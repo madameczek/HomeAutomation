@@ -7,10 +7,11 @@ using Microsoft.Extensions.Configuration;
 using CommonClasses;
 using GsmModem.Models;
 using System.Linq;
+using CommonClasses.Models;
 
 namespace GsmModem
 {
-    public class GsmModemService : BaseActor
+    public class GsmModemService : BaseService
     {
         public override string HwSettingsActorSection { get; } = "GsmModem";
         HwSettings hwSettings = new HwSettings();
@@ -35,12 +36,12 @@ public IDictionary<string, string> DataPairs { get; set; }*/
             throw new NotImplementedException();
         }
 
-        public override IActor Read()
+        public override IService Read()
         {
             throw new NotImplementedException();
         }
 
-        public override IActor ReadConfig()
+        public override IService ReadConfig()
         {
             throw new NotImplementedException();
         }

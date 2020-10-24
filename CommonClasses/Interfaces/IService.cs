@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CommonClasses.Interfaces
 {
-    public interface IActor
+    public interface IService
     {
         public string HwSettingsSection { get; }
         public string HwSettingsActorSection { get; }
@@ -15,7 +15,7 @@ namespace CommonClasses.Interfaces
         /// <summary>
         /// 
         /// </summary>
-        public Guid Id { get; set; }
+        public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }
 
         /// <summary>
@@ -40,11 +40,11 @@ namespace CommonClasses.Interfaces
         /// <summary>
         /// Information about device configuration in dictionary form - easier to work with.
         /// </summary>
-        public IDictionary<string, string> DataPairs { get; set; }
+        public IDictionary<string, string> ConfigurationJson { get; set; }
 
         public Task ConfigureService(CancellationToken cancellationToken);
 
-        public IActor ReadConfig();
+        public IService ReadConfig();
 
         public IMessage GetMessage();
 

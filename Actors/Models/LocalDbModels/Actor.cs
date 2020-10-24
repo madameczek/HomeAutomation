@@ -14,10 +14,11 @@ namespace Actors.Models.LocalDbModels
         public Guid Id { get; set; }
         [Required]
         public string Type { get; set; }
-        [Required]
         public ActorConfiguration Configuration { get; set; }
 
-        [ForeignKey("GatewayGuid")]
-        public Gateway Gateway { get; set; }
+        // Relationships
+        public ICollection<Message> Messages { get; set; }
+        [ForeignKey("Gateway")]
+        public Guid GatewayId { get; set; }
     }
 }

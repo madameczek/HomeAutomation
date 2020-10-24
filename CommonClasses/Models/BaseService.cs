@@ -8,34 +8,34 @@ using System.Threading.Tasks;
 //using System.Text.Json;
 //using System.Text.Json.Serialization;
 
-namespace CommonClasses
+namespace CommonClasses.Models
 {
-    public enum Type
+    public enum DeviceType
     {
         Gateway,
         GsmModem,
         Relay,
-        TempSensor,
+        TemperatureSensor,
         HumiditySensor,
         Input
     }
-    public abstract class BaseActor : IActor
+    public abstract class BaseService : IService
     {
         public string HwSettingsSection { get; } = "HWSettings";
         public abstract string HwSettingsActorSection { get; }
-        public Guid Id { get; set; }
+        public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
         public string Data { get; set; }
-        public IDictionary<string, string> DataPairs { get; set; }
+        public IDictionary<string, string> ConfigurationJson { get; set; }
         public Enum Type { get; set; }
 
         public abstract IMessage GetMessage();
-        public abstract IActor Read();
+        public abstract IService Read();
 
-        public abstract IActor ReadConfig();
+        public abstract IService ReadConfig();
 
         public abstract Task ConfigureService(CancellationToken cancellationToken);
 
@@ -47,7 +47,7 @@ namespace CommonClasses
         {
             try
             {
-                Data = JsonConvert.SerializeObject(DataPairs);
+                Data = JsonConvert.SerializeObject(ConfigurationJson);
                 return true;
             }
             catch
@@ -60,7 +60,7 @@ namespace CommonClasses
         {
             try
             {
-                DataPairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(Data);
+                ConfigurationJson = JsonConvert.DeserializeObject<Dictionary<string, string>>(Data);
                 return true;
             }
             catch (Exception)

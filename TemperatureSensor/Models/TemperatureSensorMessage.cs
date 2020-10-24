@@ -1,10 +1,12 @@
-﻿using System;
+﻿
+using CommonClasses.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommonClasses.Interfaces
+namespace TemperatureSensor
 {
-    public interface IMessage
+    public class TemperatureSensorMessage : IMessage
     {
         public DateTimeOffset CreatedOn { get; set; }
         public string MessageBodyJson { get; set; }

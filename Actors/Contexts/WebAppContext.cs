@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Actors.Models.LocalDbModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,12 @@ namespace Actors.Contexts
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory + @"/Properties/")
                 .AddJsonFile("dbcontextsettings.json")
                 .Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("AzureDbConnection"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("LocalSqlExpressConnection"));
         }
 
+        public DbSet<Gateway> Gateways { get; set; }
+        public DbSet<Actor> Actors { get; set; }
+        public DbSet<ActorConfiguration> Configurations { get; set; }
+        public DbSet<Message> Messages { get; set; }
     }
 }

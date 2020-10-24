@@ -21,32 +21,31 @@ namespace Actors
     {
         static async Task<int> Main()
         {
-            var cts = new CancellationTokenSource();
-            AppDomain.CurrentDomain.ProcessExit += (s, e) =>
-            {
-                cts.Cancel();
-            };
 #if DEBUG
             // uncomment for debuging
-            /*for (; ; )
+            for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");
                 if (Debugger.IsAttached) break;
                 await System.Threading.Tasks.Task.Delay(3000);
-            }*/
+            }
 #endif
 
+            var cts = new CancellationTokenSource();
+            AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+            {
+                cts.Cancel();
+            }; 
+            
             var servicesProvider = RegisterServices();
 
             IConfiguration configuration = GetConfigurationObject();
-            var hwConfigurations = configuration.GetSection("HWSetup").GetSection("TemperatureSensor").Get<TemperatureSensor.Models.HwSettings>();
-
 
             using (servicesProvider as IDisposable)
             {
-                var mainController = servicesProvider.GetRequiredService<MainController>();
-                await mainController.ConfigureServicesAsync(cts.Token);
-                await mainController.StartServicesAsync(cts.Token);
+                var serviceLauncher = servicesProvider.GetRequiredService<ServiceLauncher>();
+                await serviceLauncher.ConfigureServicesAsync(cts.Token);
+                await serviceLauncher.StartServicesAsync(cts.Token);
             }
 
             #region Finalizing
@@ -70,11 +69,12 @@ namespace Actors
             var services = new ServiceCollection();
 
             services.AddSingleton(GetConfigurationObject());
-            services.AddTransient<MainController>();
             services.AddDbContext<LocalContext>();
+            services.AddTransient<LocalQueue>();
             services.AddSingleton<TemperatureSensorService>();
             services.AddSingleton<GsmModemService>();
-            services.AddTransient<LocalQueue>();
+            services.AddTransient<MainController>();
+            services.AddTransient<ServiceLauncher>();
             return services.BuildServiceProvider();
         }
 

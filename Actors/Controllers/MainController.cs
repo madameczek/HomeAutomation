@@ -1,5 +1,4 @@
-﻿using Actors.Services;
-using GsmModem;
+﻿using Actors.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,37 +8,31 @@ using TemperatureSensor;
 
 namespace Actors.Controllers
 {
-    class MainController
+    public class MainController
     {
-        private GsmModemService gsmModemService;
         private TemperatureSensorService temperatureSensorService;
-        private LocalQueue localQueue;
 
-        public MainController(GsmModemService gsmModemService, TemperatureSensorService temperatureSensorService, LocalQueue localQueue)
+        public MainController(TemperatureSensorService temperatureSensorService)
         {
-            this.gsmModemService = gsmModemService;
             this.temperatureSensorService = temperatureSensorService;
-            this.localQueue = localQueue;
         }
 
-        // configure services
-        public async Task ConfigureServicesAsync(CancellationToken ct = default)
+        public async Task Run(CancellationToken ct = default)
         {
-            List<Task> tasks = new List<Task>
+            // uruchamia metody ReadData() z serwisów i pcha do bazy
+            try
             {
-                temperatureSensorService.ConfigureService(ct),
-            };
-            await Task.WhenAll(tasks);
-        }
+                while (!ct.IsCancellationRequested)
+                {
+                    var message = temperatureSensorService.Read();
+                    //context.Add(message);
+                    //Console.WriteLine(this.context.Database.ProviderName);
 
-        public async Task StartServicesAsync(CancellationToken ct = default)
-        {
-            List<Task> tasks = new List<Task>
-            {
-                temperatureSensorService.Run(ct),
-                localQueue.Run(ct)
-            };
-            await Task.WhenAll(tasks);
+                    await Task.Delay(3000, ct);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception) { throw; }
         }
     }
 }

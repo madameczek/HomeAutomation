@@ -1,4 +1,5 @@
 ﻿using Actors.Models.LocalDbModels;
+using CommonClasses.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,7 +18,8 @@ namespace Actors.Models.LocalDbModels
         [Required]
         public bool IsProcessed { get; set; }
 
-        [ForeignKey("ActorId")]
-        public Actor Actor { get; set; }
+        // Relationships
+        [ForeignKey("Actor")]
+        public Guid ActorId { get; set; }
     }
 }

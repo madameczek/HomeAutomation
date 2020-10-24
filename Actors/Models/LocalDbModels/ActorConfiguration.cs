@@ -15,7 +15,8 @@ namespace Actors.Models.LocalDbModels
         public DateTimeOffset UpdatedOn { get; set; }
         public string ConfigurationJson { get; set; }
 
-        [ForeignKey("ActorId")]
-        public Actor Actor { get; set; }
+        // Relationships
+        [ForeignKey("Actor")]
+        public Guid ActorId { get; set; }
     }
 }

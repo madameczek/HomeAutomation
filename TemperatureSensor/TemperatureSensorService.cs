@@ -5,24 +5,25 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using CommonClasses;
 using TemperatureSensor.Models;
+using CommonClasses.Models;
+using Newtonsoft.Json;
 
 namespace TemperatureSensor
 {
-    public class TemperatureSensorService : BaseActor
+    public class TemperatureSensorService : BaseService
     {
         public override string HwSettingsActorSection { get; } = "TemperatureSensor";
         HwSettings hwSettings = new HwSettings();
-        private string DataPairsKeyTemperature { get; } = "temperature";
+        private string HwSettingsKeyTemperature { get; } = "temperature";
 
-        private IConfiguration configuration;
+        private readonly IConfiguration configuration;
         public TemperatureSensorService(IConfiguration configuration) 
         {
             this.configuration = configuration;
-            DataPairs = new Dictionary<string, string>() { { DataPairsKeyTemperature, "0.0" } };
+            ConfigurationJson = new Dictionary<string, string>() { { HwSettingsKeyTemperature, "0.0" } };
         }
 
         /*public Guid Guid { get; set; }
@@ -36,13 +37,13 @@ namespace TemperatureSensor
 
         public override IMessage GetMessage()
         {
-            IMessage message = new TemperatureSensorMessageModel();
-            message.MessageTime = DateTimeOffset.Now;
-            message.DataPairs = new Dictionary<string, string>() { { DataPairsKeyTemperature, DataPairs[DataPairsKeyTemperature] } };
+            IMessage message = new TemperatureSensorMessage();
+            message.CreatedOn = DateTimeOffset.Now;
+            //message.DataPairs = new Dictionary<string, string>() { { HwSettingsKeyTemperature, ConfigurationJson[HwSettingsKeyTemperature] } };
             return message;
         }
 
-        public override IActor ReadConfig()
+        public override IService ReadConfig()
         {
             throw new NotImplementedException();
         }
@@ -54,6 +55,8 @@ namespace TemperatureSensor
                 if(!ct.IsCancellationRequested)
                 {
                     hwSettings = configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
+                    //var Serialized = JsonConvert.SerializeObject(hwSettings);
+
                 }
             }
             catch (OperationCanceledException) { }
@@ -63,7 +66,7 @@ namespace TemperatureSensor
 
         public override bool Write(IMessage message)
         {
-            return true;
+            throw new NotImplementedException();
         }
 
         private async Task ReadTemp(CancellationToken ct = default)
@@ -73,7 +76,7 @@ namespace TemperatureSensor
                 string data = await Task.Run(() =>
                     File.ReadAllText(hwSettings.BasePath + hwSettings.HWSerial + @"/temperature"), ct);
                 string _temperature = (int.Parse(data.Trim()) * 0.001).ToString("F1").Substring(0, 4);
-                DataPairs[DataPairsKeyTemperature] = _temperature;
+                ConfigurationJson[HwSettingsKeyTemperature] = _temperature;
             }
             catch (OperationCanceledException) { }
             catch (Exception) { throw; }
@@ -92,7 +95,9 @@ namespace TemperatureSensor
                 while (!ct.IsCancellationRequested)
                 {
                     await ReadTemp(ct);
-                    Console.WriteLine(DataPairs[DataPairsKeyTemperature]);
+
+                    // remove for production
+                    Console.WriteLine(ConfigurationJson[HwSettingsKeyTemperature]);
                     await Task.Delay(hwSettings.ReadInterval, ct);
                 }
             }
@@ -100,7 +105,7 @@ namespace TemperatureSensor
             catch(Exception) { throw; }
         }
 
-        public override IActor Read()
+        public override IService Read()
         {
             throw new NotImplementedException();
         }

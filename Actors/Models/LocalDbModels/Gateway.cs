@@ -13,6 +13,7 @@ namespace Actors.Models.LocalDbModels
         public string Name { get; set; }
         public string SiteName { get; set; }
 
+        // Relationships
         public ICollection<Actor> Actors { get; set; }
     }
 }

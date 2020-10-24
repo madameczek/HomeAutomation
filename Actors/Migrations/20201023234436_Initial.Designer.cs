@@ -3,14 +3,16 @@ using System;
 using Actors.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Actors.Migrations
 {
     [DbContext(typeof(LocalContext))]
-    partial class LocalContextModelSnapshot : ModelSnapshot
+    [Migration("20201023234436_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,28 +93,28 @@ namespace Actors.Migrations
                             Id = 1,
                             ActorId = new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 13, 10, 57, 125, DateTimeKind.Unspecified).AddTicks(1888), new TimeSpan(0, 2, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 448, DateTimeKind.Unspecified).AddTicks(7171), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 2,
                             ActorId = new Guid("429060a5-7e97-4227-aa44-25999f13536f"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 13, 10, 57, 127, DateTimeKind.Unspecified).AddTicks(9725), new TimeSpan(0, 2, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 451, DateTimeKind.Unspecified).AddTicks(5277), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 3,
                             ActorId = new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 13, 10, 57, 127, DateTimeKind.Unspecified).AddTicks(9837), new TimeSpan(0, 2, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 451, DateTimeKind.Unspecified).AddTicks(5388), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 4,
                             ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"),
-                            ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 13, 10, 57, 127, DateTimeKind.Unspecified).AddTicks(9869), new TimeSpan(0, 2, 0, 0, 0))
+                            ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Interface\":\"wire-1\",\"Type\":\"TemperatureSensor\",\"Name\":\"TemperatureSensor\",\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\",\"ReadInterval\":5000,\"Attach\":true}",
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 451, DateTimeKind.Unspecified).AddTicks(5422), new TimeSpan(0, 2, 0, 0, 0))
                         });
                 });
 
