@@ -30,7 +30,8 @@ namespace Actors.Services
         {
             List<Task> tasks = new List<Task>
             {
-                temperatureSensorService.ConfigureService(ct),
+                controller.ConfigureService(ct),
+                temperatureSensorService.ConfigureService(ct)
             };
             await Task.WhenAll(tasks);
         }
