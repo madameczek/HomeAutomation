@@ -16,7 +16,7 @@ namespace IotHubGateway.Services
             this.controller = controller;
         }
 
-        // configure services
+        // Configure services
         public async Task ConfigureServicesAsync(CancellationToken ct = default)
         {
             List<Task> tasks = new List<Task>
@@ -26,6 +26,7 @@ namespace IotHubGateway.Services
             await Task.WhenAll(tasks);
         }
 
+        // Start services
         public async Task StartServicesAsync(CancellationToken ct = default)
         {
             List<Task> tasks = new List<Task>

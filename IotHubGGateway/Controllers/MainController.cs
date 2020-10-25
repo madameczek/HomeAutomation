@@ -23,7 +23,8 @@ namespace IotHubGateway.Controllers
                 while (!ct.IsCancellationRequested)
                 {
                     // deal with queues: read one/write another
-                    // do something
+
+                    await localQueue.CopyNewLocalMessagesToRemoteAsync();
                     await Task.Delay(30000, ct);
                 }
             }
