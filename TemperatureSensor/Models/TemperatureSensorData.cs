@@ -1,15 +1,19 @@
-﻿using System;
+﻿using CommonClasses.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommonClasses.Interfaces
+namespace TemperatureSensor.Models
 {
-    public interface IMessage
+    class TemperatureSensorData : IMessage
     {
         public int? Id { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
         public string MessageBodyJson { get; set; }
         public bool? IsProcessed { get; set; }
         public Guid ActorId { get; set; }
+
+        public double Temperature { get; set; }
+
     }
 }

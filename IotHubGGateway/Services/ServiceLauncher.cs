@@ -1,27 +1,18 @@
-﻿using Actors.Controllers;
-using Actors.Models.LocalDbModels;
-using Actors.Services;
-using CommonClasses.Models;
-using GsmModem;
+﻿using IotHubGateway.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TemperatureSensor;
 
-namespace Actors.Services
+namespace IotHubGateway.Services
 {
     class ServiceLauncher
     {
-        private GsmModemService gsmModemService;
-        private TemperatureSensorService temperatureSensorService;
-        private MainController controller;
+        private readonly MainController controller;
 
-        public ServiceLauncher(GsmModemService gsmModemService, TemperatureSensorService temperatureSensorService, MainController controller)
+        public ServiceLauncher(MainController controller)
         {
-            this.gsmModemService = gsmModemService;
-            this.temperatureSensorService = temperatureSensorService;
             this.controller = controller;
         }
 
@@ -30,7 +21,7 @@ namespace Actors.Services
         {
             List<Task> tasks = new List<Task>
             {
-                temperatureSensorService.ConfigureService(ct),
+                //dummyService.ConfigureService(ct),
             };
             await Task.WhenAll(tasks);
         }
@@ -39,7 +30,6 @@ namespace Actors.Services
         {
             List<Task> tasks = new List<Task>
             {
-                temperatureSensorService.Run(ct),
                 controller.Run(ct)
             };
             await Task.WhenAll(tasks);

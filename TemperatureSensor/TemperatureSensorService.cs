@@ -10,22 +10,26 @@ using CommonClasses;
 using TemperatureSensor.Models;
 using CommonClasses.Models;
 using Newtonsoft.Json;
+using System.Linq.Expressions;
 
 namespace TemperatureSensor
 {
     public class TemperatureSensorService : BaseService
     {
-        public override string HwSettingsActorSection { get; } = "TemperatureSensor";
-        HwSettings hwSettings = new HwSettings();
-        private string HwSettingsKeyTemperature { get; } = "temperature";
-
+        #region Dependency Injection
         private readonly IConfiguration configuration;
-        public TemperatureSensorService(IConfiguration configuration) 
+        public TemperatureSensorService(IConfiguration configuration)
         {
             this.configuration = configuration;
-            ConfigurationJson = new Dictionary<string, string>() { { HwSettingsKeyTemperature, "0.0" } };
         }
+        #endregion
 
+        // Define section of appsettings.json to parse device config from configuration object
+        public override string HwSettingsActorSection { get; } = "TemperatureSensor";
+        HwSettings hwSettings = new HwSettings();
+
+        private double temperature;
+        
         /*public Guid Guid { get; set; }
         public Guid DeviceGuid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -37,9 +41,22 @@ namespace TemperatureSensor
 
         public override IMessage GetMessage()
         {
-            IMessage message = new TemperatureSensorMessage();
-            message.CreatedOn = DateTimeOffset.Now;
-            //message.DataPairs = new Dictionary<string, string>() { { HwSettingsKeyTemperature, ConfigurationJson[HwSettingsKeyTemperature] } };
+            // to be simplified
+            DateTimeOffset time = DateTimeOffset.Now;
+            time = time.AddTicks(-(time.Ticks % TimeSpan.TicksPerSecond));
+
+            IMessage _message = new TemperatureSensorData()
+            {
+                CreatedOn = time,
+                ActorId = hwSettings.DeviceId,
+                Temperature = temperature
+            };
+            var _jsonData = JsonConvert.SerializeObject(_message, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            IMessage message = JsonConvert.DeserializeObject<TemperatureSensorMessage>(_jsonData);
+            message.Id = 0;
+            message.IsProcessed = false;
+            message.MessageBodyJson = _jsonData;
+            message.CreatedOn = time;
             return message;
         }
 
@@ -55,8 +72,6 @@ namespace TemperatureSensor
                 if(!ct.IsCancellationRequested)
                 {
                     hwSettings = configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
-                    //var Serialized = JsonConvert.SerializeObject(hwSettings);
-
                 }
             }
             catch (OperationCanceledException) { }
@@ -69,35 +84,14 @@ namespace TemperatureSensor
             throw new NotImplementedException();
         }
 
-        private async Task ReadTemp(CancellationToken ct = default)
-        {
-            try
-            {
-                string data = await Task.Run(() =>
-                    File.ReadAllText(hwSettings.BasePath + hwSettings.HWSerial + @"/temperature"), ct);
-                string _temperature = (int.Parse(data.Trim()) * 0.001).ToString("F1").Substring(0, 4);
-                ConfigurationJson[HwSettingsKeyTemperature] = _temperature;
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception) { throw; }
-        }
-
         public override async Task Run(CancellationToken ct = default)
         {
-            // metoda periodycznie odczytuje DS1820. Efekt:
-            // - zapisuje wynik do DataPairs "temperature", <string>
-            // - kolejna wersja może porównywać odczyt z parametrem konfiguracyjnym uppperlimit i lowerlimit (+histereza)
-            // i wywoływać event
-            // - kolejna wersja może wykrywać anomalie (np. obniżenie temp o 5 st w czasie 5 minut i też wywoływać alarm
-
+            // metoda periodycznie odczytuje DS1820 i aktualizuje właściwość
             try
             {
                 while (!ct.IsCancellationRequested)
                 {
                     await ReadTemp(ct);
-
-                    // remove for production
-                    Console.WriteLine(ConfigurationJson[HwSettingsKeyTemperature]);
                     await Task.Delay(hwSettings.ReadInterval, ct);
                 }
             }
@@ -108,6 +102,18 @@ namespace TemperatureSensor
         public override IService Read()
         {
             throw new NotImplementedException();
+        }
+
+        private async Task ReadTemp(CancellationToken ct = default)
+        {
+            try
+            {
+                string data = await Task.Run(() =>
+                    File.ReadAllText(hwSettings.BasePath + hwSettings.HWSerial + @"/temperature"), ct);
+                temperature = (int.Parse(data.Trim()) * 0.001);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception) { throw; }
         }
     }
 }

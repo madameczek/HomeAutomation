@@ -1,20 +1,13 @@
-﻿using Actors.Contexts;
+﻿using IotHubGateway.Contexts;
+using IotHubGateway.Controllers;
+using IotHubGateway.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using TemperatureSensor;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using GsmModem;
-using Actors.Services;
-using Actors.Controllers;
 
-namespace Actors
+namespace IotHubGateway
 {
     class Program
     {
@@ -34,8 +27,8 @@ namespace Actors
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
                 cts.Cancel();
-            }; 
-            
+            };
+
             var servicesProvider = RegisterServices();
 
             IConfiguration configuration = GetConfigurationObject();
@@ -69,13 +62,11 @@ namespace Actors
 
             services.AddSingleton(GetConfigurationObject());
             services.AddDbContext<LocalContext>();
+            services.AddDbContext<AzureContext>();
             services.AddTransient<LocalQueue>();
-            services.AddSingleton<TemperatureSensorService>();
-            services.AddSingleton<GsmModemService>();
             services.AddTransient<MainController>();
             services.AddTransient<ServiceLauncher>();
             return services.BuildServiceProvider();
         }
-
     }
 }

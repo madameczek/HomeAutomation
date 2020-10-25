@@ -1,4 +1,4 @@
-﻿using Actors.Contexts;
+﻿using Actors.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,11 +10,13 @@ namespace Actors.Controllers
 {
     public class MainController
     {
-        private TemperatureSensorService temperatureSensorService;
+        private readonly TemperatureSensorService temperatureSensorService;
+        private readonly LocalQueue localQueue;
 
-        public MainController(TemperatureSensorService temperatureSensorService)
+        public MainController(LocalQueue localQueue, TemperatureSensorService temperatureSensorService)
         {
             this.temperatureSensorService = temperatureSensorService;
+            this.localQueue = localQueue;
         }
 
         public async Task Run(CancellationToken ct = default)
@@ -24,15 +26,16 @@ namespace Actors.Controllers
             {
                 while (!ct.IsCancellationRequested)
                 {
-                    var message = temperatureSensorService.Read();
-                    //context.Add(message);
-                    //Console.WriteLine(this.context.Database.ProviderName);
-
+                    // Wait for first readings from hardware devices
                     await Task.Delay(3000, ct);
+                    var message = temperatureSensorService.GetMessage();
+                    localQueue.AddMessage(message);
+
+                    await Task.Delay(30000, ct);
                 }
             }
             catch (OperationCanceledException) { }
-            catch (Exception) { throw; }
+            catch (Exception e) { Console.WriteLine(e.Message); throw; }
         }
     }
 }

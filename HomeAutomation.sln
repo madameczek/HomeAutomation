@@ -11,13 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{80FFED55
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GsmModem", "GsmModem\GsmModem.csproj", "{26E08116-AEDB-42A2-92B3-D65F796D5DF4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway", "Gateway\Gateway.csproj", "{A9164FA1-5DCC-46E9-8ABA-C7CC23479EB4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Actors.Test", "Actors.Test\Actors.Test.csproj", "{B0E227D5-BB14-4148-B974-6C1F0F7DD6DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Actors", "Actors\Actors.csproj", "{D00356B0-EA82-4447-9907-2E2068D59C4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonClasses", "CommonClasses\CommonClasses.csproj", "{A84C1739-E165-4078-8A8D-28F336D0BBA6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IotHubGateway", "IotHubGGateway\IotHubGateway.csproj", "{AF0B3290-DB80-40CB-ABD5-7D5F1DA56358}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +33,6 @@ Global
 		{26E08116-AEDB-42A2-92B3-D65F796D5DF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26E08116-AEDB-42A2-92B3-D65F796D5DF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26E08116-AEDB-42A2-92B3-D65F796D5DF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9164FA1-5DCC-46E9-8ABA-C7CC23479EB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9164FA1-5DCC-46E9-8ABA-C7CC23479EB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9164FA1-5DCC-46E9-8ABA-C7CC23479EB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9164FA1-5DCC-46E9-8ABA-C7CC23479EB4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B0E227D5-BB14-4148-B974-6C1F0F7DD6DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0E227D5-BB14-4148-B974-6C1F0F7DD6DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0E227D5-BB14-4148-B974-6C1F0F7DD6DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,6 +45,10 @@ Global
 		{A84C1739-E165-4078-8A8D-28F336D0BBA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A84C1739-E165-4078-8A8D-28F336D0BBA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A84C1739-E165-4078-8A8D-28F336D0BBA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF0B3290-DB80-40CB-ABD5-7D5F1DA56358}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF0B3290-DB80-40CB-ABD5-7D5F1DA56358}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF0B3290-DB80-40CB-ABD5-7D5F1DA56358}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF0B3290-DB80-40CB-ABD5-7D5F1DA56358}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
