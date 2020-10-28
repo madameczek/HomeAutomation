@@ -57,7 +57,11 @@ namespace Actors.Services
             };
             _logger.LogInformation("Actors services started");
             await Task.WhenAll(tasks);
-            await Task.FromCanceled(ct);
+            try
+            {
+                await Task.FromCanceled(ct);
+            }
+            catch(OperationCanceledException) { }
         }
     }
 }

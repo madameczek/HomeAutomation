@@ -22,12 +22,12 @@ namespace Actors
         {
 #if DEBUG
             // uncomment for debuging
-            for (; ; )
+            /*for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");
                 if (Debugger.IsAttached) break;
                 await System.Threading.Tasks.Task.Delay(3000);
-            }
+            }*/
 #endif
 
             var cts = new CancellationTokenSource();
