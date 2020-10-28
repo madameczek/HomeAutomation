@@ -1,4 +1,5 @@
 ﻿using IotHubGateway.Controllers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,10 +11,12 @@ namespace IotHubGateway.Services
     class ServiceLauncher
     {
         private readonly MainController controller;
+        private readonly ILogger _logger;
 
-        public ServiceLauncher(MainController controller)
+        public ServiceLauncher(ILogger<ServiceLauncher> logger, MainController controller)
         {
             this.controller = controller;
+            _logger = logger;
         }
 
         // Configure services
@@ -23,6 +26,7 @@ namespace IotHubGateway.Services
             {
                 //dummyService.ConfigureService(ct),
             };
+            _logger.LogDebug("Gateway services configured");
             await Task.WhenAll(tasks);
         }
 
@@ -33,6 +37,7 @@ namespace IotHubGateway.Services
             {
                 controller.Run(ct)
             };
+            _logger.LogInformation("Gateway services started");
             await Task.WhenAll(tasks);
         }
     }

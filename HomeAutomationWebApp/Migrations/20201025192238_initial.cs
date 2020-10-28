@@ -1,10 +1,9 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace HomeAutomationWebApp.Data.Migrations
+namespace HomeAutomationWebApp.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,7 +39,8 @@ namespace HomeAutomationWebApp.Data.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    Discriminator = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -52,7 +52,7 @@ namespace HomeAutomationWebApp.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -73,7 +73,7 @@ namespace HomeAutomationWebApp.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -93,8 +93,8 @@ namespace HomeAutomationWebApp.Data.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -138,8 +138,8 @@ namespace HomeAutomationWebApp.Data.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -152,6 +152,131 @@ namespace HomeAutomationWebApp.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Gateways",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    SiteName = table.Column<string>(nullable: true),
+                    IotUserId = table.Column<Guid>(nullable: false),
+                    IotUserId1 = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Gateways", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Gateways_AspNetUsers_IotUserId1",
+                        column: x => x.IotUserId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Actors",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Type = table.Column<string>(nullable: false),
+                    GatewayId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Actors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Actors_Gateways_GatewayId",
+                        column: x => x.GatewayId,
+                        principalTable: "Gateways",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Configurations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UpdatedOn = table.Column<DateTimeOffset>(nullable: false),
+                    ConfigurationJson = table.Column<string>(nullable: true),
+                    ActorId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Configurations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Configurations_Actors_ActorId",
+                        column: x => x.ActorId,
+                        principalTable: "Actors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedOn = table.Column<DateTimeOffset>(nullable: false),
+                    MessageBodyJson = table.Column<string>(nullable: true),
+                    IsProcessed = table.Column<bool>(nullable: false),
+                    ActorId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_Actors_ActorId",
+                        column: x => x.ActorId,
+                        principalTable: "Actors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "1", "a2aedabb-ec21-417b-82c4-86148d708cf9", "User", "USER" },
+                    { "2", "c38c0259-fd33-4bb0-bde4-40b2d49e0b8d", "SiteManager", "SITEMANAGER" },
+                    { "3", "83c86112-0139-4f3c-9be5-6fd16b1ad40c", "Administrator", "ADMINISTRATOR" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Gateways",
+                columns: new[] { "Id", "IotUserId", "IotUserId1", "Name", "SiteName" },
+                values: new object[] { new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"), new Guid("00000000-0000-0000-0000-000000000000"), null, "Raspberry Pi", null });
+
+            migrationBuilder.InsertData(
+                table: "Actors",
+                columns: new[] { "Id", "GatewayId", "Type" },
+                values: new object[,]
+                {
+                    { new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432"), new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"), "GsmModem" },
+                    { new Guid("429060a5-7e97-4227-aa44-25999f13536f"), new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"), "Relay" },
+                    { new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8"), new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"), "Relay" },
+                    { new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"), new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"), "TemperatureSensor" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Configurations",
+                columns: new[] { "Id", "ActorId", "ConfigurationJson", "UpdatedOn" },
+                values: new object[,]
+                {
+                    { 1, new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432"), "", new DateTimeOffset(new DateTime(2020, 10, 25, 20, 22, 38, 30, DateTimeKind.Unspecified).AddTicks(6873), new TimeSpan(0, 1, 0, 0, 0)) },
+                    { 2, new Guid("429060a5-7e97-4227-aa44-25999f13536f"), "", new DateTimeOffset(new DateTime(2020, 10, 25, 20, 22, 38, 33, DateTimeKind.Unspecified).AddTicks(1028), new TimeSpan(0, 1, 0, 0, 0)) },
+                    { 3, new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8"), "", new DateTimeOffset(new DateTime(2020, 10, 25, 20, 22, 38, 33, DateTimeKind.Unspecified).AddTicks(1128), new TimeSpan(0, 1, 0, 0, 0)) },
+                    { 4, new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"), "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}", new DateTimeOffset(new DateTime(2020, 10, 25, 20, 22, 38, 33, DateTimeKind.Unspecified).AddTicks(1161), new TimeSpan(0, 1, 0, 0, 0)) }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Actors_GatewayId",
+                table: "Actors",
+                column: "GatewayId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -191,6 +316,22 @@ namespace HomeAutomationWebApp.Data.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Configurations_ActorId",
+                table: "Configurations",
+                column: "ActorId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Gateways_IotUserId1",
+                table: "Gateways",
+                column: "IotUserId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_ActorId",
+                table: "Messages",
+                column: "ActorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -211,7 +352,19 @@ namespace HomeAutomationWebApp.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Configurations");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Actors");
+
+            migrationBuilder.DropTable(
+                name: "Gateways");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

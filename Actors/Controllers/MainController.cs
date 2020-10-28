@@ -1,5 +1,7 @@
 ﻿using Actors.Services;
+using CommonClasses.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,15 +13,17 @@ namespace Actors.Controllers
 {
     public class MainController
     {
-        private readonly TemperatureSensorService temperatureSensorService;
-        private readonly LocalQueue localQueue;
-        private readonly IConfiguration configuration;
+        private readonly TemperatureSensorService _temperatureSensorService;
+        private readonly LocalQueue _localQueue;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
 
-        public MainController(IConfiguration configuration, LocalQueue localQueue, TemperatureSensorService temperatureSensorService)
+        public MainController(ILogger<MainController> logger, IConfiguration configuration, LocalQueue localQueue, TemperatureSensorService temperatureSensorService)
         {
-            this.temperatureSensorService = temperatureSensorService;
-            this.localQueue = localQueue;
-            this.configuration = configuration;
+            _localQueue = localQueue;
+            _temperatureSensorService = temperatureSensorService;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         // Define section of appsettings.json to parse device config from configuration object
@@ -33,7 +37,7 @@ namespace Actors.Controllers
             {
                 if (!ct.IsCancellationRequested)
                 {
-                    var settings = configuration.GetSection(ServicesSection).GetSection(DatabaseSection).Get<Dictionary<string, int>>();
+                    var settings = _configuration.GetSection(ServicesSection).GetSection(DatabaseSection).Get<Dictionary<string, int>>();
                     if (settings.TryGetValue("TemperatureMessagePushPeriod", out var value))
                     {
                         if (value * 1000 < int.MaxValue)
@@ -48,21 +52,21 @@ namespace Actors.Controllers
                 }
             }
             catch (OperationCanceledException) { }
-            catch (Exception) { throw; }
+            catch (Exception e) { _logger.LogError(e.Message, "Error at configuring Controller. Are values in configuration file correcr?"); throw; }
             await Task.CompletedTask;
         }
 
         public async Task Run(CancellationToken ct = default)
         {
-            // uruchamia metody ReadData() z serwisów i pcha do bazy
+            // Create messages perriodically and store in local database.
             try
             {
                 while (!ct.IsCancellationRequested)
                 {
                     // Wait for first readings from hardware devices
                     await Task.Delay(3000, ct);
-                    var message = temperatureSensorService.GetMessage();
-                    localQueue.AddMessage(message);
+                    IMessage message = _temperatureSensorService.GetMessage();
+                    _localQueue.AddMessage(message);
 
                     await Task.Delay(temperatureMessagePushPeriod, ct);
                 }

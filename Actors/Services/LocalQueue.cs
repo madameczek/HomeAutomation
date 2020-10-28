@@ -1,6 +1,7 @@
 ﻿using Actors.Contexts;
 using Actors.Models.LocalDbModels;
 using CommonClasses.Interfaces;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,21 +11,23 @@ namespace Actors.Services
 {
     public class LocalQueue
     {
-        private readonly LocalContext dbContext;
-
-        public LocalQueue(LocalContext dbContext)
+        private readonly LocalContext _dbContext;
+        private readonly ILogger _logger;
+        public LocalQueue(ILogger<LocalQueue> logger, LocalContext dbContext)
         {
-            this.dbContext = dbContext;
+            this._dbContext = dbContext;
+            _logger = logger;
         }
 
         public void AddMessage(IMessage message)
         {
+            // This is to change type from those used by devices to 'Message' used in DbSet.
             var _json = JsonConvert.SerializeObject(message);
             Message dbMessage = JsonConvert.DeserializeObject<Message>(_json);
-            dbContext.Add(dbMessage);
-            dbContext.SaveChanges();
-            //remove for production
-            Console.WriteLine($"{message.CreatedOn}, Temp: {message.MessageBodyJson}");
+
+            _dbContext.Add(dbMessage);
+            _dbContext.SaveChanges();
+            _logger.LogDebug("Data from device saved to local database");
         }
     }
 }

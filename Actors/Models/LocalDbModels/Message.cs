@@ -1,7 +1,4 @@
-﻿using Actors.Models.LocalDbModels;
-using CommonClasses.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
@@ -13,7 +10,7 @@ namespace Actors.Models.LocalDbModels
         [Key]
         public int Id { get; set; }
         [Required]
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         public string MessageBodyJson { get; set; }
         [Required]
         public bool IsProcessed { get; set; }

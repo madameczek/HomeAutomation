@@ -1,34 +1,33 @@
-﻿using CommonClasses.Interfaces;
+﻿using CommonClasses;
+using CommonClasses.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using CommonClasses;
 using TemperatureSensor.Models;
-using CommonClasses.Models;
-using Newtonsoft.Json;
-using System.Linq.Expressions;
 
 namespace TemperatureSensor
 {
     public class TemperatureSensorService : BaseService
     {
         #region Dependency Injection
-        private readonly IConfiguration configuration;
-        public TemperatureSensorService(IConfiguration configuration)
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
+        public TemperatureSensorService(ILogger<TemperatureSensorService> logger, IConfiguration configuration)
         {
-            this.configuration = configuration;
+            _configuration = configuration;
+            _logger = logger;
         }
         #endregion
 
         // Define section of appsettings.json to parse device config from configuration object
         public override string HwSettingsActorSection { get; } = "TemperatureSensor";
-        HwSettings hwSettings = new HwSettings();
+        private HwSettings _hwSettings = new HwSettings();
 
-        private double temperature;
+        private double _temperature;
         
         /*public Guid Guid { get; set; }
         public Guid DeviceGuid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -41,18 +40,22 @@ namespace TemperatureSensor
 
         public override IMessage GetMessage()
         {
-            // to be simplified
+            // Cut milliseconds for shorter storage in json.
             DateTimeOffset time = DateTimeOffset.Now;
             time = time.AddTicks(-(time.Ticks % TimeSpan.TicksPerSecond));
 
+            // Temporary object with readings to be serialized.
             IMessage _message = new TemperatureSensorData()
             {
                 CreatedOn = time,
-                ActorId = hwSettings.DeviceId,
-                Temperature = temperature
+                ActorId = _hwSettings.DeviceId,
+                Temperature = _temperature
             };
+            
+            // Create json to be stored as string in MessageBody field of a Message.
             var _jsonData = JsonConvert.SerializeObject(_message, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             IMessage message = JsonConvert.DeserializeObject<TemperatureSensorMessage>(_jsonData);
+
             message.Id = 0;
             message.IsProcessed = false;
             message.MessageBodyJson = _jsonData;
@@ -71,7 +74,7 @@ namespace TemperatureSensor
             {
                 if(!ct.IsCancellationRequested)
                 {
-                    hwSettings = configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
+                    _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
                 }
             }
             catch (OperationCanceledException) { }
@@ -86,22 +89,17 @@ namespace TemperatureSensor
 
         public override async Task Run(CancellationToken ct = default)
         {
-            // metoda periodycznie odczytuje DS1820 i aktualizuje właściwość
+            // This periodically invokes a method reading temperature from a sensor.
             try
             {
                 while (!ct.IsCancellationRequested)
                 {
                     await ReadTemp(ct);
-                    await Task.Delay(hwSettings.ReadInterval, ct);
+                    await Task.Delay(_hwSettings.ReadInterval, ct);
                 }
             }
             catch(OperationCanceledException) { }
             catch(Exception) { throw; }
-        }
-
-        public override IService Read()
-        {
-            throw new NotImplementedException();
         }
 
         private async Task ReadTemp(CancellationToken ct = default)
@@ -109,11 +107,11 @@ namespace TemperatureSensor
             try
             {
                 string data = await Task.Run(() =>
-                    File.ReadAllText(hwSettings.BasePath + hwSettings.HWSerial + @"/temperature"), ct);
-                temperature = (int.Parse(data.Trim()) * 0.001);
+                    File.ReadAllText(_hwSettings.BasePath + _hwSettings.HWSerial + @"/temperature"), ct);
+                _temperature = int.Parse(data.Trim()) * 0.001;
             }
             catch (OperationCanceledException) { }
-            catch (Exception) { throw; }
+            catch (Exception e) { _logger.LogCritical(e, "Service TemperatureSensorService crashed"); throw; }
         }
     }
 }

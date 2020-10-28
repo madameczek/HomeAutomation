@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using CommonClasses;
 using GsmModem.Models;
 using System.Linq;
-using CommonClasses.Models;
 
 namespace GsmModem
 {
@@ -32,11 +31,6 @@ public string Data { get; set; }
 public IDictionary<string, string> DataPairs { get; set; }*/
 
         public override IMessage GetMessage()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IService Read()
         {
             throw new NotImplementedException();
         }

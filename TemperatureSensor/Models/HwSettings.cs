@@ -1,11 +1,10 @@
-﻿using CommonClasses.Models;
+﻿using CommonClasses;
+using CommonClasses.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TemperatureSensor.Models
 {
-    public class HwSettings
+    public class HwSettings : IHwSettings
     {
         public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }

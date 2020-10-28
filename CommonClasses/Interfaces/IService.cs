@@ -51,7 +51,7 @@ namespace CommonClasses.Interfaces
         public bool Write(IMessage message);
 
         /// <summary>
-        /// Method to be invoked in order to start and run a service. Defines tasks, which are invoked periodically.
+        /// Method to be invoked in order to start a service. Defines tasks, which are invoked periodically.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

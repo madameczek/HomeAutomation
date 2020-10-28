@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonClasses", "CommonClas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IotHubGateway", "IotHubGGateway\IotHubGateway.csproj", "{AF0B3290-DB80-40CB-ABD5-7D5F1DA56358}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAutomationWebApp", "HomeAutomationWebApp\HomeAutomationWebApp.csproj", "{8454EEC6-27DA-453A-800F-5F9D4793C55A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeAutomationWebApp", "HomeAutomationWebApp\HomeAutomationWebApp.csproj", "{8454EEC6-27DA-453A-800F-5F9D4793C55A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgwApi", "ImgwApi\ImgwApi.csproj", "{93146B93-E1B5-404A-A5F3-85A2B631AA33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{8454EEC6-27DA-453A-800F-5F9D4793C55A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8454EEC6-27DA-453A-800F-5F9D4793C55A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8454EEC6-27DA-453A-800F-5F9D4793C55A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93146B93-E1B5-404A-A5F3-85A2B631AA33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93146B93-E1B5-404A-A5F3-85A2B631AA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93146B93-E1B5-404A-A5F3-85A2B631AA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93146B93-E1B5-404A-A5F3-85A2B631AA33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{B0E227D5-BB14-4148-B974-6C1F0F7DD6DA} = {80FFED55-EE8F-4D81-B000-DD5804C27FC3}
 		{D00356B0-EA82-4447-9907-2E2068D59C4F} = {68D17372-878F-4320-96BB-A2EC445EF7A5}
 		{A84C1739-E165-4078-8A8D-28F336D0BBA6} = {68D17372-878F-4320-96BB-A2EC445EF7A5}
+		{93146B93-E1B5-404A-A5F3-85A2B631AA33} = {68D17372-878F-4320-96BB-A2EC445EF7A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {374DB276-3DCB-4C07-B9A5-7E8B0756483A}

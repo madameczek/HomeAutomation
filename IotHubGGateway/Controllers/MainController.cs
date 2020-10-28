@@ -9,12 +9,8 @@ namespace IotHubGateway.Controllers
 {
     public class MainController
     {
-        private LocalQueue localQueue;
-
-        public MainController(LocalQueue localQueue)
-        {
-            this.localQueue = localQueue;
-        }
+        private readonly LocalQueue _localQueue;
+        public MainController(LocalQueue localQueue) => _localQueue = localQueue;
 
         public async Task Run(CancellationToken ct = default)
         {
@@ -24,8 +20,8 @@ namespace IotHubGateway.Controllers
                 {
                     // deal with queues: read one/write another
 
-                    await localQueue.CopyNewLocalMessagesToRemoteAsync();
-                    await Task.Delay(30000, ct);
+                    _ = _localQueue.CopyNewLocalMessagesToRemote(ct);
+                    await Task.Delay(60000, ct);
                 }
             }
             catch (OperationCanceledException) { }

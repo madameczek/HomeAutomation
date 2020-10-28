@@ -19,5 +19,10 @@ namespace IotHubGateway.Models
         // Relationships
         [ForeignKey("Actor")]
         public Guid ActorId { get; set; }
+
+        public Message Clone()
+        {
+            return (Message)MemberwiseClone();
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Actors.Controllers;
 using Actors.Models.LocalDbModels;
 using Actors.Services;
-using CommonClasses.Models;
 using GsmModem;
+using ImgwApi;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,15 +15,24 @@ namespace Actors.Services
 {
     class ServiceLauncher
     {
-        private GsmModemService gsmModemService;
-        private TemperatureSensorService temperatureSensorService;
-        private MainController controller;
+        private GsmModemService _gsmModemService;
+        private TemperatureSensorService _temperatureSensorService;
+        private ImgwService _imgwApiService;
+        private MainController _controller;
+        private readonly ILogger _logger;
 
-        public ServiceLauncher(GsmModemService gsmModemService, TemperatureSensorService temperatureSensorService, MainController controller)
+        public ServiceLauncher(
+            ILogger<ServiceLauncher> logger, 
+            GsmModemService gsmModemService, 
+            TemperatureSensorService temperatureSensorService, 
+            ImgwService imgwService,
+            MainController controller)
         {
-            this.gsmModemService = gsmModemService;
-            this.temperatureSensorService = temperatureSensorService;
-            this.controller = controller;
+            _logger = logger;
+            _gsmModemService = gsmModemService;
+            _temperatureSensorService = temperatureSensorService;
+            _imgwApiService = imgwService;
+            _controller = controller;
         }
 
         // configure services
@@ -30,8 +40,9 @@ namespace Actors.Services
         {
             List<Task> tasks = new List<Task>
             {
-                controller.ConfigureService(ct),
-                temperatureSensorService.ConfigureService(ct)
+                _controller.ConfigureService(ct),
+                _temperatureSensorService.ConfigureService(ct),
+                _imgwApiService.ConfigureService(ct)
             };
             await Task.WhenAll(tasks);
         }
@@ -40,10 +51,13 @@ namespace Actors.Services
         {
             List<Task> tasks = new List<Task>
             {
-                temperatureSensorService.Run(ct),
-                controller.Run(ct)
+                _temperatureSensorService.Run(ct),
+                _imgwApiService.Run(ct),
+                _controller.Run(ct)
             };
+            _logger.LogInformation("Actors services started");
             await Task.WhenAll(tasks);
+            await Task.FromCanceled(ct);
         }
     }
 }

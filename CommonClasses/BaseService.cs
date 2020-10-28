@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 //using System.Text.Json;
 //using System.Text.Json.Serialization;
 
-namespace CommonClasses.Models
+namespace CommonClasses
 {
     public enum DeviceType
     {
@@ -17,7 +17,8 @@ namespace CommonClasses.Models
         Relay,
         TemperatureSensor,
         HumiditySensor,
-        Input
+        Input,
+        WeatherData
     }
     public abstract class BaseService : IService
     {
@@ -33,7 +34,6 @@ namespace CommonClasses.Models
         public Enum Type { get; set; }
 
         public abstract IMessage GetMessage();
-        public abstract IService Read();
 
         public abstract IService ReadConfig();
 

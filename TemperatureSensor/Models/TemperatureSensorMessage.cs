@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TemperatureSensor
+namespace TemperatureSensor.Models
 {
     public class TemperatureSensorMessage : IMessage
     {

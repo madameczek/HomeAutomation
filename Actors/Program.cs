@@ -1,18 +1,18 @@
 ﻿using Actors.Contexts;
+using Actors.Controllers;
+using Actors.Services;
+using GsmModem;
+using ImgwApi;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Core;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using TemperatureSensor;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using GsmModem;
-using Actors.Services;
-using Actors.Controllers;
 
 namespace Actors
 {
@@ -22,23 +22,34 @@ namespace Actors
         {
 #if DEBUG
             // uncomment for debuging
-            /*for (; ; )
+            for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");
                 if (Debugger.IsAttached) break;
                 await System.Threading.Tasks.Task.Delay(3000);
-            }*/
+            }
 #endif
 
             var cts = new CancellationTokenSource();
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
                 cts.Cancel();
+
             }; 
-            
-            var servicesProvider = RegisterServices();
 
             IConfiguration configuration = GetConfigurationObject();
+
+            Logger logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration.GetSection("Serilog"))
+                .MinimumLevel.Debug()
+                .WriteTo.File(
+                    AppDomain.CurrentDomain.BaseDirectory + @"/Actors-log-.txt",
+                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
+                    rollingInterval: RollingInterval.Day)
+                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
+                .CreateLogger();
+
+            IServiceProvider servicesProvider = RegisterServices(logger);
 
             using (servicesProvider as IDisposable)
             {
@@ -48,7 +59,8 @@ namespace Actors
             }
 
             #region Finalizing
-            Console.WriteLine("Exiting...");
+            logger.Information("Actor application is exiting...");
+            logger.Dispose();
             cts.Dispose();
             return 0;
             #endregion
@@ -63,7 +75,7 @@ namespace Actors
             return configuration;
         }
 
-        private static IServiceProvider RegisterServices()
+        private static IServiceProvider RegisterServices(Logger logger)
         {
             var services = new ServiceCollection();
 
@@ -71,9 +83,15 @@ namespace Actors
             services.AddDbContext<LocalContext>();
             services.AddTransient<LocalQueue>();
             services.AddSingleton<TemperatureSensorService>();
+            services.AddSingleton<ImgwService>();
             services.AddSingleton<GsmModemService>();
             services.AddTransient<MainController>();
             services.AddTransient<ServiceLauncher>();
+            services.AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddSerilog(logger: logger, dispose: false);
+            }); 
             return services.BuildServiceProvider();
         }
 

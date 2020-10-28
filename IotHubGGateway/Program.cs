@@ -3,9 +3,12 @@ using IotHubGateway.Controllers;
 using IotHubGateway.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog.Core;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
+using Serilog;
 
 namespace IotHubGateway
 {
@@ -14,7 +17,7 @@ namespace IotHubGateway
         static async Task<int> Main()
         {
 #if DEBUG
-            // uncomment for debuging
+            // Uncomment for debuging.
             /*for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");
@@ -29,9 +32,19 @@ namespace IotHubGateway
                 cts.Cancel();
             };
 
-            var servicesProvider = RegisterServices();
-
             IConfiguration configuration = GetConfigurationObject();
+
+            Logger logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration.GetSection("Serilog"))
+                .MinimumLevel.Debug()
+                .WriteTo.File(
+                    AppDomain.CurrentDomain.BaseDirectory + @"/Gateway-log-.txt",
+                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
+                    rollingInterval: RollingInterval.Day)
+                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
+                .CreateLogger();
+
+            IServiceProvider servicesProvider = RegisterServices(logger);
 
             using (servicesProvider as IDisposable)
             {
@@ -41,12 +54,13 @@ namespace IotHubGateway
             }
 
             #region Finalizing
-            Console.WriteLine("Exiting...");
+            logger.Information("Gateway is exiting...");
+            logger.Dispose();
             cts.Dispose();
             return 0;
             #endregion
         }
-
+        
         private static IConfiguration GetConfigurationObject()
         {
             IConfiguration configuration = new ConfigurationBuilder()
@@ -56,16 +70,19 @@ namespace IotHubGateway
             return configuration;
         }
 
-        private static IServiceProvider RegisterServices()
+        private static IServiceProvider RegisterServices(Logger logger)
         {
             var services = new ServiceCollection();
-
             services.AddSingleton(GetConfigurationObject());
             services.AddDbContext<LocalContext>();
             services.AddDbContext<AzureContext>();
             services.AddTransient<LocalQueue>();
             services.AddTransient<MainController>();
             services.AddTransient<ServiceLauncher>();
+            services.AddLogging(builder =>
+            {
+                builder.AddSerilog(logger: logger, dispose: false);
+            });
             return services.BuildServiceProvider();
         }
     }
