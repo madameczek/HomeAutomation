@@ -52,7 +52,7 @@ namespace TemperatureSensor
                 Temperature = _temperature
             };
             
-            // Create json to be stored as string in MessageBody field of a Message.
+            /*// Create json to be stored as string in MessageBody field of a Message.
             var _jsonData = JsonConvert.SerializeObject(_tempMessage, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             TemperatureSensorData _message = JsonConvert.DeserializeObject<TemperatureSensorData>(_jsonData);
 
@@ -60,8 +60,8 @@ namespace TemperatureSensor
             _message.IsProcessed = false;
             _message.MessageBodyJson = _jsonData;
             _message.CreatedOn = _time;
-            _message.Humidity = null;
-            return _message;
+            _message.Humidity = null;*/
+            return _tempMessage;
         }
 
         public override IService ReadConfig()

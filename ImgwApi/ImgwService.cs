@@ -68,6 +68,7 @@ namespace ImgwApi
 
         public override async Task Run(CancellationToken ct = default)
         {
+            return;
             var _timer = new System.Timers.Timer(_hwSettings.ReadInterval);
             // This periodically invokes a method reading temperature from a sensor.
             try

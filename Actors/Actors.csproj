@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\WebAppDbModels\**" />
+    <EmbeddedResource Remove="Models\WebAppDbModels\**" />
+    <None Remove="Models\WebAppDbModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.9">
       <PrivateAssets>all</PrivateAssets>
@@ -42,10 +48,6 @@
     <None Update="Properties\dbcontextsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\WebAppDbModels\" />
   </ItemGroup>
 
 </Project>

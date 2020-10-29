@@ -70,7 +70,7 @@ namespace Actors.Controllers
                     await Task.Delay(3000, ct);
                     IMessage message = _temperatureSensorService.GetMessage();
                     _localQueue.AddMessage(message);
-                    _localQueue.AddWeatherData(_imgwService.GetMessage());
+                    _localQueue.AddMessage(_imgwService.GetMessage());
 
                     await Task.Delay(temperatureMessagePushPeriod, ct);
                 }

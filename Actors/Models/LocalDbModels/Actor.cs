@@ -15,6 +15,7 @@ namespace Actors.Models.LocalDbModels
 
         // Relationships
         public ICollection<Message> Messages { get; set; }
+        public ICollection<TemperatureAndHumidity> Temperatures { get; set; }
         [ForeignKey("Gateway")]
         public Guid GatewayId { get; set; }
     }

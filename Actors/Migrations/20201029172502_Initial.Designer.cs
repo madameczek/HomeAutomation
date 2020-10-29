@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Actors.Migrations
 {
     [DbContext(typeof(LocalContext))]
-    [Migration("20201023234436_Initial")]
+    [Migration("20201029172502_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,6 +62,18 @@ namespace Actors.Migrations
                             Id = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"),
                             GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"),
                             Type = "TemperatureSensor"
+                        },
+                        new
+                        {
+                            Id = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1"),
+                            GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"),
+                            Type = "TemperatureSensor"
+                        },
+                        new
+                        {
+                            Id = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
+                            GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"),
+                            Type = "WeatherData"
                         });
                 });
 
@@ -77,7 +89,7 @@ namespace Actors.Migrations
                     b.Property<string>("ConfigurationJson")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<DateTimeOffset>("UpdatedOn")
+                    b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
@@ -93,28 +105,42 @@ namespace Actors.Migrations
                             Id = 1,
                             ActorId = new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 448, DateTimeKind.Unspecified).AddTicks(7171), new TimeSpan(0, 2, 0, 0, 0))
+                            UpdatedOn = new DateTime(2020, 10, 29, 18, 25, 2, 199, DateTimeKind.Local).AddTicks(6451)
                         },
                         new
                         {
                             Id = 2,
                             ActorId = new Guid("429060a5-7e97-4227-aa44-25999f13536f"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 451, DateTimeKind.Unspecified).AddTicks(5277), new TimeSpan(0, 2, 0, 0, 0))
+                            UpdatedOn = new DateTime(2020, 10, 29, 18, 25, 2, 202, DateTimeKind.Local).AddTicks(1545)
                         },
                         new
                         {
                             Id = 3,
                             ActorId = new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 451, DateTimeKind.Unspecified).AddTicks(5388), new TimeSpan(0, 2, 0, 0, 0))
+                            UpdatedOn = new DateTime(2020, 10, 29, 18, 25, 2, 202, DateTimeKind.Local).AddTicks(1644)
                         },
                         new
                         {
                             Id = 4,
                             ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"),
-                            ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Interface\":\"wire-1\",\"Type\":\"TemperatureSensor\",\"Name\":\"TemperatureSensor\",\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\",\"ReadInterval\":5000,\"Attach\":true}",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 24, 1, 44, 36, 451, DateTimeKind.Unspecified).AddTicks(5422), new TimeSpan(0, 2, 0, 0, 0))
+                            ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
+                            UpdatedOn = new DateTime(2020, 10, 29, 18, 25, 2, 202, DateTimeKind.Local).AddTicks(1670)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ActorId = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1"),
+                            ConfigurationJson = "",
+                            UpdatedOn = new DateTime(2020, 10, 29, 18, 25, 2, 202, DateTimeKind.Local).AddTicks(1694)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
+                            ConfigurationJson = "",
+                            UpdatedOn = new DateTime(2020, 10, 29, 18, 25, 2, 202, DateTimeKind.Local).AddTicks(1720)
                         });
                 });
 
@@ -151,13 +177,13 @@ namespace Actors.Migrations
                     b.Property<Guid>("ActorId")
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTimeOffset>("CreatedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsProcessed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("MessageBodyJson")
+                    b.Property<string>("MessageBody")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
@@ -165,6 +191,75 @@ namespace Actors.Migrations
                     b.HasIndex("ActorId");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("Actors.Models.LocalDbModels.TemperatureAndHumidity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double?>("Humidity")
+                        .HasColumnType("double");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<double?>("Temperature")
+                        .HasColumnType("double");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorId");
+
+                    b.ToTable("Temperatures");
+                });
+
+            modelBuilder.Entity("Actors.Models.LocalDbModels.Weather", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double?>("AirPressure")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("AirTemperature")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double?>("Humidity")
+                        .HasColumnType("double");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<double?>("Precipitation")
+                        .HasColumnType("double");
+
+                    b.Property<int?>("StationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StationName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int?>("WindDirection")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("WindSpeed")
+                        .HasColumnType("double");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WeatherReadings");
                 });
 
             modelBuilder.Entity("Actors.Models.LocalDbModels.Actor", b =>
@@ -189,6 +284,15 @@ namespace Actors.Migrations
                 {
                     b.HasOne("Actors.Models.LocalDbModels.Actor", null)
                         .WithMany("Messages")
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Actors.Models.LocalDbModels.TemperatureAndHumidity", b =>
+                {
+                    b.HasOne("Actors.Models.LocalDbModels.Actor", null)
+                        .WithMany("Temperatures")
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

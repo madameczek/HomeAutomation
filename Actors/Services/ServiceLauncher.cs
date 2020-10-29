@@ -46,6 +46,7 @@ namespace Actors.Services
                     _temperatureSensorService.ConfigureService(ct),
                     _imgwApiService.ConfigureService(ct)
                 };
+                _logger.LogDebug("Actors services configured.");
                 await Task.WhenAll(tasks);
             }
             catch (OperationCanceledException) { }
@@ -58,14 +59,14 @@ namespace Actors.Services
                 List<Task> tasks = new List<Task>
                 {
                     _temperatureSensorService.Run(ct),
-                    _imgwApiService.Run(ct),
+                    //_imgwApiService.Run(ct),
                     _controller.Run(ct)
                 };
-                _logger.LogInformation("Actors services started");
+                _logger.LogInformation("Actors services started.");
                 await Task.WhenAll(tasks);
-                await Task.FromCanceled(ct);
+                await Task.FromCanceled(ct); // This occurs only when cancell occured in any of tasks?
             }
-            catch(OperationCanceledException e) { _logger.LogDebug(e.Message, "Cancelled at OperationCanceledException in StartServicesAsync"); }
+            catch(OperationCanceledException e) { _logger.LogDebug(e.Message, "Cancelled at OperationCanceledException in StartServicesAsync."); }
         }
     }
 }
