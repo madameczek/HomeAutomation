@@ -22,12 +22,12 @@ namespace Actors
         {
 #if DEBUG
             // uncomment for debuging
-            /*for (; ; )
+            for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");
                 if (Debugger.IsAttached) break;
                 await System.Threading.Tasks.Task.Delay(3000);
-            }*/
+            }
 #endif
 
             var cts = new CancellationTokenSource();
@@ -81,12 +81,12 @@ namespace Actors
 
             services.AddSingleton(GetConfigurationObject());
             services.AddDbContext<LocalContext>();
-            services.AddTransient<LocalQueue>();
+            services.AddSingleton<LocalQueue>();
             services.AddSingleton<TemperatureSensorService>();
             services.AddSingleton<ImgwService>();
             services.AddSingleton<GsmModemService>();
-            services.AddTransient<MainController>();
-            services.AddTransient<ServiceLauncher>();
+            services.AddSingleton<MainController>();
+            services.AddSingleton<ServiceLauncher>();
             services.AddLogging(builder =>
             {
                 builder.ClearProviders();

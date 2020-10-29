@@ -1,7 +1,5 @@
 ﻿using CommonClasses.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TemperatureSensor.Models
 {
@@ -13,7 +11,7 @@ namespace TemperatureSensor.Models
         public bool? IsProcessed { get; set; }
         public Guid ActorId { get; set; }
 
-        public double Temperature { get; set; }
+        public double? Temperature { get; set; }
 
     }
 }

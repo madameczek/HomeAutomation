@@ -41,26 +41,26 @@ namespace TemperatureSensor
         public override IMessage GetMessage()
         {
             // Cut milliseconds for shorter storage in json.
-            DateTimeOffset time = DateTimeOffset.Now;
-            time = time.AddTicks(-(time.Ticks % TimeSpan.TicksPerSecond));
+            DateTimeOffset _time = DateTimeOffset.Now;
+            _time = _time.AddTicks(-(_time.Ticks % TimeSpan.TicksPerSecond));
 
             // Temporary object with readings to be serialized.
-            IMessage _message = new TemperatureSensorData()
+            IMessage _tempMessage = new TemperatureSensorData()
             {
-                CreatedOn = time,
+                CreatedOn = _time,
                 ActorId = _hwSettings.DeviceId,
                 Temperature = _temperature
             };
             
             // Create json to be stored as string in MessageBody field of a Message.
-            var _jsonData = JsonConvert.SerializeObject(_message, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            IMessage message = JsonConvert.DeserializeObject<TemperatureSensorMessage>(_jsonData);
+            var _jsonData = JsonConvert.SerializeObject(_tempMessage, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            IMessage _message = JsonConvert.DeserializeObject<TemperatureSensorMessage>(_jsonData);
 
-            message.Id = 0;
-            message.IsProcessed = false;
-            message.MessageBodyJson = _jsonData;
-            message.CreatedOn = time;
-            return message;
+            _message.Id = 0;
+            _message.IsProcessed = false;
+            _message.MessageBodyJson = _jsonData;
+            _message.CreatedOn = _time;
+            return _message;
         }
 
         public override IService ReadConfig()
@@ -94,7 +94,7 @@ namespace TemperatureSensor
             {
                 while (!ct.IsCancellationRequested)
                 {
-                    await ReadTemp(ct);
+                    await ReadTempAsync(ct);
                     await Task.Delay(_hwSettings.ReadInterval, ct);
                 }
             }
@@ -102,7 +102,7 @@ namespace TemperatureSensor
             catch(Exception) { throw; }
         }
 
-        private async Task ReadTemp(CancellationToken ct = default)
+        private async Task ReadTempAsync(CancellationToken ct = default)
         {
             try
             {

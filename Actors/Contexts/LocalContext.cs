@@ -13,6 +13,9 @@ namespace Actors.Contexts
         public DbSet<Actor> Actors { get; set; }
         public DbSet<ActorConfiguration> Configurations { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public TemeratureAndHumidity TemeratureAndHumidity {get; set;}
+        public Weather WeatherReadings { get; set; }
+
 
         #region Connection Configuration
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

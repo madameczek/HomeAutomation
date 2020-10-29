@@ -26,38 +26,39 @@ namespace ImgwApi
 
         // Define section of appsettings.json to parse device config from configuration object
         public override string HwSettingsActorSection { get; } = "ImgwApi";
-
         private HwSettings _hwSettings = new HwSettings();
-        
+        Dictionary<string, string> _dataFieldNames;
+
+        private Dictionary<string, string> _rawData = new Dictionary<string, string>();
+        IMessage _message = new WeatherMessage();
+
         public override Task ConfigureService(CancellationToken cancellationToken)
         {
             _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
+            _dataFieldNames = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).GetSection("Fields").Get<Dictionary<string,string>>();
             return Task.CompletedTask;
         }
 
         public override IMessage GetMessage()
         {
-            // Cut milliseconds for shorter storage in json.
-            DateTimeOffset time = DateTimeOffset.Now;
-            time = time.AddTicks(-(time.Ticks % TimeSpan.TicksPerSecond));
-
+            Task.Run(async () => await GetDataAsync()).Wait();
             // Temporary object with readings to be serialized.
-            IMessage _message = new WeatherData()
+            IMessage _tempMessage = new WeatherData()
             {
-                CreatedOn = time,
+                Id = 0,
+                IsProcessed = false,
+                CreatedOn = DateTime.Parse(_rawData[_dataFieldNames["ReadingDate"]]).AddHours(int.Parse(_rawData[_dataFieldNames["ReadingTime"]])),
                 ActorId = _hwSettings.DeviceId,
-                AirTemperature = 23
+                AirTemperature = double.Parse(_rawData[_dataFieldNames["AirTemperature"]]),
+                AirPressure = double.Parse(_rawData[_dataFieldNames["AirPressure"]]),
+                Precipitation = double.Parse(_rawData[_dataFieldNames["Precipitation"]]),
+                Humidity = double.Parse(_rawData[_dataFieldNames["Humidity"]]),
+                WindSpeed = int.Parse(_rawData[_dataFieldNames["WindSpeed"]]),
+                WindDirection = int.Parse(_rawData[_dataFieldNames["WindDirection"]]),
+                StationId = int.Parse(_rawData[_dataFieldNames["StationId"]]),
+                StationName = _rawData[_dataFieldNames["StationName"]]
             };
-
-            // Create json to be stored as string in MessageBody field of a Message.
-            var _jsonData = JsonConvert.SerializeObject(_message, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            IMessage message = JsonConvert.DeserializeObject<WeatherMessage>(_jsonData);
-
-            message.Id = 0;
-            message.IsProcessed = false;
-            message.MessageBodyJson = _jsonData;
-            message.CreatedOn = time;
-            return message;
+            return _tempMessage;
         }
 
         public override IService ReadConfig()
@@ -67,24 +68,37 @@ namespace ImgwApi
 
         public override async Task Run(CancellationToken ct = default)
         {
+            var _timer = new System.Timers.Timer(_hwSettings.ReadInterval);
             // This periodically invokes a method reading temperature from a sensor.
             try
             {
+                if (!ct.IsCancellationRequested)
+                {
+
+                    _timer.Elapsed += async (sender, e) => { await GetDataAsync(ct); _message = GetMessage(); };
+                    _timer.AutoReset = true;
+                    _timer.Start();
+                }
                 while (!ct.IsCancellationRequested)
                 {
-                    await GetDataAsync(ct);
-                    // ReadInterval in config file is expresesed in minutes
-                    await Task.Delay(_hwSettings.ReadInterval * 60 * 1000, ct);
+                    await Task.Delay(100000, ct);
                 }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) 
+            { 
+                _timer.Stop(); 
+                _timer.Dispose(); 
+                _logger.LogDebug("Cancelled in IMGWService.Run."); 
+            }
             catch (Exception) { throw; }
+            return;
         }
 
         public override bool Write(IMessage message)
         {
             throw new NotImplementedException();
         }
+
         private async Task GetDataAsync(CancellationToken ct = default)
         {
             HttpClient _client = new HttpClient();
@@ -92,15 +106,13 @@ namespace ImgwApi
             {
                 _client.DefaultRequestHeaders.Accept.Clear();
                 _client.DefaultRequestHeaders.Add("User-Agent", "Private student's API test");
-
-                var stringTask = _client.GetStringAsync(_hwSettings.Url+ _hwSettings.StationId);
-
-                var msg = await stringTask;
-                var message = JsonConvert.DeserializeObject<Dictionary<string, string>>(msg);
-                _logger.LogDebug("Imgw api looks working {message}", message);
+                string _response = await Task.Run(() => _client.GetStringAsync(_hwSettings.Url + _hwSettings.StationId), ct);
+                _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(_response);
+                
+                _logger.LogDebug("Imgw api looks working {_rawData}", _rawData);
             }
-            catch (OperationCanceledException) { _logger.LogDebug("Cancelled at getting web data."); }
-            catch (Exception e) { _logger.LogCritical(e, "Service ImgwService crashed"); throw; }
+            catch (OperationCanceledException) { _logger.LogDebug("Cancelled in IMGWService.Getting Web data."); }
+            catch (Exception e) { _logger.LogCritical(e.Message, "Service ImgwService crashed"); throw; }
         }
     }
 }

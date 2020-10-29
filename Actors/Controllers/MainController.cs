@@ -1,5 +1,6 @@
 ﻿using Actors.Services;
 using CommonClasses.Interfaces;
+using ImgwApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,16 +15,18 @@ namespace Actors.Controllers
     public class MainController
     {
         private readonly TemperatureSensorService _temperatureSensorService;
+        private readonly ImgwService _imgwService;
         private readonly LocalQueue _localQueue;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
-        public MainController(ILogger<MainController> logger, IConfiguration configuration, LocalQueue localQueue, TemperatureSensorService temperatureSensorService)
+        public MainController(ILogger<MainController> logger, IConfiguration configuration, LocalQueue localQueue, TemperatureSensorService temperatureSensorService, ImgwService imgwService)
         {
             _localQueue = localQueue;
             _temperatureSensorService = temperatureSensorService;
             _configuration = configuration;
             _logger = logger;
+            _imgwService = imgwService;
         }
 
         // Define section of appsettings.json to parse device config from configuration object
@@ -58,7 +61,7 @@ namespace Actors.Controllers
 
         public async Task Run(CancellationToken ct = default)
         {
-            // Create messages perriodically and store in local database.
+            // Create messages periodically and store in local database.
             try
             {
                 while (!ct.IsCancellationRequested)
@@ -67,6 +70,7 @@ namespace Actors.Controllers
                     await Task.Delay(3000, ct);
                     IMessage message = _temperatureSensorService.GetMessage();
                     _localQueue.AddMessage(message);
+                    _localQueue.AddWeatherData(_imgwService.GetMessage());
 
                     await Task.Delay(temperatureMessagePushPeriod, ct);
                 }

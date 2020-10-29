@@ -38,30 +38,34 @@ namespace Actors.Services
         // configure services
         public async Task ConfigureServicesAsync(CancellationToken ct = default)
         {
-            List<Task> tasks = new List<Task>
+            try
             {
-                _controller.ConfigureService(ct),
-                _temperatureSensorService.ConfigureService(ct),
-                _imgwApiService.ConfigureService(ct)
-            };
-            await Task.WhenAll(tasks);
+                List<Task> tasks = new List<Task>
+                {
+                    _controller.ConfigureService(ct),
+                    _temperatureSensorService.ConfigureService(ct),
+                    _imgwApiService.ConfigureService(ct)
+                };
+                await Task.WhenAll(tasks);
+            }
+            catch (OperationCanceledException) { }
         }
 
         public async Task StartServicesAsync(CancellationToken ct = default)
         {
-            List<Task> tasks = new List<Task>
-            {
-                _temperatureSensorService.Run(ct),
-                _imgwApiService.Run(ct),
-                _controller.Run(ct)
-            };
-            _logger.LogInformation("Actors services started");
-            await Task.WhenAll(tasks);
             try
             {
+                List<Task> tasks = new List<Task>
+                {
+                    _temperatureSensorService.Run(ct),
+                    _imgwApiService.Run(ct),
+                    _controller.Run(ct)
+                };
+                _logger.LogInformation("Actors services started");
+                await Task.WhenAll(tasks);
                 await Task.FromCanceled(ct);
             }
-            catch(OperationCanceledException) { }
+            catch(OperationCanceledException e) { _logger.LogDebug(e.Message, "Cancelled at OperationCanceledException in StartServicesAsync"); }
         }
     }
 }

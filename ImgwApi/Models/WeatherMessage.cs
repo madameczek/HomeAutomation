@@ -1,8 +1,6 @@
 ﻿
 using CommonClasses.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ImgwApi.Models
 {
