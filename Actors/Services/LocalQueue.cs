@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Actors.Services
 {
-    public class LocalQueue : IDisposable
+    public class LocalQueue
     {
         private readonly LocalContext _dbContext;
         private readonly ILogger _logger;
@@ -39,11 +39,6 @@ namespace Actors.Services
 
             Console.WriteLine(JsonConvert.SerializeObject(message));
             Console.WriteLine(_dbContext.ContextId);
-        }
-
-        public void Dispose()
-        {
-            Dispose();
         }
     }
 }

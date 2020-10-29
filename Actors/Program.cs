@@ -81,12 +81,12 @@ namespace Actors
 
             services.AddSingleton(GetConfigurationObject());
             services.AddDbContext<LocalContext>();
-            services.AddSingleton<LocalQueue>();
+            services.AddTransient<LocalQueue>();
             services.AddSingleton<TemperatureSensorService>();
             services.AddSingleton<ImgwService>();
             services.AddSingleton<GsmModemService>();
-            services.AddSingleton<MainController>();
-            services.AddSingleton<ServiceLauncher>();
+            services.AddTransient<MainController>();
+            services.AddTransient<ServiceLauncher>();
             services.AddLogging(builder =>
             {
                 builder.ClearProviders();
