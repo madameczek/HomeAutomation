@@ -54,12 +54,13 @@ namespace TemperatureSensor
             
             // Create json to be stored as string in MessageBody field of a Message.
             var _jsonData = JsonConvert.SerializeObject(_tempMessage, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            IMessage _message = JsonConvert.DeserializeObject<TemperatureSensorMessage>(_jsonData);
+            TemperatureSensorData _message = JsonConvert.DeserializeObject<TemperatureSensorData>(_jsonData);
 
             _message.Id = 0;
             _message.IsProcessed = false;
             _message.MessageBodyJson = _jsonData;
             _message.CreatedOn = _time;
+            _message.Humidity = null;
             return _message;
         }
 

@@ -30,7 +30,7 @@ namespace ImgwApi
         Dictionary<string, string> _dataFieldNames;
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
-        IMessage _message = new WeatherMessage();
+        IMessage _message = new WeatherData();
 
         public override Task ConfigureService(CancellationToken cancellationToken)
         {
