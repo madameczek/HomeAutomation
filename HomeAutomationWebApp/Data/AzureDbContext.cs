@@ -19,6 +19,8 @@ namespace HomeAutomationWebApp.Data
         public DbSet<Actor> Actors { get; set; }
         public DbSet<ActorConfiguration> Configurations { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<TemperatureAndHumidity> Temperatures { get; set; }
+        public DbSet<Weather> WeatherReadings { get; set; }
         public new DbSet<IotUser> Users { get; set; }
         public new DbSet<IdentityRole> Roles { get; set; }
 
@@ -90,6 +92,20 @@ namespace HomeAutomationWebApp.Data
                   Type = "TemperatureSensor",
                   GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c")
               });
+            modelBuilder.Entity<Actor>().HasData
+              (new Actor
+              {
+                  Id = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1"),
+                  Type = "TemperatureSensor",
+                  GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c")
+              });
+            modelBuilder.Entity<Actor>().HasData
+              (new Actor
+              {
+                  Id = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
+                  Type = "WeatherData",
+                  GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c")
+              });
 
             modelBuilder.Entity<ActorConfiguration>().HasData
               (new ActorConfiguration
@@ -122,6 +138,22 @@ namespace HomeAutomationWebApp.Data
                   UpdatedOn = DateTimeOffset.Now,
                   ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
                   ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2")
+              });
+            modelBuilder.Entity<ActorConfiguration>().HasData
+              (new ActorConfiguration
+              {
+                  Id = 5,
+                  UpdatedOn = DateTime.Now,
+                  ConfigurationJson = "",
+                  ActorId = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1")
+              });
+            modelBuilder.Entity<ActorConfiguration>().HasData
+              (new ActorConfiguration
+              {
+                  Id = 6,
+                  UpdatedOn = DateTime.Now,
+                  ConfigurationJson = "",
+                  ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576")
               });
         }
     }

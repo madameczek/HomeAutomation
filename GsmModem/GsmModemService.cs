@@ -45,19 +45,15 @@ public IDictionary<string, string> DataPairs { get; set; }*/
             throw new NotImplementedException();
         }
 
-        public override async Task ConfigureService(CancellationToken ct = default)
+        public override void ConfigureService()
         {
             // Select configs representing GSM modem
             try
             {
-                if (!ct.IsCancellationRequested)
-                {
-                    hwSettings = configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
-                }
+                hwSettings = configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
             }
             catch (OperationCanceledException) { }
             catch (Exception) { throw; }
-            await Task.CompletedTask;
         }
 
         public override bool Write(IMessage message)

@@ -13,6 +13,8 @@ namespace IotHubGateway.Contexts
         public DbSet<Actor> Actors { get; set; }
         public DbSet<ActorConfiguration> Configurations { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<TemperatureAndHumidity> Temperatures { get; set; }
+        public DbSet<Weather> WeatherReadings { get; set; }
 
         #region Connection Configuration
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

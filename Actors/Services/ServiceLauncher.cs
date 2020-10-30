@@ -42,9 +42,9 @@ namespace Actors.Services
             {
                 List<Task> tasks = new List<Task>
                 {
-                    _controller.ConfigureService(ct),
-                    _temperatureSensorService.ConfigureService(ct),
-                    _imgwApiService.ConfigureService(ct)
+                    Task.Run(()=>_controller.ConfigureService(), ct),
+                    Task.Run(() => _temperatureSensorService.ConfigureService(), ct),
+                    Task.Run(() => _imgwApiService.ConfigureService(), ct)
                 };
                 _logger.LogDebug("Actors services configured.");
                 await Task.WhenAll(tasks);

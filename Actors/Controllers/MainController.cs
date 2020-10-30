@@ -30,37 +30,31 @@ namespace Actors.Controllers
         }
 
         // Define section of appsettings.json to parse device config from configuration object
-        private string ServicesSection { get; } = "Services";
-        private string DatabaseSection { get; } = "DatabasePolling";
         private int temperatureMessagePushPeriod = 30000;
 
-        public async Task ConfigureService(CancellationToken ct = default)
+        public void ConfigureService()
         {
             try
             {
-                if (!ct.IsCancellationRequested)
+                var settings = _configuration.GetSection("Services:DatabasePooling").Get<Dictionary<string, int>>();
+                if (settings.TryGetValue("TemperatureMessagePushPeriod[s]", out var value))
                 {
-                    var settings = _configuration.GetSection(ServicesSection).GetSection(DatabaseSection).Get<Dictionary<string, int>>();
-                    if (settings.TryGetValue("TemperatureMessagePushPeriod", out var value))
+                    if (value * 1000 < int.MaxValue)
                     {
-                        if (value * 1000 < int.MaxValue)
-                        {
-                            temperatureMessagePushPeriod = value * 1000;
-                        }
-                        else
-                        {
-                            temperatureMessagePushPeriod = 30000;
-                        }
+                        temperatureMessagePushPeriod = value * 1000;
+                    }
+                    else
+                    {
+                        temperatureMessagePushPeriod = 30000;
                     }
                 }
             }
-            catch (OperationCanceledException) { }
             catch (Exception e) { _logger.LogError(e.Message, "Error at configuring Controller. Are values in configuration file correcr?"); throw; }
-            await Task.CompletedTask;
         }
 
         public async Task Run(CancellationToken ct = default)
         {
+            int _count = 0;
             // Create messages periodically and store in local database.
             try
             {
@@ -69,10 +63,11 @@ namespace Actors.Controllers
                     // Wait for first readings from hardware devices
                     await Task.Delay(3000, ct);
                     IMessage message = _temperatureSensorService.GetMessage();
-                    _localQueue.AddMessage(message);
-                    _localQueue.AddMessage(_imgwService.GetMessage());
+                    await _localQueue.AddMessage(message);
+                    await _localQueue.AddMessage(_imgwService.GetMessage());
 
                     await Task.Delay(temperatureMessagePushPeriod, ct);
+                    _logger.LogDebug("Obrót w Controller: {_count}", _count);
                 }
             }
             catch (OperationCanceledException) { }

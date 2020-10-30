@@ -42,7 +42,7 @@ namespace CommonClasses.Interfaces
         /// </summary>
         public IDictionary<string, string> ConfigurationJson { get; set; }
 
-        public Task ConfigureService(CancellationToken cancellationToken);
+        public void ConfigureService();
 
         public IService ReadConfig();
 

@@ -37,7 +37,7 @@ namespace CommonClasses
 
         public abstract IService ReadConfig();
 
-        public abstract Task ConfigureService(CancellationToken cancellationToken);
+        public abstract void ConfigureService();
 
         public abstract bool Write(IMessage message);
 

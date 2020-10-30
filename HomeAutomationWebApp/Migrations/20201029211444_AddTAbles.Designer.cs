@@ -4,14 +4,16 @@ using HomeAutomationWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HomeAutomationWebApp.Migrations
 {
     [DbContext(typeof(AzureDbContext))]
-    partial class AzureDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201029211444_AddTAbles")]
+    partial class AddTAbles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,42 +108,42 @@ namespace HomeAutomationWebApp.Migrations
                             Id = 1,
                             ActorId = new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 23, 6, 20, 848, DateTimeKind.Unspecified).AddTicks(460), new TimeSpan(0, 1, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 22, 14, 44, 27, DateTimeKind.Unspecified).AddTicks(4280), new TimeSpan(0, 1, 0, 0, 0))
                         },
                         new
                         {
                             Id = 2,
                             ActorId = new Guid("429060a5-7e97-4227-aa44-25999f13536f"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 23, 6, 20, 850, DateTimeKind.Unspecified).AddTicks(6897), new TimeSpan(0, 1, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 22, 14, 44, 30, DateTimeKind.Unspecified).AddTicks(1844), new TimeSpan(0, 1, 0, 0, 0))
                         },
                         new
                         {
                             Id = 3,
                             ActorId = new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 23, 6, 20, 850, DateTimeKind.Unspecified).AddTicks(7008), new TimeSpan(0, 1, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 22, 14, 44, 30, DateTimeKind.Unspecified).AddTicks(1966), new TimeSpan(0, 1, 0, 0, 0))
                         },
                         new
                         {
                             Id = 4,
                             ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"),
                             ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 23, 6, 20, 850, DateTimeKind.Unspecified).AddTicks(7044), new TimeSpan(0, 1, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 22, 14, 44, 30, DateTimeKind.Unspecified).AddTicks(2002), new TimeSpan(0, 1, 0, 0, 0))
                         },
                         new
                         {
                             Id = 5,
                             ActorId = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 23, 6, 20, 850, DateTimeKind.Unspecified).AddTicks(7076), new TimeSpan(0, 1, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 22, 14, 44, 30, DateTimeKind.Unspecified).AddTicks(2038), new TimeSpan(0, 1, 0, 0, 0))
                         },
                         new
                         {
                             Id = 6,
                             ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 23, 6, 20, 850, DateTimeKind.Unspecified).AddTicks(7146), new TimeSpan(0, 1, 0, 0, 0))
+                            UpdatedOn = new DateTimeOffset(new DateTime(2020, 10, 29, 22, 14, 44, 30, DateTimeKind.Unspecified).AddTicks(2108), new TimeSpan(0, 1, 0, 0, 0))
                         });
                 });
 
@@ -194,7 +196,7 @@ namespace HomeAutomationWebApp.Migrations
                     b.Property<bool>("IsProcessed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("MessageBody")
+                    b.Property<string>("MessageBodyJson")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -305,21 +307,21 @@ namespace HomeAutomationWebApp.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "282026e2-a1f2-4210-af78-bfdf6bcfe7a3",
+                            ConcurrencyStamp = "5e838df1-129d-4c1b-922b-170566900d80",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "59601d52-5690-4d44-908f-567ad4d60afd",
+                            ConcurrencyStamp = "d223eca0-feb1-4215-9ef4-91436269502b",
                             Name = "SiteManager",
                             NormalizedName = "SITEMANAGER"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "ead9b8eb-3afb-4ef5-8ef8-3675f3d23359",
+                            ConcurrencyStamp = "1526e297-505c-4009-9b99-22b27e13ec09",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

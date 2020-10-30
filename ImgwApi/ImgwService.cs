@@ -32,11 +32,10 @@ namespace ImgwApi
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
         IMessage _message = new WeatherData();
 
-        public override Task ConfigureService(CancellationToken cancellationToken)
+        public override void ConfigureService()
         {
             _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
             _dataFieldNames = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).GetSection("Fields").Get<Dictionary<string,string>>();
-            return Task.CompletedTask;
         }
 
         public override IMessage GetMessage()
@@ -58,6 +57,7 @@ namespace ImgwApi
                 StationId = int.Parse(_rawData[_dataFieldNames["StationId"]]),
                 StationName = _rawData[_dataFieldNames["StationName"]]
             };
+            _logger.LogDebug("{_tempMessage}", _tempMessage);
             return _tempMessage;
         }
 
@@ -110,7 +110,7 @@ namespace ImgwApi
                 string _response = await Task.Run(() => _client.GetStringAsync(_hwSettings.Url + _hwSettings.StationId), ct);
                 _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(_response);
                 
-                _logger.LogDebug("Imgw api looks working {_rawData}", _rawData);
+                _logger.LogDebug("Fetched data from IMGW");
             }
             catch (OperationCanceledException) { _logger.LogDebug("Cancelled in IMGWService.Getting Web data."); }
             catch (Exception e) { _logger.LogCritical(e.Message, "Service ImgwService crashed"); throw; }

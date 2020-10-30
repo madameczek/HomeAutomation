@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Actors.Models.LocalDbModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,6 +18,7 @@ namespace IotHubGateway.Models
 
         // Relationships
         public ICollection<Message> Messages { get; set; }
+        public ICollection<TemperatureAndHumidity> Temperatures { get; set; }
         [ForeignKey("Gateway")]
         public Guid GatewayId { get; set; }
     }

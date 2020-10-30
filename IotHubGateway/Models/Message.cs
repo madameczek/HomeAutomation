@@ -12,7 +12,7 @@ namespace IotHubGateway.Models
         public int Id { get; set; }
         [Required]
         public DateTimeOffset CreatedOn { get; set; }
-        public string MessageBodyJson { get; set; }
+        public string MessageBody { get; set; }
         [Required]
         public bool IsProcessed { get; set; }
 

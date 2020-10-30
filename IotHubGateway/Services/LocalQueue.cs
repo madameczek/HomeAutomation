@@ -35,33 +35,103 @@ namespace IotHubGateway.Services
         /// <returns></returns>
         public async Task CopyNewLocalMessagesToRemote(CancellationToken ct = default)
         {
-            var localMessages = _localContext.Messages.Where(x => x.IsProcessed == false).OrderBy(x=>x.CreatedOn).ToList();
-            if (localMessages.Count == 0) return; //Task.CompletedTask;
+            var _localMessages = _localContext.Messages.Where(x => x.IsProcessed == false).ToList();
+            if (_localMessages.Count == 0) return;
             // Clone messages
-            List<Message> clonedMessages = new List<Message>();
-            localMessages.ForEach(m => clonedMessages.Add(m.Clone()));
+            var _clonedMessages = new List<Message>();
+            _localMessages.ForEach(m => _clonedMessages.Add(m.Clone()));
             // Add cloned messages to remote context and save.
             // Because local database does not support column type of C# DateTimeOffset, 
             // before insert to Azure MSSql, CreatedOn is retrieved from MessageBody field.
-            clonedMessages.ForEach(x =>
+            _clonedMessages.ForEach(x =>
             {
                 x.Id = 0;
-                var messageBody = JsonConvert.DeserializeAnonymousType(x.MessageBodyJson, new { CreatedOn = "" });
+                var messageBody = JsonConvert.DeserializeAnonymousType(x.MessageBody, new { CreatedOn = "" });
                 x.CreatedOn = DateTimeOffset.Parse(messageBody.CreatedOn);
             });
-            await _remoteContext.Messages.AddRangeAsync(clonedMessages, ct);
+            await _remoteContext.Messages.AddRangeAsync(_clonedMessages, ct);
             //remoteContext.Messages.AddRange(clonedMessages);
-            var savedClonedMessagesCount = await _remoteContext.SaveChangesAsync(ct);
+            var _savedClonedMessagesCount = await _remoteContext.SaveChangesAsync(ct);
             //var savedClonedMessagesCount = remoteContext.SaveChanges();
-            // If copied succesfully, mark local processed.
-            if (savedClonedMessagesCount == clonedMessages.Count)
+            // If copied succesfully, mark local as processed.
+            if (_savedClonedMessagesCount == _clonedMessages.Count)
             {
-                localMessages.ForEach(x => x.IsProcessed = true);
-                _localContext.UpdateRange(localMessages);
-                var updatedCount = _localContext.SaveChangesAsync(ct).Result;
+                _localMessages.ForEach(x => x.IsProcessed = true);
+                _localContext.UpdateRange(_localMessages);
+                try
+                {
+                    await _localContext.SaveChangesAsync(ct);
+                }
+                catch (Exception e) { _logger.LogError(e, "Database error while copying messages to remote."); }
             }
 
-            _logger.LogDebug("New records added to Azure: {savedClonedMessagesCount}", savedClonedMessagesCount);
+            _logger.LogDebug("New Message records added to Azure: {savedClonedMessagesCount}", _savedClonedMessagesCount);
+            return;
+        }
+
+        public async Task CopyNewLocalTemperaturesToRemote(CancellationToken ct = default)
+        {
+            var _localTemperatures = _localContext.Temperatures.Where(x => x.IsProcessed == false).ToList();
+            if (_localTemperatures.Count == 0) return;
+            // Clone messages
+            var _clonedTemperatures = new List<TemperatureAndHumidity>();
+            _localTemperatures.ForEach(m => _clonedTemperatures.Add(m.Clone()));
+            // Add cloned messages to remote context and save.
+            // Because local database does not support column type of C# DateTimeOffset, 
+            // before insert to Azure MSSql, CreatedOn is retrieved from MessageBody field.
+            _clonedTemperatures.ForEach(x =>
+            {
+                x.Id = 0;
+                x.CreatedOn = new DateTimeOffset(x.CreatedOn.DateTime, new TimeSpan(TimeZoneInfo.Local.BaseUtcOffset.Hours, 0, 0));
+            });
+            await _remoteContext.Temperatures.AddRangeAsync(_clonedTemperatures, ct);
+            var _savedClonedTemperaturesCount = await _remoteContext.SaveChangesAsync(ct);
+            // If copied succesfully, mark local as processed.
+            if (_savedClonedTemperaturesCount == _clonedTemperatures.Count)
+            {
+                _localTemperatures.ForEach(x => x.IsProcessed = true);
+                _localContext.UpdateRange(_localTemperatures);
+                try
+                {
+                    await _localContext.SaveChangesAsync(ct);
+                }
+                catch(Exception e) { _logger.LogError(e, "Database error while copying temperatures to remote."); }
+            }
+
+            _logger.LogDebug("New Temperature records added to Azure: {savedClonedMessagesCount}", _savedClonedTemperaturesCount);
+            return;
+        }
+
+        public async Task CopyNewLocalWeatherReadingsToRemote(CancellationToken ct = default)
+        {
+            var _localWeathers = _localContext.WeatherReadings.Where(x => x.IsProcessed == false).ToList();
+            if (_localWeathers.Count == 0) return;
+            // Clone messages
+            var _clonedWeathers = new List<Weather>();
+            _localWeathers.ForEach(m => _clonedWeathers.Add(m.Clone()));
+            // Add cloned messages to remote context and save.
+            // Because local database does not support column type of C# DateTimeOffset, 
+            // before insert to Azure MSSql, CreatedOn is retrieved from MessageBody field.
+            _clonedWeathers.ForEach(x =>
+            {
+                x.Id = 0;
+                x.CreatedOn = new DateTimeOffset(x.CreatedOn.DateTime, new TimeSpan(TimeZoneInfo.Local.BaseUtcOffset.Hours, 0, 0));
+            });
+            await _remoteContext.WeatherReadings.AddRangeAsync(_clonedWeathers, ct);
+            var _savedClonedWeathersCount = await _remoteContext.SaveChangesAsync(ct);
+            // If copied succesfully, mark local as processed.
+            if (_savedClonedWeathersCount == _clonedWeathers.Count)
+            {
+                _localWeathers.ForEach(x => x.IsProcessed = true);
+                _localContext.UpdateRange(_localWeathers);
+                try
+                {
+                    await _localContext.SaveChangesAsync(ct);
+                }
+                catch (Exception e) { _logger.LogError(e, "Database error while copying Weathers to remote."); }
+            }
+
+            _logger.LogDebug("New Weather records added to Azure: {savedClonedMessagesCount}", _savedClonedWeathersCount);
             return;
         }
 

@@ -69,18 +69,13 @@ namespace TemperatureSensor
             throw new NotImplementedException();
         }
 
-        public override async Task ConfigureService(CancellationToken ct = default)
+        public override void ConfigureService()
         {
             try
             {
-                if(!ct.IsCancellationRequested)
-                {
-                    _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
-                }
+                _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsActorSection).Get<HwSettings>();
             }
-            catch (OperationCanceledException) { }
             catch (Exception) { throw; }
-            await Task.CompletedTask;
         }
 
         public override bool Write(IMessage message)
