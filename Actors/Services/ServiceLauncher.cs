@@ -56,10 +56,12 @@ namespace Actors.Services
         {
             try
             {
+                // Run methods keep services to communicate with devices if necessary.
+                // For example it may be periodic read of hardware state.
                 List<Task> tasks = new List<Task>
                 {
                     _temperatureSensorService.Run(ct),
-                    //_imgwApiService.Run(ct),
+                    //_imgwApiService.Run(ct), //aktualnie nic nie robi
                     _controller.Run(ct)
                 };
                 _logger.LogInformation("Actors services started.");

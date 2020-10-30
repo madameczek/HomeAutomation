@@ -42,6 +42,7 @@ namespace ImgwApi
         {
             Task.Run(async () => await GetDataAsync()).Wait();
             // Temporary object with readings to be serialized.
+
             IMessage _tempMessage = new WeatherData()
             {
                 Id = 0,
@@ -57,7 +58,6 @@ namespace ImgwApi
                 StationId = int.Parse(_rawData[_dataFieldNames["StationId"]]),
                 StationName = _rawData[_dataFieldNames["StationName"]]
             };
-            _logger.LogDebug("{_tempMessage}", _tempMessage);
             return _tempMessage;
         }
 
@@ -69,8 +69,10 @@ namespace ImgwApi
         public override async Task Run(CancellationToken ct = default)
         {
             return;
+#pragma warning disable CS0162 // Unreachable code detected
             var _timer = new System.Timers.Timer(_hwSettings.ReadInterval);
-            // This periodically invokes a method reading temperature from a sensor.
+#pragma warning restore CS0162 // Unreachable code detected
+                              // This periodically invokes a method reading temperature from a sensor.
             try
             {
                 if (!ct.IsCancellationRequested)
@@ -110,7 +112,7 @@ namespace ImgwApi
                 string _response = await Task.Run(() => _client.GetStringAsync(_hwSettings.Url + _hwSettings.StationId), ct);
                 _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(_response);
                 
-                _logger.LogDebug("Fetched data from IMGW");
+                _logger.LogDebug("Fetched data from IMGW.");
             }
             catch (OperationCanceledException) { _logger.LogDebug("Cancelled in IMGWService.Getting Web data."); }
             catch (Exception e) { _logger.LogCritical(e.Message, "Service ImgwService crashed"); throw; }

@@ -104,10 +104,24 @@ namespace TemperatureSensor
             {
                 string data = await Task.Run(() =>
                     File.ReadAllText(_hwSettings.BasePath + _hwSettings.HWSerial + @"/temperature"), ct);
-                _temperature = int.Parse(data.Trim()) * 0.001;
+                if (data != null)
+                {
+                    bool _result = int.TryParse(data.Trim(), out int _tempReading);
+                    if (_result)
+                    {
+                        _temperature = _tempReading * 0.001;
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Temperature sensor error.");
+                }
             }
             catch (OperationCanceledException) { }
-            catch (Exception e) { _logger.LogCritical(e, "Service TemperatureSensorService crashed"); throw; }
+            catch (Exception e) 
+            { 
+                _logger.LogCritical(e, "Service TemperatureSensorService crashed");
+            }
         }
     }
 }

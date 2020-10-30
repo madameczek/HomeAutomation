@@ -1,6 +1,6 @@
 using System;
 
-namespace HomeAutomationWebApp.Models
+namespace HomeAutomationWebApp.Models.ViewModels
 {
     public class ErrorViewModel
     {

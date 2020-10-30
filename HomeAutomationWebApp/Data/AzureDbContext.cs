@@ -11,9 +11,7 @@ namespace HomeAutomationWebApp.Data
 {
     public class AzureDbContext : IdentityDbContext
     {
-        public AzureDbContext() : base()
-        {
-        }
+        public AzureDbContext() : base() { }
 
         public DbSet<Gateway> Gateways { get; set; }
         public DbSet<Actor> Actors { get; set; }
@@ -35,6 +33,7 @@ namespace HomeAutomationWebApp.Data
         }
         #endregion
 
+        #region Data seeding
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -155,6 +154,7 @@ namespace HomeAutomationWebApp.Data
                   ConfigurationJson = "",
                   ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576")
               });
+            #endregion
         }
     }
 }

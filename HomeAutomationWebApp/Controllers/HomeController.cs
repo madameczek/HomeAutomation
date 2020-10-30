@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using HomeAutomationWebApp.Models;
+using HomeAutomationWebApp.Models.ViewModels;
 
 namespace HomeAutomationWebApp.Controllers
 {

@@ -13,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using HomeAutomationWebApp.Models.DbModels;
+using HomeAutomationWebApp.Services.Interfaces;
+using HomeAutomationWebApp.Services;
 
 namespace HomeAutomationWebApp
 {
@@ -30,7 +32,9 @@ namespace HomeAutomationWebApp
         {
             services.AddDbContext<AzureDbContext>();
             services.AddIdentity<IotUser, IdentityRole>().AddEntityFrameworkStores<AzureDbContext>();
-
+            services.AddScoped<SignInManager<IotUser>>();
+            services.AddScoped<UserManager<IotUser>>();
+            services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddControllersWithViews();
             //services.AddRazorPages();
         }

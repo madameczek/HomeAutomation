@@ -66,8 +66,8 @@ namespace Actors.Controllers
                     await _localQueue.AddMessage(message);
                     await _localQueue.AddMessage(_imgwService.GetMessage());
 
+                    _logger.LogDebug("Obrót w Controller: {_count}. Czekam: {temperatureMessagePushPeriod}s.", ++_count, temperatureMessagePushPeriod/1000);
                     await Task.Delay(temperatureMessagePushPeriod, ct);
-                    _logger.LogDebug("Obrót w Controller: {_count}", _count);
                 }
             }
             catch (OperationCanceledException) { }
