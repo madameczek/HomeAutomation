@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using HomeAutomationWebApp.Models.DbModels;
 using HomeAutomationWebApp.Services.Interfaces;
 using HomeAutomationWebApp.Services;
+using HomeAutomationWebApp.Controllers;
 
 namespace HomeAutomationWebApp
 {
@@ -35,6 +36,7 @@ namespace HomeAutomationWebApp
             services.AddScoped<SignInManager<IotUser>>();
             services.AddScoped<UserManager<IotUser>>();
             services.AddScoped<IUserManagerService, UserManagerService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddControllersWithViews();
             //services.AddRazorPages();
         }

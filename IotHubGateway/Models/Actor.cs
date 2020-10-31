@@ -19,6 +19,7 @@ namespace IotHubGateway.Models
         // Relationships
         public ICollection<Message> Messages { get; set; }
         public ICollection<TemperatureAndHumidity> Temperatures { get; set; }
+        public ICollection<QueueItem> QueueItems { get; set; }
         [ForeignKey("Gateway")]
         public Guid GatewayId { get; set; }
     }

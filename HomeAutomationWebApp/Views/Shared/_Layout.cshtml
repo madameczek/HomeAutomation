@@ -25,6 +25,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @{ if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark text-dark" asp-controller="Dashboard" asp-action="PhoneRing">Call Ur Phone!</a>
+                                </li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>
@@ -38,7 +45,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2020 - HomeAutomationWebApp - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2020 - Home Automation Makers - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

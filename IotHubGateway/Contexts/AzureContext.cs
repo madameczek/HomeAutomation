@@ -15,6 +15,7 @@ namespace IotHubGateway.Contexts
         public DbSet<Message> Messages { get; set; }
         public DbSet<TemperatureAndHumidity> Temperatures { get; set; }
         public DbSet<Weather> WeatherReadings { get; set; }
+        public DbSet<QueueItemRemote> Queue { get; set; }
 
         #region Connection Configuration
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

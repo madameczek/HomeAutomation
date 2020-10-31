@@ -21,6 +21,7 @@ namespace HomeAutomationWebApp.Data
         public DbSet<Weather> WeatherReadings { get; set; }
         public new DbSet<IotUser> Users { get; set; }
         public new DbSet<IdentityRole> Roles { get; set; }
+        public DbSet<QueueItem> Queue { get; set; }
 
         #region Connection Configuration
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

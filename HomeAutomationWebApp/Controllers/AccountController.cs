@@ -17,7 +17,7 @@ namespace HomeAutomationWebApp.Controllers
         private readonly SignInManager<IotUser> _signInManager;
         private readonly UserManager<IotUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        IUserManagerService _userManagerService;
+        private readonly IUserManagerService _userManagerService;
         public AccountController(SignInManager<IotUser> signInManager, UserManager<IotUser> userManager, RoleManager<IdentityRole> roleManager, IUserManagerService userManagerService)
         {
             _signInManager = signInManager;
@@ -59,7 +59,7 @@ namespace HomeAutomationWebApp.Controllers
 
                 // Ensure unique UserName 
                 string userName = $"{model.Name.Trim()}_{model.Surname.Trim()}";
-                IotUser user = new IotUser { UserName = userName, Email = model.Email };
+                IotUser user = new IotUser { UserName = userName, Email = model.Email, PhoneNumber = model.PhoneNumber };
 
                 try
                 {
@@ -78,7 +78,12 @@ namespace HomeAutomationWebApp.Controllers
                     }
                     else
                     {
-                        TempData["warning_regerror"] = "Error";
+                        foreach(var item in createUserResult.Errors.ToList())
+                        {
+                            var _errors = new List<string>();
+                            _errors.Add(string.Concat(item.Code, ": ", item.Description));
+                            ViewBag.Warning_regerror = _errors;
+                        }
                         return View(model);
                     }
 
@@ -131,8 +136,12 @@ namespace HomeAutomationWebApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize]
         public IActionResult Manage()
         {
+            var _user = _userManager.GetUserAsync(User);
+            ViewBag.Phone = _userManager.GetPhoneNumberAsync(_user.Result).Result;
+            ViewBag.Email = _userManager.GetEmailAsync(_user.Result).Result;
             return View();
         }
     }

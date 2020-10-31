@@ -1,0 +1,65 @@
+﻿@model IEnumerable<HomeAutomationWebApp.Models.DbModels.Weather>
+
+
+@{
+    ViewData["Title"] = "Table View";
+}
+
+<h1>View Weather in Warsaw</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Czas pomiaru
+            </th>
+            <th>
+                Temperatura
+            </th>
+            <th>
+                Ciśnienie
+            </th>
+            <th>
+                Opady [mm]
+            </th>
+            <th>
+                Wilgotność
+            </th>
+            <th>
+                Prędkość wiatru
+            </th>
+            <th>
+                Kierunek wiatru
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedOn, "ShortDateTime")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AirTemperature, "DoubleDot1")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AirPressure, "DoubleDot1")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Precipitation, "DoubleDot1")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Humidity, "DoubleDot1")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WindSpeed)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WindDirection)
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

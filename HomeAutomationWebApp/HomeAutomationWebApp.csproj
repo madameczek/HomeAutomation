@@ -13,6 +13,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20201031080822_AddQueue.cs" />
+    <Compile Remove="Migrations\20201031080822_AddQueue.Designer.cs" />
+    <Compile Remove="Migrations\20201031081110_AddQueue.cs" />
+    <Compile Remove="Migrations\20201031081110_AddQueue.Designer.cs" />
+    <Compile Remove="Migrations\20201031081201_AddQueue.cs" />
+    <Compile Remove="Migrations\20201031081201_AddQueue.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Properties\dbcontextsettings.json" />
   </ItemGroup>
 
