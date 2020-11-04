@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgwApi", "ImgwApi\ImgwApi.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IotHubGateway", "IotHubGateway\IotHubGateway.csproj", "{C987547C-F7F0-4943-9254-456B70FA2F63}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerService1", "WorkerService1\WorkerService1.csproj", "{F2EA4ABD-851F-4539-BBCD-15EB9A6D4D57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{C987547C-F7F0-4943-9254-456B70FA2F63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C987547C-F7F0-4943-9254-456B70FA2F63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C987547C-F7F0-4943-9254-456B70FA2F63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2EA4ABD-851F-4539-BBCD-15EB9A6D4D57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2EA4ABD-851F-4539-BBCD-15EB9A6D4D57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2EA4ABD-851F-4539-BBCD-15EB9A6D4D57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2EA4ABD-851F-4539-BBCD-15EB9A6D4D57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

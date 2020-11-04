@@ -17,10 +17,10 @@ namespace ImgwApi
         #region Dependency Injection
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
-        public ImgwService(ILogger<ImgwService> logger, IConfiguration configuration)
+        public ImgwService(ILoggerFactory logger, IConfiguration configuration)
         {
             _configuration = configuration;
-            _logger = logger;
+            _logger = logger.CreateLogger("IMGW service");
         }
         #endregion
 
