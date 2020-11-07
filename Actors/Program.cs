@@ -5,9 +5,9 @@ using GsmModem;
 using ImgwApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Core;
+using Serilog.Events;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -18,7 +18,7 @@ namespace Actors
 {
     class Program
     {
-        static async Task<int> Main()
+        public static void Main(string[] args)
         {
 #if DEBUG
             // uncomment for debuging
@@ -39,30 +39,32 @@ namespace Actors
 
             IConfiguration configuration = GetConfigurationObject();
 
-            Logger logger = new LoggerConfiguration()
+            Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration.GetSection("Serilog"))
                 .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
                 .WriteTo.File(
                     AppDomain.CurrentDomain.BaseDirectory + @"/Actors-log-.txt",
-                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
+                    restrictedToMinimumLevel: LogEventLevel.Debug,
                     rollingInterval: RollingInterval.Day)
-                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
+                .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
                 .CreateLogger();
 
-            IServiceProvider servicesProvider = RegisterServices(logger);
-
-            using (servicesProvider as IDisposable)
+            try
             {
-                var serviceLauncher = servicesProvider.GetRequiredService<ServiceLauncher>();
-                await serviceLauncher.ConfigureServicesAsync(cts.Token);
-                await serviceLauncher.StartServicesAsync(cts.Token);
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception e)
+            {
+                Log.Logger.Error(e, "Error");
             }
 
+            
             #region Finalizing
-            logger.Information("Actor application is exiting...");
-            logger.Dispose();
+            Log.Logger.Information("Actor application is exiting...");
+            Log.CloseAndFlush();
             cts.Dispose();
-            return 0;
             #endregion
         }
 
@@ -75,24 +77,21 @@ namespace Actors
             return configuration;
         }
 
-        private static IServiceProvider RegisterServices(Logger logger)
+        internal static IHostBuilder CreateHostBuilder(string[] args)
         {
-            var services = new ServiceCollection();
-
-            services.AddSingleton(GetConfigurationObject());
-            services.AddDbContext<LocalContext>();
-            services.AddTransient<LocalQueue>();
-            services.AddSingleton<TemperatureSensorService>();
-            services.AddSingleton<ImgwService>();
-            services.AddSingleton<GsmModemService>();
-            services.AddTransient<MainController>();
-            services.AddTransient<ServiceLauncher>();
-            services.AddLogging(builder =>
-            {
-                builder.ClearProviders();
-                builder.AddSerilog(logger: logger, dispose: false);
-            }); 
-            return services.BuildServiceProvider();
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureServices((services) =>
+                {
+                    services.AddHostedService<Launcher>();
+                    services.AddTransient<LocalQueue>();
+                    services.AddSingleton<TemperatureSensorService>();
+                    services.AddSingleton<ImgwService>();
+                    services.AddSingleton<GsmModemService>();
+                    services.AddTransient<MainController>();
+                    services.AddTransient<ServiceLauncher>();
+                    services.AddDbContext<LocalContext>();
+                })
+                .UseSerilog();
         }
 
     }
