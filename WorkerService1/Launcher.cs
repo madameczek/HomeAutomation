@@ -35,7 +35,7 @@ namespace WorkerService1
                 //Task.Delay(2000).Wait(cancellationToken);
                 return Task.CompletedTask;
             }
-            catch (OperationCanceledException) // tu nie wpadnie, bo nie ma co wywołać exc
+            catch (OperationCanceledException) // tu nie wpadnie, bo nie ma co wywołać exc, no ale  powinno byc
             {
                 _logger.LogInformation("Cancelled at StartAsync");
                 return Task.FromCanceled(cancellationToken);
@@ -61,7 +61,7 @@ namespace WorkerService1
             }
             finally
             {
-                _logger.LogInformation("Application is stopping...");
+                _logger.LogInformation("Application is stopping");
                 await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite, cancellationToken));
             }
         }

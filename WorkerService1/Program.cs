@@ -19,8 +19,8 @@ namespace WorkerService1
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
-                .WriteTo.File(AppDomain.CurrentDomain.BaseDirectory + @"/LogFile.txt")
-                .WriteTo.Console()
+                .WriteTo.File(AppDomain.CurrentDomain.BaseDirectory + @"/LogFile.txt", outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}")
+                .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
             try
@@ -29,12 +29,13 @@ namespace WorkerService1
             }
             catch (Exception e)
             {
-                Log.Logger.Error(e, "Error");
+                Log.Logger.Fatal(e, "Error");
             }
             finally
             {
                 Log.Logger.Information("Cancelled at Program");
                 //await Task.CompletedTask;
+                Log.CloseAndFlush();
             }
             //await Task.CompletedTask;
             return 0;

@@ -1,4 +1,4 @@
-﻿using CommonClasses.Interfaces;
+﻿using Shared.Models;
 using System;
 
 namespace ImgwApi.Models

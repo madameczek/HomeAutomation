@@ -1,16 +1,15 @@
-﻿using Shared.Models;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace TemperatureSensor.Models
+namespace Shared.Models
 {
-    public class TemperatureSensorData : IMessage
+    public interface IMessage
     {
         public int? Id { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
         public string MessageBody { get; set; }
         public bool? IsProcessed { get; set; }
         public Guid ActorId { get; set; }
-        public double? Temperature { get; set; }
-        public double? Humidity { get; set; }
     }
 }
