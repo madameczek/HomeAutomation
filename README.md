@@ -2,8 +2,9 @@
 
 ## In short
 
-The *Home Automation System* is an IoT project designed as an extension of existing subsystems, such as alarm system, access control, garden irrigation system, etc. However, the functionality of the *Home Automation System* allows the implementation of some tasks of these subsystems, e.g. the door will be opened not with an RFID card, but via SMS or DTMF codes, or the system inputs can be used to signal an intrusion.  
-The *Home Automation System* is designed to integrate the subsystems and take home management and monitoring capabilities to a higher level.
+The *Home Automation System* is an IoT project. I designed it with intention to make an extension of subsystems, such as alarm system, access control, garden irrigation system, etc. These are very popular among home owners. The *Home Automation System* is designed to integrate the subsystems and take home management and monitoring capabilities to a higher level.  
+However, the functionality of the *Home Automation System* implements some features of these subsystems, e.g. the door will be opened not with an RFID card, but via SMS or DTMF codes, or the system inputs can be used to signal an intrusion.  
+In each case it is central point of home automation.
 
 ## Components
 
