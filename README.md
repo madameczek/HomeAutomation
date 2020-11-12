@@ -2,12 +2,12 @@
 
 ## In short
 
-The *Home Automation System* is IoT project designed as an extension of existing subsystems, such as alarm system, access control, garden irrigation system, etc. However, the functionality of the *Home Automation System* allows the implementation of some tasks of these subsystems, e.g. the door will be opened not with an RFID card, but via SMS or DTMF codes, or the system inputs can be used to signal an intrusion.
+The *Home Automation System* is an IoT project designed as an extension of existing subsystems, such as alarm system, access control, garden irrigation system, etc. However, the functionality of the *Home Automation System* allows the implementation of some tasks of these subsystems, e.g. the door will be opened not with an RFID card, but via SMS or DTMF codes, or the system inputs can be used to signal an intrusion.  
 The *Home Automation System* is designed to integrate the subsystems and take home management and monitoring capabilities to a higher level.
 
 ## Components
 
-The system consists of devices and an application. Management and monitoring is to take place via a web application located in the Azure cloud. Hardware modules are integrated on the Raspberry Pi microcomputer.
+The system consists of physical devices and an application. Management and monitoring is to take place via a web application located in the Azure cloud. Hardware modules are integrated and controlled by the Raspberry Pi microcomputer.
 
 ## Project status as of today
 
@@ -63,7 +63,7 @@ There are two databases. One, local is used to store messages used internally by
 ## Application diagram
 
 The *Home Automation System* consists of web application where users can manage their system and present stored data.  
-Another set apps run on Linux as daemons. They manage devices, synchronise local/Azure data, and implement business logic.
+Another set of apps run on Linux as daemons. They manage devices, synchronise local/Azure data, and implement business logic.
 
 ![AppDiagram](AppModules.png)
 
@@ -72,4 +72,4 @@ Another set apps run on Linux as daemons. They manage devices, synchronise local
 ![DevBoard](RPiDevBoard.png)
 
 ---
-If you want ask a question, visit my [home page](https://www.adameczek.pl) where contact info can be found :)
+If you have questions, visit my [home page](https://www.adameczek.pl "My Homepage") where contact info can be found :)
