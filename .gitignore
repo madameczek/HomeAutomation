@@ -344,3 +344,4 @@ healthchecksdb
 
 # Secrets
 *dbcontextsettings.json
+/ActorsDaemon/Properties/gsmmodem.json

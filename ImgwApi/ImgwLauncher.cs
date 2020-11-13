@@ -36,13 +36,19 @@ namespace ImgwApi
             try
             {
                 _hwSettings = await _imgwService.ConfigureService(cancellationToken);
-                _readImgwTimer = new Timer(
-                    FetchAndStoreWeather, 
-                    null, 
-                    TimeSpan.FromMilliseconds(100),
-                    TimeSpan.FromMinutes(_hwSettings.ReadInterval));
-                _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod}min", _hwSettings.ReadInterval);
-
+                if (_hwSettings.Attach)
+                {
+                    _readImgwTimer = new Timer(
+                        FetchAndStoreWeather,
+                        null,
+                        TimeSpan.FromMilliseconds(100),
+                        TimeSpan.FromMinutes(_hwSettings.ReadInterval));
+                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod}min", _hwSettings.ReadInterval);
+                }
+                else
+                {
+                    _logger.LogDebug("Not attached");
+                }
             }
             catch (OperationCanceledException)
             {

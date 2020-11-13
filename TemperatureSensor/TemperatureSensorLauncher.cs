@@ -36,19 +36,26 @@ namespace TemperatureSensor
             try
             {
                 _hwSettings = (ITemperatureSensorHwSettings)await _temperatureSensorService.ConfigureService(cancellationToken);
-                _readSensorTimer = new Timer(
-                    ReadSensor, 
-                    null, 
-                    TimeSpan.FromMilliseconds(100),
-                    TimeSpan.FromSeconds(_hwSettings.ReadInterval));
-                _saveReadingToDatabaseTimer = new Timer(
-                    SaveToDatabase,
-                    null,
-                    // Wait for sensor data before save to database
-                    TimeSpan.FromMilliseconds(3000),
-                    TimeSpan.FromSeconds(_hwSettings.DatabasePushPeriod));
-                _logger.LogDebug("Configured with sensor read period: {sensorReadPeriod}sec.", _hwSettings.ReadInterval);
-                _logger.LogDebug("Configured with database save period: {databasePushPeriod}sec", _hwSettings.DatabasePushPeriod);
+                if (_hwSettings.Attach)
+                {
+                    _readSensorTimer = new Timer(
+                        ReadSensor,
+                        null,
+                        TimeSpan.FromMilliseconds(100),
+                        TimeSpan.FromSeconds(_hwSettings.ReadInterval));
+                    _saveReadingToDatabaseTimer = new Timer(
+                        SaveToDatabase,
+                        null,
+                        // Wait for sensor data before save to database
+                        TimeSpan.FromMilliseconds(3000),
+                        TimeSpan.FromSeconds(_hwSettings.DatabasePushPeriod));
+                    _logger.LogDebug("Configured with sensor read period: {sensorReadPeriod}sec.", _hwSettings.ReadInterval);
+                    _logger.LogDebug("Configured with database save period: {databasePushPeriod}sec", _hwSettings.DatabasePushPeriod);
+                }
+                else
+                {
+                    _logger.LogDebug("Not attached");
+                }
             }
             catch (OperationCanceledException)
             {

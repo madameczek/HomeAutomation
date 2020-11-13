@@ -8,12 +8,13 @@ using System.Linq;
 using Shared;
 using Shared.Models;
 using Microsoft.Extensions.Logging;
+using System.IO.Ports;
 
 namespace GsmModem
 {
     public class GsmModemService : IGsmModemService
     {
-        #region Dependency Injection
+        #region Ctor & Dependency Injection
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         private readonly IServiceProvider _services;
@@ -28,24 +29,34 @@ namespace GsmModem
         // Define variables for data fetched from 'appsettings.json'. Data are used to configure the service.
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "GsmModem";
-        IGsmModemHwSettings hwSettings = new GsmModemHwSettings();
+        private IGsmModemHwSettings _hwSettings = new GsmModemHwSettings();
         private readonly string _serviceSettings = "Services:DatabasePooling";
         private readonly string _messageToDbPushPeriodSeconds = "GsmMessagePushPeriod";
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
         private static readonly Object _messageLock = new object();
+        private static readonly Object _portLock = new object();
         private bool _deviceReadingIsValid = false;
+
+        static SerialPort port;
 
         public Task<IHwSettings> ConfigureService(CancellationToken ct)
         {
-            // Select configs representing GSM modem
             try
             {
-                hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).Get<GsmModemHwSettings>();
+                _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).Get<GsmModemHwSettings>();
+                _ = ConfigureComPort(_hwSettings);
             }
             catch (OperationCanceledException) { }
             catch (Exception) { throw; }
-            return (Task<IHwSettings>)hwSettings;
+            return Task.FromResult((IHwSettings)_hwSettings);
+        }
+
+        private bool ConfigureComPort(IGsmModemHwSettings gsmModemHwSettings)
+        {
+
+
+            return true;
         }
 
         public IMessage GetMessage()

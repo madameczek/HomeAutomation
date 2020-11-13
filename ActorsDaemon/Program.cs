@@ -38,7 +38,7 @@ namespace ActorsDaemon
 #if DEBUG
                 .WriteTo.Console(
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
-                    restrictedToMinimumLevel: LogEventLevel.Information)
+                    restrictedToMinimumLevel: LogEventLevel.Debug)
 #endif
                 .CreateLogger();
 
@@ -64,11 +64,13 @@ namespace ActorsDaemon
                 .ConfigureAppConfiguration((config)=>
                 {
                     config.SetBasePath(AppDomain.CurrentDomain.BaseDirectory + @"/Properties/");
+                    config.AddJsonFile("gsmmodem.json");
                 })
                 .ConfigureServices((services) =>
                 {
                     services.AddHostedService<TemperatureSensorLauncher>();
                     services.AddHostedService<ImgwLauncher>();
+                    services.AddHostedService<GsmModemLauncher>();
                     services.AddScoped<LocalQueue>();
                     services.AddSingleton<ITemperatureSensorService, TemperatureSensorService>();
                     services.AddSingleton<IImgwService, ImgwService>();
