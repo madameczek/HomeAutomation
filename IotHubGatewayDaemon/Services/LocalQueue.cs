@@ -1,5 +1,6 @@
 ﻿using IotHubGateway.Contexts;
 using IotHubGateway.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog.Core;
@@ -28,7 +29,7 @@ namespace IotHubGateway.Services
         }
 
         /// <summary>
-        /// Copies messagees unprocessed messages from local database to remote.
+        /// Copies unprocessed messages from local database to remote.
         /// If copied successfully, source's property IsProcessed = true.
         /// </summary>
         /// <param name="ct"></param>
@@ -51,7 +52,16 @@ namespace IotHubGateway.Services
             });
             await _remoteContext.Messages.AddRangeAsync(_clonedMessages, ct);
             //remoteContext.Messages.AddRange(clonedMessages);
-            var _savedClonedMessagesCount = await _remoteContext.SaveChangesAsync(ct);
+            int _savedClonedMessagesCount = 0;
+            try
+            {
+                _savedClonedMessagesCount = await _remoteContext.SaveChangesAsync(ct);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Database error");
+                throw;
+            }
             //var savedClonedMessagesCount = remoteContext.SaveChanges();
             // If copied succesfully, mark local as processed.
             if (_savedClonedMessagesCount == _clonedMessages.Count)

@@ -38,7 +38,15 @@ namespace IotHubGateway.Services
                 controller.Run(ct)
             };
             _logger.LogInformation("Gateway services started");
-            await Task.WhenAll(tasks);
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e, "Error in Controller");
+                throw;
+            }
         }
     }
 }

@@ -22,10 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="dbcontextsettings.json" />
     <Content Remove="Properties\dbcontextsettings.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="dbcontextsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\dbcontextsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

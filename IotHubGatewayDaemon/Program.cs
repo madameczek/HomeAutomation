@@ -39,25 +39,40 @@ namespace IotHubGateway
                 .ReadFrom.Configuration(configuration.GetSection("Serilog"))
                 .MinimumLevel.Debug()
                 .WriteTo.File(
-                    AppDomain.CurrentDomain.BaseDirectory + @"/Gateway-log-.txt",
+                    AppDomain.CurrentDomain.BaseDirectory + @"/Gateway-Log-.txt",
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
                     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
-                    rollingInterval: RollingInterval.Day)
-                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
+                    rollingInterval: RollingInterval.Month)
+#if DEBUG
+                .WriteTo.Console(
+                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}")
+#endif
                 .CreateLogger();
 
             IServiceProvider servicesProvider = RegisterServices(logger);
 
-            using (servicesProvider as IDisposable)
+            try
             {
-                var serviceLauncher = servicesProvider.GetRequiredService<ServiceLauncher>();
-                await serviceLauncher.ConfigureServicesAsync(cts.Token);
-                await serviceLauncher.StartServicesAsync(cts.Token);
+                using (servicesProvider as IDisposable)
+                {
+                    var serviceLauncher = servicesProvider.GetRequiredService<ServiceLauncher>();
+                    try
+                    {
+                        await serviceLauncher.ConfigureServicesAsync(cts.Token);
+                        await serviceLauncher.StartServicesAsync(cts.Token);
+                    }
+                    catch { }
+                }
             }
-
+            catch(Exception) { }
             #region Finalizing
-            logger.Information("Gateway is exiting...");
-            logger.Dispose();
-            cts.Dispose();
+            finally
+            {
+                logger.Information("Gateway is exiting...");
+                logger.Dispose();
+                cts.Dispose();
+            }
             return 0;
             #endregion
         }
