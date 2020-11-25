@@ -9,15 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HomeAutomationWebApp.Controllers
 {
-    public class DashboardController : Controller
+    public class Dashboard : Controller
     {
         private readonly IDashboardService _dashboardService;
-        public DashboardController(IDashboardService dashboardService)
+        public Dashboard(IDashboardService dashboardService)
         {
             _dashboardService = dashboardService;
         }
 
-
+        [HttpGet]
         [Authorize]
         public ActionResult Index()
         {
@@ -35,7 +35,7 @@ namespace HomeAutomationWebApp.Controllers
         public IActionResult PhoneRing()
         {
             _dashboardService.PhoneRing();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(Index), nameof(Home));
         }
 
         // GET: TemperatureSensorController/Create

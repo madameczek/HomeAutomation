@@ -9,11 +9,11 @@ using HomeAutomationWebApp.Models.ViewModels;
 
 namespace HomeAutomationWebApp.Controllers
 {
-    public class HomeController : Controller
+    public class Home : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<Home> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public Home(ILogger<Home> logger)
         {
             _logger = logger;
         }
@@ -22,7 +22,7 @@ namespace HomeAutomationWebApp.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("WeatherTableView", "Dashboard");
+                return RedirectToAction(nameof(Dashboard.WeatherTableView), nameof(Dashboard));
             }
             return View();
         }

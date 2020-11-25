@@ -11,7 +11,7 @@ namespace HomeAutomationWebApp.Models.DbModels
         [Key]
         public int Id { get; set; }
         [Required]
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string ConfigurationJson { get; set; }
 
         // Relationships

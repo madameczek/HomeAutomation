@@ -11,19 +11,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HomeAutomationWebApp.Controllers
 {
-    public class AccountController : Controller
+    public class Account : Controller
     {
-        #region Dependency Injection
+        #region Ctor & Dependency Injection
         private readonly SignInManager<IotUser> _signInManager;
         private readonly UserManager<IotUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserManagerService _userManagerService;
-        public AccountController(SignInManager<IotUser> signInManager, UserManager<IotUser> userManager, RoleManager<IdentityRole> roleManager, IUserManagerService userManagerService)
+        private readonly IWebAppEmailService _emailService;
+        public Account(
+            SignInManager<IotUser> signInManager, 
+            UserManager<IotUser> userManager, 
+            RoleManager<IdentityRole> roleManager, 
+            IUserManagerService userManagerService,
+            IWebAppEmailService webAppEmailService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
             _userManagerService = userManagerService;
+            _emailService = webAppEmailService;
         }
         #endregion
 
@@ -74,14 +81,15 @@ namespace HomeAutomationWebApp.Controllers
 
                     if (createUserResult.Succeeded && addToRoleResult.Succeeded)
                     {
-                        return RedirectToAction("Login", "Account");
+                        _ = GenerateAndSendTokeByEmail(user);
+                        return RedirectToAction(nameof(Login));
                     }
                     else
                     {
                         foreach(var item in createUserResult.Errors.ToList())
                         {
                             var _errors = new List<string>();
-                            _errors.Add(string.Concat(item.Code, ": ", item.Description));
+                            _errors.Add($"{item.Code} : {item.Description}");
                             ViewBag.Warning_regerror = _errors;
                         }
                         return View(model);
@@ -94,6 +102,11 @@ namespace HomeAutomationWebApp.Controllers
                 }
             }
             return View(model);
+        }
+
+        public IActionResult EmailConfirmed()
+        {
+            return View();
         }
 
         [HttpGet]
@@ -122,7 +135,7 @@ namespace HomeAutomationWebApp.Controllers
             var login = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, true, false);
             if (login.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(Home.Index), nameof(Home));
             }
 
             TempData["warning_password"] = "Pokombinuj jeszcze z hasłem";
@@ -133,7 +146,7 @@ namespace HomeAutomationWebApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(Home.Index), nameof(Home));
         }
 
         [Authorize]
@@ -143,6 +156,20 @@ namespace HomeAutomationWebApp.Controllers
             ViewBag.Phone = _userManager.GetPhoneNumberAsync(_user.Result).Result;
             ViewBag.Email = _userManager.GetEmailAsync(_user.Result).Result;
             return View();
+        }
+
+        [NonAction]
+        private async Task GenerateAndSendTokeByEmail(IotUser user)
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action(
+                nameof(EmailConfirmed), 
+                nameof(Account), 
+                new { token, user = user.Id }, 
+                Request.Scheme, 
+                Request.Host.ToString());
+            _ = _emailService.SendEmailConfirmation(confirmationLink, user);
+            return;
         }
     }
 }

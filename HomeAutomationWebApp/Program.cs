@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace HomeAutomationWebApp
 {
@@ -15,7 +16,9 @@ namespace HomeAutomationWebApp
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(config =>
                 {
-                    config.AddJsonFile(@"dbcontextsettings.json");
+                    config.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
+                    config.AddJsonFile(@"Properties/dbcontextsettings.json");
+                    config.AddJsonFile(@"Properties/appsecrets.json");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

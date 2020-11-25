@@ -11,7 +11,7 @@ namespace HomeAutomationWebApp.Data
 {
     public class AzureDbContext : IdentityDbContext
     {
-        public AzureDbContext() : base() { }
+        public AzureDbContext(DbContextOptions<AzureDbContext> options) : base(options) { }
 
         public DbSet<Gateway> Gateways { get; set; }
         public DbSet<Actor> Actors { get; set; }
@@ -22,17 +22,6 @@ namespace HomeAutomationWebApp.Data
         public new DbSet<IotUser> Users { get; set; }
         public new DbSet<IdentityRole> Roles { get; set; }
         public DbSet<QueueItem> Queue { get; set; }
-
-        #region Connection Configuration
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory + @"/Properties/")
-                .AddJsonFile("dbcontextsettings.json")
-                .Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("AzureDbConnection"));
-        }
-        #endregion
 
         #region Data seeding
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -111,7 +100,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 1,
-                  UpdatedOn = DateTimeOffset.Now,
+                  UpdatedOn = DateTime.Now,
                   ConfigurationJson = "",
                   ActorId = new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432")
               });
@@ -119,7 +108,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 2,
-                  UpdatedOn = DateTimeOffset.Now,
+                  UpdatedOn = DateTime.Now,
                   ConfigurationJson = "",
                   ActorId = new Guid("429060a5-7e97-4227-aa44-25999f13536f")
               });
@@ -127,7 +116,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 3,
-                  UpdatedOn = DateTimeOffset.Now,
+                  UpdatedOn = DateTime.Now,
                   ConfigurationJson = "",
                   ActorId = new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8")
               });
@@ -135,7 +124,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 4,
-                  UpdatedOn = DateTimeOffset.Now,
+                  UpdatedOn = DateTime.Now,
                   ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
                   ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2")
               });
