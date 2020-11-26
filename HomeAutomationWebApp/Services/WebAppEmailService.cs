@@ -20,18 +20,17 @@ namespace HomeAutomationWebApp.Services
                 true);
             if (result.IsCompletedSuccessfully)
             {
-                //_logger.LogDebug("Confirmation email sent.");
+                _logger.LogDebug("Account activation email sent to {Email}.", user.Email);
             }
             return Task.CompletedTask;
         }
 
         private readonly IEmailService _emailService;
-        private readonly ILoggerFactory _logger;
-
+        private readonly ILogger _logger;
         public WebAppEmailService(IEmailService emailService, ILoggerFactory loggerFactory)
         {
             _emailService = emailService;
-            //_logger = loggerFactory.CreateLogger("Email Service");
+            _logger = loggerFactory.CreateLogger("Email Service");
         }
     }
 }

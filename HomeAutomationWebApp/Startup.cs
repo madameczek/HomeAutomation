@@ -18,6 +18,8 @@ using HomeAutomationWebApp.Services;
 using HomeAutomationWebApp.Controllers;
 using NETCore.MailKit.Extensions;
 using NETCore.MailKit.Infrastructure.Internal;
+using Serilog;
+using Serilog.Events;
 
 namespace HomeAutomationWebApp
 {
@@ -33,6 +35,26 @@ namespace HomeAutomationWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+#if DEBUG
+                /*.WriteTo.MSSqlServer(
+                    Configuration.GetSection("Serilog").GetValue<string>("MsSlqlConnectionString"),
+                    sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions { AutoCreateSqlTable = true, TableName = "Logs" })*/
+                .WriteTo.UdpSyslog(Configuration.GetSection("Serilog").GetValue<string>("SyslogServer"))
+#endif
+                /*.WriteTo.Console(
+                    outputTemplate: Configuration.GetSection("Serilog").GetValue<string>("OutputTemplate1"),
+                    restrictedToMinimumLevel: LogEventLevel.Debug)*/
+                .WriteTo.File(
+                    AppDomain.CurrentDomain.BaseDirectory + @"/WebApp-Log-.txt",
+                    outputTemplate: Configuration.GetSection("Serilog").GetValue<string>("OutputTemplate1"),
+                    restrictedToMinimumLevel: LogEventLevel.Information,
+                    rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
             services.AddDbContext<AzureDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AzureFakeDbConnection")));
             services.AddIdentity<IotUser, IdentityRole>(options =>
@@ -42,6 +64,8 @@ namespace HomeAutomationWebApp
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.SignIn.RequireConfirmedEmail = false;
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
                 options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
             })
                 .AddEntityFrameworkStores<AzureDbContext>()
@@ -52,7 +76,7 @@ namespace HomeAutomationWebApp
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddTransient<IWebAppEmailService, WebAppEmailService>();
-            services.AddMailKit(config => config.UseMailKit(Configuration.GetSection("MailKitOptions").Get<MailKitOptions>()));
+            services.AddMailKit(options => options.UseMailKit(Configuration.GetSection("MailKitOptions").Get<MailKitOptions>()));
 
             services.AddControllersWithViews();
             //services.AddRazorPages();

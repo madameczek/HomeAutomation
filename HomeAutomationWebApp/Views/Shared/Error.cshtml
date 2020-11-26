@@ -8,9 +8,17 @@
 
 @if (Model.ShowRequestId)
 {
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
+<p>
+    <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    <ul>
+        @{if (ViewBag.Errors != null)
+            foreach (var item in ViewBag.Errors)
+            {
+                <li>@item</li>
+            }
+        }
+    </ul>
+</p>
 }
 
 <h3>Development Mode</h3>
