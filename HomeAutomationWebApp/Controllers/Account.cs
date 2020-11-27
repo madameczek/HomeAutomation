@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace HomeAutomationWebApp.Controllers
@@ -60,6 +61,12 @@ namespace HomeAutomationWebApp.Controllers
                 {
                     ModelState.AddModelError("", "This email is taken");
                     TempData["warning_email"] = "This email is taken";
+                    return View(model);
+                }
+
+                if (!IsPhoneNumberValid(model.PhoneNumber))
+                {
+                    ModelState.AddModelError("", "Check phone number. Allowed characters: 0-9, '+- .'. Ex: 0048.501 502 503. The only country code accepted is 48.");
                     return View(model);
                 }
 
@@ -252,6 +259,13 @@ namespace HomeAutomationWebApp.Controllers
             }
 
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
+
+        [NonAction]
+        private bool IsPhoneNumberValid(string numberToCheck)
+        {
+            Regex regex = new Regex(pattern: @"^((00|\+)[1-9]\d)?[\- \.]?[1-9]\d{2}[\- \.]?\d{3}[\- \.]?\d{3}$");
+            return regex.IsMatch(numberToCheck);
         }
     }
 }
