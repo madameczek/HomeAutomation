@@ -36,7 +36,7 @@ namespace ImgwApi
         Dictionary<string, string> _dataFieldNames;
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
-        private static readonly Object _weatherLock = new object();
+        private static readonly Object WeatherLock = new object();
         private bool _deviceReadingIsValid = false;
 
         public Task<IHwSettings> ConfigureService(CancellationToken cancellationToken)
@@ -48,16 +48,16 @@ namespace ImgwApi
 
         public async Task ReadDeviceAsync(CancellationToken ct)
         {
-            HttpClient _client = new HttpClient();
+            HttpClient client = new HttpClient();
             try
             {
-                _client.DefaultRequestHeaders.Accept.Clear();
-                _client.DefaultRequestHeaders.Add("User-Agent", "Private student's API test");
-                string _response = await Task.Run(()
-                    => _client.GetStringAsync((_hwSettings as IImgwHwSettings).Url + (_hwSettings as IImgwHwSettings).StationId), ct);
-                lock (_weatherLock)
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("User-Agent", "Private student's API test");
+                string response = await Task.Run(()
+                    => client.GetStringAsync((_hwSettings as IImgwHwSettings).Url + (_hwSettings as IImgwHwSettings).StationId), ct);
+                lock (WeatherLock)
                 {
-                    _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(_response);
+                    _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
                 }
                 _deviceReadingIsValid = _rawData.ContainsValue((_hwSettings as IImgwHwSettings).StationId.ToString());
                 _logger.LogDebug("Fetched data from IMGW.");
@@ -70,7 +70,7 @@ namespace ImgwApi
             {
                 _logger.LogCritical(e, "Service crashed");
                 _deviceReadingIsValid = false;
-                throw;
+                await Task.FromException(e);
             }
             await Task.CompletedTask;
         }
@@ -78,11 +78,11 @@ namespace ImgwApi
         public IMessage GetMessage()
         {
             // Temporary object with readings to be serialized.
-            WeatherData _tempMessage;
+            WeatherData tempMessage;
             var parseCulture = CultureInfo.CreateSpecificCulture("en-US");
-            lock (_weatherLock)
+            lock (WeatherLock)
             {
-                _tempMessage = new WeatherData()
+                tempMessage = new WeatherData()
                 {
                     Id = 0,
                     CreatedOn = DateTime.Parse(_rawData[_dataFieldNames["ReadingDate"]]).AddHours(int.Parse(_rawData[_dataFieldNames["ReadingTime"]])),
@@ -98,7 +98,7 @@ namespace ImgwApi
                     StationName = _rawData[_dataFieldNames["StationName"]]
                 };
             }
-            return _tempMessage;
+            return tempMessage;
         }
 
         public async Task SaveMessageAsync(CancellationToken ct)

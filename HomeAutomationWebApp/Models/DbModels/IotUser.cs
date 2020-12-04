@@ -14,6 +14,7 @@ namespace HomeAutomationWebApp.Models.DbModels
 
         [StringLength(100)]
         public string LastName { get; set; }
+
         // Relationships
         public ICollection<Gateway> Gateways { get; set; }
     }

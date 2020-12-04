@@ -42,7 +42,8 @@ namespace TemperatureSensor
         {
             try
             {
-                _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).Get<TemperatureSensorHwSettings>();
+                _hwSettings = _configuration
+                    .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<TemperatureSensorHwSettings>();
                 var serviceSettings = _configuration.GetSection(_serviceSettings).Get<Dictionary<string, int>>();
                 if (serviceSettings.TryGetValue(_messageToDbPushPeriodSeconds, out var value))
                 {

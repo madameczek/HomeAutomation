@@ -1,7 +1,7 @@
 ﻿@model HomeAutomationWebApp.Models.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData[index: "Title"] = "Login";
 }
 
 <h1>Login</h1>
@@ -33,5 +33,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync(partialViewName: "_ValidationScriptsPartial");}
 }

@@ -60,7 +60,6 @@ namespace HomeAutomationWebApp.Controllers
                 if (!_userManagerService.IsEmailUnique(model.Email))
                 {
                     ModelState.AddModelError("", "This email is taken");
-                    TempData["warning_email"] = "This email is taken";
                     return View(model);
                 }
 
@@ -100,7 +99,7 @@ namespace HomeAutomationWebApp.Controllers
                             }
                             else
                             {
-                                _logger.LogWarning("Error adding user with email {Email} added {Role}", user.Email, "Administrator");
+                                _logger.LogWarning("Error adding user with email {Email} to role {Role}", user.Email, "Administrator");
                             }
                         }
                         addToRoleResult = await _userManager.AddToRoleAsync(user, "User");
@@ -110,7 +109,7 @@ namespace HomeAutomationWebApp.Controllers
                         }
                         else
                         {
-                            _logger.LogWarning("Error adding user with email {Email} added {Role}", user.Email, "User");
+                            _logger.LogWarning("Error adding user with email {Email} to role {Role}", user.Email, "User");
                         }
 
                         _ = GenerateAndSendTokeByEmail(user);
@@ -264,7 +263,7 @@ namespace HomeAutomationWebApp.Controllers
         [NonAction]
         private bool IsPhoneNumberValid(string numberToCheck)
         {
-            Regex regex = new Regex(pattern: @"^((00|\+)[1-9]\d)?[\- \.]?[1-9]\d{2}[\- \.]?\d{3}[\- \.]?\d{3}$");
+            Regex regex = new Regex(pattern: @"^((00|\+)48)?[\- \.]?[1-9]\d{2}[\- \.]?\d{3}[\- \.]?\d{3}$");
             return regex.IsMatch(numberToCheck);
         }
     }

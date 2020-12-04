@@ -64,8 +64,11 @@ namespace ImgwApi
         {
             _readImgwTask = _imgwService.ReadDeviceAsync(_stoppingCts.Token);
             _readImgwTask.Wait(_stoppingCts.Token);
-            _saveReadingToDatabaseTask = _imgwService.SaveMessageAsync(_stoppingCts.Token);
-            _saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
+            if (_readImgwTask.Exception == null)
+            {
+                _saveReadingToDatabaseTask = _imgwService.SaveMessageAsync(_stoppingCts.Token);
+                _saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
