@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shared.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,8 +13,9 @@ namespace ImgwApi
     {
         private Timer _readImgwTimer;
         //private Timer _saveReadingToDatabaseTimer;
-        private Task _readImgwTask;
-        private Task _saveReadingToDatabaseTask;
+        //private Task _readImgwTask;
+        //private Task _saveReadingToDatabaseTask;
+        private readonly List<Task> _tasks = new List<Task>();
 
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
         private IHwSettings _hwSettings = new ImgwHwSettings() 
@@ -62,13 +64,13 @@ namespace ImgwApi
 
         private void FetchAndStoreWeather(object state)
         {
-            _readImgwTask = _imgwService.ReadDeviceAsync(_stoppingCts.Token);
-            _readImgwTask.Wait(_stoppingCts.Token);
-            if (_readImgwTask.Exception == null)
-            {
-                _saveReadingToDatabaseTask = _imgwService.SaveMessageAsync(_stoppingCts.Token);
-                _saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
-            }
+            var readImgwTask = _imgwService.ReadDeviceAsync(_stoppingCts.Token);
+            _tasks.Add(readImgwTask);
+            readImgwTask.Wait(_stoppingCts.Token);
+            if (readImgwTask.Exception != null) return;
+            var saveReadingToDatabaseTask = _imgwService.SaveMessageAsync(_stoppingCts.Token);
+            _tasks.Add(readImgwTask);
+            saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -81,7 +83,7 @@ namespace ImgwApi
             finally
             {
                 _logger.LogDebug("Stopping");
-                Task.WhenAll(_readImgwTask).Wait(cancellationToken);
+                Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;
         }

@@ -48,7 +48,7 @@ namespace ImgwApi
 
         public async Task ReadDeviceAsync(CancellationToken ct)
         {
-            HttpClient client = new HttpClient();
+            var client = new HttpClient();
             try
             {
                 client.DefaultRequestHeaders.Accept.Clear();

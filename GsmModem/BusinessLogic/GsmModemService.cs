@@ -66,7 +66,15 @@ namespace GsmModem
 
         public Task ReadDeviceAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Task.CompletedTask;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("Cancelled.");
+            }
+            return Task.CompletedTask;
         }
 
         public Task SaveMessageAsync(CancellationToken cancellationToken)

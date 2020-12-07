@@ -12,7 +12,7 @@ using TemperatureSensor;
 
 namespace ActorsDaemon
 {
-    class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -44,12 +44,12 @@ namespace ActorsDaemon
 
             try
             {
-                Log.Information("Actor appllication is starting up");
+                Log.Information("Actor application is starting up");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "There was a problem starting the application");
+                Log.Fatal(e, "Application error");
             }
             finally
             {

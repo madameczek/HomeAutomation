@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TemperatureSensor.Models;
@@ -11,8 +12,9 @@ namespace TemperatureSensor
     {
         private Timer _readSensorTimer;
         private Timer _saveReadingToDatabaseTimer;
-        private Task _readSensorTask;
-        private Task _saveReadingToDatabaseTask;
+        //private Task _readSensorTask;
+        //private Task _saveReadingToDatabaseTask;
+        private readonly List<Task> _tasks = new List<Task>();
 
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
         private ITemperatureSensorHwSettings _hwSettings = new TemperatureSensorHwSettings() 
@@ -69,12 +71,14 @@ namespace TemperatureSensor
 
         private void ReadSensor(object state)
         {
-            _readSensorTask = _temperatureSensorService.ReadDeviceAsync(_stoppingCts.Token);
+            //var readSensorTask = _temperatureSensorService.ReadDeviceAsync(_stoppingCts.Token);
+            _tasks.Add(_temperatureSensorService.ReadDeviceAsync(_stoppingCts.Token));
         }
 
         private void SaveToDatabase(object state)
         {
-            _saveReadingToDatabaseTask = _temperatureSensorService.SaveMessageAsync(_stoppingCts.Token);
+            //var saveReadingToDatabaseTask = _temperatureSensorService.SaveMessageAsync(_stoppingCts.Token);
+            _tasks.Add(_temperatureSensorService.SaveMessageAsync(_stoppingCts.Token));
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -87,7 +91,7 @@ namespace TemperatureSensor
             finally
             {
                 _logger.LogDebug("Stopping");
-                Task.WhenAll(_readSensorTask, _saveReadingToDatabaseTask).Wait(cancellationToken);
+                Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;
         }

@@ -12,8 +12,9 @@ namespace GsmModem
     public class GsmModemLauncher : IHostedService, IDisposable
     {
         private Timer _readModemTimer;
-        private Task _modemReadTask;
-
+        //private Task _modemReadTask;
+        private readonly List<Task> _tasks = new List<Task>();
+        
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
         private IGsmModemHwSettings _hwSettings = new GsmModemHwSettings()
         {
@@ -60,7 +61,8 @@ namespace GsmModem
 
         private void ReadModem(object state)
         {
-            _modemReadTask = _gsmService.ReadDeviceAsync(_stoppingCts.Token);
+            //var modemReadTask = _gsmService.ReadDeviceAsync(_stoppingCts.Token);
+            _tasks.Add(_gsmService.ReadDeviceAsync(_stoppingCts.Token));
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -73,7 +75,7 @@ namespace GsmModem
             finally
             {
                 _logger.LogDebug("Stopping");
-                Task.WhenAll(_modemReadTask).Wait(cancellationToken);
+                Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;
         }
