@@ -9,8 +9,6 @@ namespace HomeAutomationWebApp.Services.Interfaces
 {
     public interface IUserManagerService
     {
-        public IdentityUser GetUserByEmail(string email);
-
         public bool IsOnlyAdministratorExisting();
 
         public bool IsEmailUnique(string email);

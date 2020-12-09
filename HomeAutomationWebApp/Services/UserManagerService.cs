@@ -14,17 +14,12 @@ namespace HomeAutomationWebApp.Services
         // Returns true if there is only one user with name "Administrator"
         public bool IsOnlyAdministratorExisting()
         {
-            return _context.Users.Where(u=>u.NormalizedUserName.StartsWith("ADMINISTRATOR")).Count() == 1;
+            return _context.Users.Count(u => u.NormalizedUserName.StartsWith("ADMINISTRATOR")) == 1;
         }
 
         public bool IsEmailUnique(string email)
         {
-            return _context.Users.Where(u => u.NormalizedEmail == email.ToUpper()).FirstOrDefault() == null;
-        }
-
-        public IdentityUser GetUserByEmail(string email)
-        {
-            return _context.Users.Where(u => u.NormalizedEmail == email.ToUpper()).FirstOrDefault();
+            return _context.Users.FirstOrDefault(u => u.NormalizedEmail == email.ToUpper()) == null;
         }
 
         #region Dependency Injection

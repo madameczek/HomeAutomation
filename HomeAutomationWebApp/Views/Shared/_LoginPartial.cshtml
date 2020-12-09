@@ -1,16 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using HomeAutomationWebApp.Models.DbModels;
+@using HomeAutomationWebApp.Models.DbModels
+@using HomeAutomationWebApp.Controllers
+@using HomeAutomationWebApp.Services.Interfaces
 @inject SignInManager<IotUser> SignInManager
-@inject UserManager<IotUser> UserManager
+@inject UserManager<IotUser> Manager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
-            <a asp-action="Manage" asp-controller="Account" class="nav-link text-dark" title="Manage">Hello @User.Identity.Name!</a>
+            <a asp-controller="@nameof(Account)" asp-action="@nameof(Account.Manage)" class="nav-link text-dark" title="Manage">Hello @Manager.FindByIdAsync(User.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value).Result.FirstName!</a>
         </li>
         <li class="nav-item">
-            <form class="form-inline" asp-controller="Account" asp-action="Logout" )>
+            <form class="form-inline" asp-controller="@nameof(Account)" asp-action="@nameof(Account.Logout)" )>
                 <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
             </form>
         </li>
@@ -18,10 +20,10 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Registration">Register</a>
+            <a class="nav-link text-dark" asp-controller="@nameof(Account)" asp-action="@nameof(Account.Registration)">Register</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+            <a class="nav-link text-dark" asp-controller="@nameof(Account)" asp-action="@nameof(Account.Login)">Login</a>
         </li>
     }
 </ul>

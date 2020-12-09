@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HomeAutomationWebApp.Controllers
 {
@@ -53,82 +54,79 @@ namespace HomeAutomationWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Registration(RegistrationViewModel model)
         {
-            IdentityResult addToRoleResult;
+            if (!ModelState.IsValid) return View(model);
 
-            if (ModelState.IsValid)
+            if (!_userManagerService.IsEmailUnique(model.Email))
             {
-                if (!_userManagerService.IsEmailUnique(model.Email))
-                {
-                    ModelState.AddModelError("", "This email is taken");
-                    return View(model);
-                }
+                ModelState.AddModelError("", "This email is taken");
+                return View(model);
+            }
 
-                if (!IsPhoneNumberValid(model.PhoneNumber))
-                {
-                    ModelState.AddModelError("", "Check phone number. Allowed characters: 0-9, '+- .'. Ex: 0048.501 502 503. The only country code accepted is 48.");
-                    return View(model);
-                }
+            if (!IsPhoneNumberValid(model.PhoneNumber))
+            {
+                ModelState.AddModelError("", "Check phone number. Allowed characters: 0-9, '+- .'. Ex: 0048.501 502 503. The only country code accepted is 48.");
+                return View(model);
+            }
 
-                IotUser user = new IotUser()
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email
-                };
-                user.UserName = $"{user.FirstName}{user.LastName}".Replace(" ", "_");
-                user.UserName = RemoveDiacritics(user.UserName);
-                user.NormalizedUserName = user.UserName.ToUpper();
-                user.NormalizedEmail = user.Email.ToUpper();
+            var user = new IotUser()
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email
+            };
+            user.UserName = $"{user.FirstName}{user.LastName}".Replace(" ", "_");
+            user.UserName = RemoveDiacritics(user.UserName);
+            user.NormalizedUserName = user.UserName.ToUpper();
+            user.NormalizedEmail = user.Email.ToUpper();
                 
-                try
+            try
+            {
+                // Create user
+                IdentityResult createUserResult = await _userManager.CreateAsync(user, model.Password);
+                if (createUserResult.Succeeded)
                 {
-                    // Create user
-                    IdentityResult createUserResult = await _userManager.CreateAsync(user, model.Password);
+                    _logger.LogInformation("User {User} with email {Email} created.", user.UserName, user.Email);
 
-                    if (createUserResult.Succeeded)
+                    // Add to Roles. Add first user created with FirstName="Administrator" to Administrator role :o
+                    IdentityResult addToRoleResult;
+                    if (_userManagerService.IsOnlyAdministratorExisting() && model.FirstName == "Administrator")
                     {
-                        _logger.LogInformation("User {User} with email {Email} created.", user.UserName, user.Email);
-
-                        // Add to Roles. Add first user created with FirstName="Administrator" to Administrator role :o
-                        if (_userManagerService.IsOnlyAdministratorExisting() && model.FirstName == "Administrator")
-                        {
-                            addToRoleResult = await _userManager.AddToRoleAsync(user, "Administrator");
-                            if (addToRoleResult.Succeeded)
-                            {
-                                _logger.LogInformation("User with email {Email} added to role {Role}", user.Email, "Administrator");
-                            }
-                            else
-                            {
-                                _logger.LogWarning("Error adding user with email {Email} to role {Role}", user.Email, "Administrator");
-                            }
-                        }
-                        addToRoleResult = await _userManager.AddToRoleAsync(user, "User");
+                        addToRoleResult = await _userManager.AddToRoleAsync(user, "Administrator");
                         if (addToRoleResult.Succeeded)
                         {
-                            _logger.LogInformation("User with email {Email} added to role {Role}", user.Email, "User");
+                            _logger.LogInformation("User with email {Email} added to role {Role}", user.Email, "Administrator");
                         }
                         else
                         {
-                            _logger.LogWarning("Error adding user with email {Email} to role {Role}", user.Email, "User");
+                            _logger.LogWarning("Error adding user with email {Email} to role {Role}", user.Email, "Administrator");
                         }
+                    }
 
-                        _ = GenerateAndSendTokeByEmail(user);
-                        return RedirectToAction(nameof(SuccessfulRegistration));
+                    addToRoleResult = await _userManager.AddToRoleAsync(user, "User");
+                    if (addToRoleResult.Succeeded)
+                    {
+                        _logger.LogInformation("User with email {Email} added to role {Role}", user.Email, "User");
                     }
                     else
                     {
-                        createUserResult.Errors.Select(e => e.Description).ToList().ForEach(e=>ModelState.AddModelError("",e));
-                        return View(model);
+                        _logger.LogWarning("Error adding user with email {Email} to role {Role}", user.Email, "User");
                     }
 
+                    _ = GenerateAndSendTokeByEmail(user);
+                    return RedirectToAction(nameof(SuccessfulRegistration));
                 }
-                catch(Exception e)
-                {
-                    _logger.LogError(e, "Error creating user.");
-                    throw;
-                }
+
+                createUserResult.Errors
+                    .Select(e => e.Description)
+                    .ToList()
+                    .ForEach(e => ModelState.AddModelError("", e));
+                return View(model);
             }
-            return View(model);
+            catch(Exception e)
+            {
+                _logger.LogError(e, "Error creating user.");
+            }
+            return View(model); // consider redirect to error page
         }
 
 
@@ -143,34 +141,33 @@ namespace HomeAutomationWebApp.Controllers
         {
             // Do not change name of parameter 'user'. It must match email
             var identityUser = _userManager.FindByIdAsync(user).Result;
-            if (identityUser != null)
+            
+            if (identityUser == null) return RedirectToAction(nameof(Error));
+
+            var result = await _userManager.ConfirmEmailAsync(identityUser, token);
+            if (result.Succeeded || await _userManager.IsEmailConfirmedAsync(identityUser))
             {
-                var result = await _userManager.ConfirmEmailAsync(identityUser, token);
-                if (result.Succeeded || await _userManager.IsEmailConfirmedAsync(identityUser))
-                {
-                    return View(nameof(EmailConfirmed));
-                }
-                else
-                {
-                    var enumerator = result.Errors.GetEnumerator();
-                    var errorList = new List<string>();
-                    while (enumerator.MoveNext())
-                    {
-                        errorList.Add(enumerator.Current.Description);
-                    }
-                    if (errorList.Contains("Invalid token."))
-                    {
-                        _logger.LogError("Confirming Email {Email} error. Error list: {Error}", identityUser.Email, errorList);
-                        // Send confirmation email again
-                        _ = GenerateAndSendTokeByEmail(identityUser);
-                        ViewBag.Message = "Twój link aktywacyjny wygasł.";
-                        return View(nameof(SuccessfulRegistration));
-                    }
-                    ViewBag.Errors = errorList;
-                    return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-                }
+                return View(nameof(EmailConfirmed));
             }
-            return RedirectToAction(nameof(Error));
+
+            using var enumerator = result.Errors.GetEnumerator();
+            var errorList = new List<string>();
+            while (enumerator.MoveNext())
+            {
+                errorList.Add(enumerator.Current.Description);
+            }
+
+            if (errorList.Contains("Invalid token."))
+            {
+                _logger.LogError("Confirming Email {Email} error. Error list: {Error}", identityUser.Email, errorList);
+                // Send confirmation email again
+                _ = GenerateAndSendTokeByEmail(identityUser);
+                ViewBag.Message = "Twój link aktywacyjny wygasł.";
+                return View(nameof(SuccessfulRegistration));
+            }
+
+            ViewBag.Errors = errorList;
+            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         [HttpGet]
@@ -188,7 +185,7 @@ namespace HomeAutomationWebApp.Controllers
                 return View(model);
             }
 
-            var user = _userManagerService.GetUserByEmail(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 TempData["warning_email"] = "Nie odnaleziono adresu e-mail";
@@ -222,6 +219,35 @@ namespace HomeAutomationWebApp.Controllers
             return View();
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        // Show a page with 'click emailed link to reset password' prompt
+        public async Task<IActionResult> ConfirmResetPassword(LoginViewModel model)
+        {
+            if (ModelState.GetFieldValidationState("Email") == ModelValidationState.Invalid)
+            {
+                ModelState.AddModelError("", "Podaj adres email");
+                return View(nameof(Login), model);
+            }
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    //ModelState.AddModelError("", "Nie odnaleziono adresu email");
+                    return View(model);
+                }
+                // Prepare token & send it via email
+                _ = GenerateAndSendPasswordResetToken(user);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error");
+            }
+            return View();
+        }
+
         public IActionResult Error(List<string> errors)
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
@@ -238,11 +264,10 @@ namespace HomeAutomationWebApp.Controllers
                 Request.Scheme, 
                 Request.Host.ToString());
             _ = _emailService.SendEmailConfirmation(confirmationLink, user);
-            return;
         }
 
         [NonAction]
-        private string RemoveDiacritics(string text)
+        private static string RemoveDiacritics(string text)
         {
             var normalizedString = text.Normalize(NormalizationForm.FormD);
             normalizedString = normalizedString.Replace('ł', 'l');
@@ -261,9 +286,9 @@ namespace HomeAutomationWebApp.Controllers
         }
 
         [NonAction]
-        private bool IsPhoneNumberValid(string numberToCheck)
+        private static bool IsPhoneNumberValid(string numberToCheck)
         {
-            Regex regex = new Regex(pattern: @"^((00|\+)48)?[\- \.]?[1-9]\d{2}[\- \.]?\d{3}[\- \.]?\d{3}$");
+            var regex = new Regex(pattern: @"^((00|\+)48)?[\- \.]?[1-9]\d{2}[\- \.]?\d{3}[\- \.]?\d{3}$");
             return regex.IsMatch(numberToCheck);
         }
     }
