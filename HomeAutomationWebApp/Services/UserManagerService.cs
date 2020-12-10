@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using HomeAutomationWebApp.Data;
-using HomeAutomationWebApp.Models.DbModels;
+﻿using HomeAutomationWebApp.Data;
 using HomeAutomationWebApp.Services.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HomeAutomationWebApp.Models.DbModels;
 
-namespace HomeAutomationWebApp.Services 
+namespace HomeAutomationWebApp.Services
 {
     public class UserManagerService : IUserManagerService
     {
@@ -20,6 +17,12 @@ namespace HomeAutomationWebApp.Services
         public bool IsEmailUnique(string email)
         {
             return _context.Users.FirstOrDefault(u => u.NormalizedEmail == email.ToUpper()) == null;
+        }
+
+        public async Task ConfirmEmailAsync(IotUser user)
+        {
+            _context.Users.FirstOrDefault(u => u.Email == user.Email).EmailConfirmed = true;
+            await _context.SaveChangesAsync();
         }
 
         #region Dependency Injection

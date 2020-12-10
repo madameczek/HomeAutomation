@@ -12,5 +12,7 @@ namespace HomeAutomationWebApp.Services.Interfaces
         public bool IsOnlyAdministratorExisting();
 
         public bool IsEmailUnique(string email);
+
+        public Task ConfirmEmailAsync(IotUser user);
     }
 }

@@ -12,6 +12,12 @@
     <div class="col-md-4">
         <form asp-action="Login" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="text-danger">
+                @{
+                    var errors = ViewData.ModelState.Where(n => n.Value.Errors.Any()).ToList();
+                    errors.ForEach(e => e.Value.Errors.ToList().ForEach(i=>i.ErrorMessage.ToString()));
+                }
+            </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
@@ -23,8 +29,8 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-primary" />
-                <input class="btn btn--without-border" type="submit" formacCtion="@nameof(Account.ConfirmResetPassword)" formnovalidate value="Przypomnij hasło" />
+                <input class="btn btn-primary" type="submit" value="Login" />
+                <input class="btn btn--without-border" type="submit" value="Reset password" formaction="@nameof(Account.ConfirmResetPassword)" formnovalidate />
             </div>
         </form>
     </div>

@@ -68,14 +68,17 @@ namespace HomeAutomationWebApp.Controllers
                 return View(model);
             }
 
+            var random = new Random();
             var user = new IotUser()
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email
             };
-            user.UserName = $"{user.FirstName}{user.LastName}".Replace(" ", "_");
+            user.UserName = $"{user.FirstName}{user.LastName}";
             user.UserName = RemoveDiacritics(user.UserName);
+            user.UserName = RemoveNotLetterNorDigit(user.UserName);
+            user.UserName += random.Next(1000).ToString("D3");
             user.NormalizedUserName = user.UserName.ToUpper();
             user.NormalizedEmail = user.Email.ToUpper();
                 
@@ -113,7 +116,7 @@ namespace HomeAutomationWebApp.Controllers
                     }
 
                     _ = GenerateAndSendTokeByEmail(user);
-                    return RedirectToAction(nameof(SuccessfulRegistration));
+                    return RedirectToAction(nameof(ConfirmRegistration));
                 }
 
                 createUserResult.Errors
@@ -129,9 +132,9 @@ namespace HomeAutomationWebApp.Controllers
             return View(model); // consider redirect to error page
         }
 
-
         [HttpGet]
-        public IActionResult SuccessfulRegistration()
+        // Show a page with 'click emailed link' prompt
+        public IActionResult ConfirmRegistration()
         {
             return View();
         }
@@ -163,7 +166,7 @@ namespace HomeAutomationWebApp.Controllers
                 // Send confirmation email again
                 _ = GenerateAndSendTokeByEmail(identityUser);
                 ViewBag.Message = "Twój link aktywacyjny wygasł.";
-                return View(nameof(SuccessfulRegistration));
+                return View(nameof(ConfirmRegistration));
             }
 
             ViewBag.Errors = errorList;
@@ -233,10 +236,10 @@ namespace HomeAutomationWebApp.Controllers
             try
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user == null)
                 {
-                    //ModelState.AddModelError("", "Nie odnaleziono adresu email");
-                    return View(model);
+                    ModelState.AddModelError("", "Email not found"); // To show or not to show that email address id valid
+                    return View(nameof(Login), model);
                 }
                 // Prepare token & send it via email
                 _ = GenerateAndSendPasswordResetToken(user);
@@ -246,6 +249,49 @@ namespace HomeAutomationWebApp.Controllers
                 _logger.LogError(e, "Error");
             }
             return View();
+        }
+
+        [HttpGet]
+        // Method invoked by email link
+        // Show to a user a page with reset password form
+        public async Task<IActionResult> ResetPassword(string user, string token)
+        {
+            if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(token)) return RedirectToAction(nameof(Error));
+            var identityUser = await _userManager.FindByIdAsync(user);
+            if (identityUser == null) return RedirectToAction(nameof(Error)); // or redirect to login page
+            var model = new ResetPasswordViewModel() { Email = identityUser.Email, Token = token };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return View(model);
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                // Confirm email, if not confirmed yet
+                if (!(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    _ = _userManagerService.ConfirmEmailAsync(user);
+                }
+                return View("PasswordChangeConfirmed");
+            }
+
+            ModelState.AddModelError("", "Nie udało się zmienić hasła.");
+            result.Errors
+                .Select(identityError => identityError.Description)
+                .ToList()
+                .ForEach(errorMessage => ModelState.AddModelError("", errorMessage));
+            return View(model);
         }
 
         public IActionResult Error(List<string> errors)
@@ -267,6 +313,19 @@ namespace HomeAutomationWebApp.Controllers
         }
 
         [NonAction]
+        private async Task GenerateAndSendPasswordResetToken(IotUser user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var confirmationLink = Url.Action(
+                nameof(ResetPassword),
+                nameof(Account),
+                new { token, user = user.Id },
+                Request.Scheme,
+                Request.Host.ToString());
+            _ = _emailService.SendResetPasswordConfirmation(confirmationLink, user);
+        }
+
+        [NonAction]
         private static string RemoveDiacritics(string text)
         {
             var normalizedString = text.Normalize(NormalizationForm.FormD);
@@ -281,8 +340,18 @@ namespace HomeAutomationWebApp.Controllers
                     stringBuilder.Append(c);
                 }
             }
-
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
+
+        [NonAction]
+        private static string RemoveNotLetterNorDigit(string text)
+        {
+            var sb = new StringBuilder();
+            foreach (var character in text.Where(char.IsLetterOrDigit))
+            {
+                sb.Append(character);
+            }
+            return sb.ToString();
         }
 
         [NonAction]
