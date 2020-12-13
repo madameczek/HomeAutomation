@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using GsmModem.Models;
 using System.Linq;
-using Shared;
 using Shared.Models;
 using Microsoft.Extensions.Logging;
 using System.IO.Ports;
@@ -14,15 +14,19 @@ namespace GsmModem
 {
     public class GsmModemService : IGsmModemService
     {
+        private SerialPort _port;
+
         #region Ctor & Dependency Injection
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
-        private readonly IServiceProvider _services;
-        public GsmModemService(ILoggerFactory logger, IConfiguration configuration, IServiceProvider services)
+        private readonly IPortProvider _portProvider;
+        private readonly IModemDevice _device;
+        public GsmModemService(ILoggerFactory logger, IConfiguration configuration, IPortProvider portProvider, IModemDevice device)
         {
             _logger = logger.CreateLogger("GSM Service");
             _configuration = configuration;
-            _services = services;
+            _portProvider = portProvider;
+            _device = device;
         }
         #endregion
 
@@ -38,25 +42,31 @@ namespace GsmModem
         private static readonly Object _portLock = new object();
         private bool _deviceReadingIsValid = false;
 
-        static SerialPort port;
+        public IHwSettings GetSettings()
+        {
+            return _hwSettings =_configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<GsmModemHwSettings>();
+        }
 
-        public Task<IHwSettings> ConfigureService(CancellationToken ct)
+        public async Task<IHwSettings> ConfigureService(CancellationToken ct)
         {
             try
             {
-                _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).Get<GsmModemHwSettings>();
-                _ = ConfigureComPort(_hwSettings);
+                 _port = await _portProvider.GetPort(_hwSettings);
+                await _device.Initialize(_port);
             }
-            catch (OperationCanceledException) { }
-            catch (Exception) { throw; }
-            return Task.FromResult((IHwSettings)_hwSettings);
-        }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (IOException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Service configuration error");
+            }
 
-        private bool ConfigureComPort(IGsmModemHwSettings gsmModemHwSettings)
-        {
-
-
-            return true;
+            return _hwSettings;
         }
 
         public IMessage GetMessage()

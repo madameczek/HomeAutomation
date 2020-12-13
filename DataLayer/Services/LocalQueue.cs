@@ -30,7 +30,7 @@ namespace DataAccessLayer
             string _json = JsonConvert.SerializeObject(message);
             var dbMessage = JsonConvert.DeserializeObject(_json, targetType);
 
-            bool _isDuplicate = false;
+            var _isDuplicate = false;
 
             if (targetType == typeof(Weather))
             {
@@ -102,7 +102,6 @@ namespace DataAccessLayer
             {
                 _logger.LogCritical(e, "Local database Error");
                 return false;
-                throw;
             }
         }
     }

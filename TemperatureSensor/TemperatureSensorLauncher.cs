@@ -35,11 +35,13 @@ namespace TemperatureSensor
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            _hwSettings = (ITemperatureSensorHwSettings)_temperatureSensorService.GetSettings();
             try
             {
-                _hwSettings = (ITemperatureSensorHwSettings)await _temperatureSensorService.ConfigureService(cancellationToken);
                 if (_hwSettings.Attach)
                 {
+                    _ = (ITemperatureSensorHwSettings)await _temperatureSensorService.ConfigureService(cancellationToken);
+
                     _readSensorTimer = new Timer(
                         ReadSensor,
                         null,
@@ -99,8 +101,8 @@ namespace TemperatureSensor
         public void Dispose()
         {
             _logger.LogDebug("Disposing resources.");
-            _readSensorTimer.Dispose();
-            _saveReadingToDatabaseTimer.Dispose();
+            _readSensorTimer?.Dispose();
+            _saveReadingToDatabaseTimer?.Dispose();
         }
     }
 }

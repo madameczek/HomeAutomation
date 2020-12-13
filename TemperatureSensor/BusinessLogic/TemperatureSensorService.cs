@@ -38,12 +38,17 @@ namespace TemperatureSensor
         private double _temperature;
         private bool _deviceReadingIsValid;
 
+        public IHwSettings GetSettings()
+        {
+            return _hwSettings = _configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<TemperatureSensorHwSettings>();
+        }
+
         public Task<IHwSettings> ConfigureService(CancellationToken cancellationToken)
         {
             try
             {
                 _hwSettings = _configuration
-                    .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<TemperatureSensorHwSettings>();
+                    .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<TemperatureSensorHwSettings>(); // redundant
                 var serviceSettings = _configuration.GetSection(_serviceSettings).Get<Dictionary<string, int>>();
                 if (serviceSettings.TryGetValue(_messageToDbPushPeriodSeconds, out var value))
                 {

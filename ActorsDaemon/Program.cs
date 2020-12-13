@@ -58,7 +58,7 @@ namespace ActorsDaemon
             }
         }
 
-        internal static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((config)=>
@@ -76,6 +76,8 @@ namespace ActorsDaemon
                     services.AddSingleton<IImgwService, ImgwService>();
                     services.AddSingleton<IGsmModemService, GsmModemService>();
                     services.AddDbContext<LocalContext>();
+                    services.AddTransient<IPortProvider, PortProvider>();
+                    services.AddTransient<IModemDevice, ModemDevice>();
                 })
                 .UseSerilog();
         }

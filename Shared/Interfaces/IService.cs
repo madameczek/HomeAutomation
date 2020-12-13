@@ -11,6 +11,8 @@ namespace Shared
         public string HwSettingsSection { get; }
         public string HwSettingsCurrentActorSection { get; }
 
+        public IHwSettings GetSettings();
+
         public Task<IHwSettings> ConfigureService(CancellationToken ct);
 
         /// <summary>

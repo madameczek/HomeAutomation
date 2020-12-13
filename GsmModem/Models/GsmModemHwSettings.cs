@@ -1,6 +1,8 @@
 ﻿using Shared;
 using Shared.Models;
 using System;
+using System.IO;
+using System.IO.Ports;
 
 namespace GsmModem.Models
 {
@@ -21,7 +23,7 @@ namespace GsmModem.Models
         public int ReadInterval { get; set; }
         public string PortName { get; set; }
         public int BaudRate { get; set; }
-        public string Handshake { get; set; }
-        public Char NewLineChar { get; set; }
+        public Handshake Handshake { get; set; }
+        public string NewLine { get; set; }
     }
 }

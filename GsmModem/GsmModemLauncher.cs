@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Shared.Models;
 
 namespace GsmModem
 {
@@ -16,10 +17,7 @@ namespace GsmModem
         private readonly List<Task> _tasks = new List<Task>();
         
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
-        private IGsmModemHwSettings _hwSettings = new GsmModemHwSettings()
-        {
-            ReadInterval = 10,
-        };
+        private IHwSettings _hwSettings; 
 
         #region Ctor & Dependency Injection
         private readonly ILogger _logger;
@@ -33,11 +31,13 @@ namespace GsmModem
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _hwSettings = (IGsmModemHwSettings)await _gsmService.ConfigureService(cancellationToken);
+            _hwSettings = _gsmService.GetSettings();
             try
             {
                 if (_hwSettings.Attach)
                 {
+                    _ = await _gsmService.ConfigureService(cancellationToken);
+
                     _readModemTimer = new Timer(
                         ReadModem,
                         null,

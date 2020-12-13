@@ -18,10 +18,7 @@ namespace ImgwApi
         private readonly List<Task> _tasks = new List<Task>();
 
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
-        private IHwSettings _hwSettings = new ImgwHwSettings() 
-        { 
-            ReadInterval = 20 
-        };
+        private IHwSettings _hwSettings;
 
         #region Ctor & Dependency Injection
         private readonly ILogger _logger;
@@ -35,11 +32,13 @@ namespace ImgwApi
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            _hwSettings = _imgwService.GetSettings();
             try
             {
-                _hwSettings = await _imgwService.ConfigureService(cancellationToken);
                 if (_hwSettings.Attach)
                 {
+                    _ = await _imgwService.ConfigureService(cancellationToken);
+
                     _readImgwTimer = new Timer(
                         FetchAndStoreWeather,
                         null,
@@ -91,7 +90,7 @@ namespace ImgwApi
         public void Dispose()
         {
             _logger.LogDebug("Disposing resources.");
-            _readImgwTimer.Dispose();
+            _readImgwTimer?.Dispose();
         }
     }
 }

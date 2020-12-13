@@ -35,6 +35,7 @@ namespace HomeAutomationWebApp.Services
                 "Nastąpi przekierowanie do formularza zmiany hasła.<br />" +
                 "Zignoruj tę wiadomość, jeśli nie zlecełeś(aś) operacji.",
                 true);
+            _logger.LogDebug("Password reset email sent to {Email}.", user.Email);
             return Task.CompletedTask;
         }
 

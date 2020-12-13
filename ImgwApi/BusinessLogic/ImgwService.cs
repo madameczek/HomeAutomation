@@ -33,15 +33,20 @@ namespace ImgwApi
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "ImgwApi";
         private IHwSettings _hwSettings = new ImgwHwSettings();
-        Dictionary<string, string> _dataFieldNames;
+        private Dictionary<string, string> _dataFieldNames;
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
-        private static readonly Object WeatherLock = new object();
-        private bool _deviceReadingIsValid = false;
+        private static readonly object WeatherLock = new object();
+        private bool _deviceReadingIsValid;
+
+        public IHwSettings GetSettings()
+        {
+            return _hwSettings = _configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<ImgwHwSettings>();
+        }
 
         public Task<IHwSettings> ConfigureService(CancellationToken cancellationToken)
         {
-            _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).Get<ImgwHwSettings>();
+            _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).Get<ImgwHwSettings>(); // redundant
             _dataFieldNames = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).GetSection("Fields").Get<Dictionary<string, string>>();
             return Task.FromResult(_hwSettings);
         }

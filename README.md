@@ -18,7 +18,8 @@ The system consists of physical devices and an application. Management and monit
 - Azure and local database (MariaDb) work
 - web application runs on Azure
 - data is downloaded from the temperature sensor
-- data is downloaded from the weather service.
+- data is downloaded from the weather service
+- GSM Modem is initialised.
 
 As you can see, this is an incipient stage, but the feasibility is already proven and the hardware and core software modules have been integrated. It is a hobby project, which will probably be extended in time, and functionalities will be launched according to the developer's own needs ;)
 
