@@ -15,7 +15,7 @@ namespace DataAccessLayer
         private readonly ILogger _logger;
         public LocalQueue(ILogger<LocalQueue> logger, LocalContext dbContext)
         {
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
             _logger = logger;
         }
 
@@ -27,15 +27,15 @@ namespace DataAccessLayer
 
             // Serialized object will be used as proto to deserialize onto target type
             // depending on required data type and then target type will be stored in a database.
-            string _json = JsonConvert.SerializeObject(message);
-            var dbMessage = JsonConvert.DeserializeObject(_json, targetType);
+            string json = JsonConvert.SerializeObject(message);
+            var dbMessage = JsonConvert.DeserializeObject(json, targetType);
 
-            var _isDuplicate = false;
+            var isDuplicate = false;
 
             if (targetType == typeof(Weather))
             {
-                _isDuplicate = IsDuplicate(dbMessage as Weather);
-                if (!_isDuplicate)
+                isDuplicate = IsDuplicate(dbMessage as Weather);
+                if (!isDuplicate)
                 {
                     _dbContext.Add(dbMessage as Weather);
                 }
@@ -52,51 +52,51 @@ namespace DataAccessLayer
 
             // In addition to above, all records are stored in 'blob' format with data serializesd to json.
             // This is for future use.
-            if (!_isDuplicate)
+            if (!isDuplicate)
             {
                 _dbContext.Add(CreateBlobMessage(message));
             }
 
-            int _count;
+            int count;
             try
             {
-                _count = _dbContext.SaveChanges();
+                count = _dbContext.SaveChanges();
             }
             catch(Exception e)
             {
                 _logger.LogCritical(e, "Local database error.");
                 throw;
             }
-            if (_count > 0)
+            if (count > 0)
             {
                 _logger.LogDebug("Data of type {type} saved to local database.", targetType.ToString().Split('.').Last());
             }
             return Task.CompletedTask;
         }
 
-        Message CreateBlobMessage (IMessage message)
+        static Message CreateBlobMessage (IMessage message)
         {
             // Create json to be stored as string in MessageBody field of a Message.
             message.Id = null;
             message.IsProcessed = null;
-            string _jsonData = JsonConvert.SerializeObject(
+            string jsonData = JsonConvert.SerializeObject(
                 message, 
                 new JsonSerializerSettings 
                 { 
                     NullValueHandling = NullValueHandling.Ignore 
                 });
-            var _message = JsonConvert.DeserializeObject<Message>(_jsonData);
-            _message.Id = 0;
-            _message.IsProcessed = false;
-            _message.MessageBody = _jsonData;
-            return _message;
+            var blobMessage = JsonConvert.DeserializeObject<Message>(jsonData);
+            blobMessage.Id = 0;
+            blobMessage.IsProcessed = false;
+            blobMessage.MessageBody = jsonData;
+            return blobMessage;
         }
 
-        bool IsDuplicate(Weather message)
+        private bool IsDuplicate(Weather message)
         {
             try
             {
-                return _dbContext.Messages.Where(m => m.CreatedOn == message.CreatedOn).Count() > 0;
+                return _dbContext.Messages.Any(m => m.CreatedOn == message.CreatedOn);
             }
             catch (Exception e)
             {

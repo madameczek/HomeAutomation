@@ -1,16 +1,14 @@
-﻿using IotHubGateway.Services;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using IotHubGatewayDaemon.Services;
+using Microsoft.Extensions.Configuration;
 
-namespace IotHubGateway.Controllers
+namespace IotHubGatewayDaemon.Controllers
 {
     public class MainController
     {
-        IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
         private readonly LocalQueue _localQueue;
         public MainController(LocalQueue localQueue, IConfiguration configuration) 
         {
@@ -32,9 +30,9 @@ namespace IotHubGateway.Controllers
                     // deal with queues: read one/write another
                     try 
                     { 
-                    await _localQueue.CopyNewLocalMessagesToRemote(ct);
-                    await _localQueue.CopyNewLocalTemperaturesToRemote(ct);
-                    await _localQueue.CopyNewLocalWeatherReadingsToRemote(ct);
+                        await _localQueue.CopyNewLocalMessagesToRemote(ct);
+                        await _localQueue.CopyNewLocalTemperaturesToRemote(ct);
+                        await _localQueue.CopyNewLocalWeatherReadingsToRemote(ct);
                     }
                     catch { Console.WriteLine("Czekamy na kolejną szansę"); }
                     await Task.Delay(60000, ct);

@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 
 namespace HomeAutomationWebApp.Controllers
 {
@@ -71,11 +72,11 @@ namespace HomeAutomationWebApp.Controllers
             var random = new Random();
             var user = new IotUser()
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
+                Firstname = model.FirstName,
+                Lastname = model.LastName,
                 Email = model.Email
             };
-            user.UserName = $"{user.FirstName}{user.LastName}";
+            user.UserName = $"{user.Firstname}{user.Lastname}";
             user.UserName = RemoveDiacritics(user.UserName);
             user.UserName = RemoveNotLetterNorDigit(user.UserName);
             user.UserName += random.Next(1000).ToString("D3");
@@ -214,14 +215,13 @@ namespace HomeAutomationWebApp.Controllers
         }
 
         [Authorize]
-        public IActionResult Manage()
+        public async Task<IActionResult> Manage()
         {
-            var user = _userManager.GetUserAsync(User);
-            ViewBag.Phone = _userManager.GetPhoneNumberAsync(user.Result).Result;
-            ViewBag.Email = _userManager.GetEmailAsync(user.Result).Result;
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+            var json = JsonConvert.SerializeObject(user);
+            var model = JsonConvert.DeserializeObject<ManageViewModel>(json);
+            return View(model);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -1,21 +1,19 @@
-﻿using IotHubGateway.Contexts;
-using IotHubGateway.Controllers;
-using IotHubGateway.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog.Core;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
+using IotHubGatewayDaemon.Contexts;
+using IotHubGatewayDaemon.Controllers;
+using IotHubGatewayDaemon.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using System.Diagnostics;
+using Serilog.Core;
 
-namespace IotHubGateway
+namespace IotHubGatewayDaemon
 {
     class Program
     {
-        static async Task<int> Main()
+        private static async Task<int> Main()
         {
 #if DEBUG
             // Uncomment for debuging.
@@ -62,10 +60,16 @@ namespace IotHubGateway
                         await serviceLauncher.ConfigureServicesAsync(cts.Token);
                         await serviceLauncher.StartServicesAsync(cts.Token);
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
-            catch(Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
             #region Finalizing
             finally
             {
@@ -86,7 +90,7 @@ namespace IotHubGateway
             return configuration;
         }
 
-        private static IServiceProvider RegisterServices(Logger logger)
+        private static IServiceProvider RegisterServices(ILogger logger)
         {
             var services = new ServiceCollection();
             services.AddSingleton(GetConfigurationObject());

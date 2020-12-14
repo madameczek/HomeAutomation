@@ -1,9 +1,9 @@
-﻿using IotHubGateway.Models;
+﻿using System;
+using IotHubGatewayDaemon.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
 
-namespace IotHubGateway.Contexts
+namespace IotHubGatewayDaemon.Contexts
 {
     public class LocalContext : DbContext
     {

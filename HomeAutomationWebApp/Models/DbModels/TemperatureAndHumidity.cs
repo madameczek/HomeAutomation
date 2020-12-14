@@ -6,10 +6,12 @@ namespace HomeAutomationWebApp.Models.DbModels
 {
     public class TemperatureAndHumidity
     {
+        private DateTime _createdOn;
+
         [Key]
         public int Id { get; set; }
         [Required]
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime CreatedOn { get => _createdOn.ToLocalTime(); set => _createdOn = value.ToUniversalTime(); }
         [Required]
         public bool IsProcessed { get; set; }
         public double? Temperature { get; set; }

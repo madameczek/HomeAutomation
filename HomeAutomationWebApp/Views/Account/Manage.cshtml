@@ -11,28 +11,28 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Firstname)
         </dt>
         <dd class="col-sm-10">
-            @User.Identity.Name.Substring(0, User.Identity.Name.IndexOf('_'))
+            @Model.Firstname 
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Surname)
+            @Html.DisplayNameFor(model => model.Lastname)
         </dt>
         <dd class="col-sm-10">
-            @User.Identity.Name.Substring(User.Identity.Name.IndexOf('_') + 1)
+            @Model.Lastname
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Email)
         </dt>
         <dd class="col-sm-10">
-            @ViewBag.Email
+            @Model.Email
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.PhoneNumber)
         </dt>
         <dd class="col-sm-10">
-            @ViewBag.Phone
+            @Model.PhoneNumber
         </dd>
     </dl>
 </div>

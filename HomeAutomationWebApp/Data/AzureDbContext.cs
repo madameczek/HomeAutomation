@@ -100,7 +100,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 1,
-                  UpdatedOn = DateTime.Now,
+                  UpdatedOn = new DateTime(2020, 10, 31),
                   ConfigurationJson = "",
                   ActorId = new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432")
               });
@@ -108,7 +108,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 2,
-                  UpdatedOn = DateTime.Now,
+                  UpdatedOn = new DateTime(2020, 10, 31),
                   ConfigurationJson = "",
                   ActorId = new Guid("429060a5-7e97-4227-aa44-25999f13536f")
               });
@@ -116,7 +116,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 3,
-                  UpdatedOn = DateTime.Now,
+                  UpdatedOn = new DateTime(2020, 10, 31),
                   ConfigurationJson = "",
                   ActorId = new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8")
               });
@@ -124,7 +124,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 4,
-                  UpdatedOn = DateTime.Now,
+                  UpdatedOn = new DateTime(2020, 10, 31),
                   ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
                   ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2")
               });
@@ -132,7 +132,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 5,
-                  UpdatedOn = DateTime.Now,
+                  UpdatedOn = new DateTime(2020, 10, 31),
                   ConfigurationJson = "",
                   ActorId = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1")
               });
@@ -140,7 +140,7 @@ namespace HomeAutomationWebApp.Data
               (new ActorConfiguration
               {
                   Id = 6,
-                  UpdatedOn = DateTime.Now,
+                  UpdatedOn = new DateTime(2020, 10, 31),
                   ConfigurationJson = "",
                   ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576")
               });

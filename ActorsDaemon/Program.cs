@@ -17,7 +17,7 @@ namespace ActorsDaemon
         public static void Main(string[] args)
         {
 #if DEBUG
-            // uncomment for debuging
+            // uncomment for remote debuging
             /*for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");

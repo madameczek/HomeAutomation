@@ -10,10 +10,10 @@ namespace HomeAutomationWebApp.Models.DbModels
     public class IotUser : IdentityUser
     {
         [StringLength(100)]
-        public string FirstName { get; set; }
+        public string Firstname { get; set; }
 
         [StringLength(100)]
-        public string LastName { get; set; }
+        public string Lastname { get; set; }
 
         // Relationships
         public ICollection<Gateway> Gateways { get; set; }

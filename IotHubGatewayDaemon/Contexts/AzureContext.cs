@@ -1,11 +1,9 @@
-﻿using IotHubGateway.Models;
+﻿using System;
+using IotHubGatewayDaemon.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace IotHubGateway.Contexts
+namespace IotHubGatewayDaemon.Contexts
 {
     public class AzureContext : DbContext
     {

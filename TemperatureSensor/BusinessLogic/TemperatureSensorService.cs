@@ -70,8 +70,8 @@ namespace TemperatureSensor
                     File.ReadAllText(_hwSettings.BasePath + _hwSettings.HWSerial + @"/temperature"), ct);
                 if (data != null)
                 {
-                    bool _result = int.TryParse(data.Trim(), out int _tempReading);
-                    if (_result)
+                    var result = int.TryParse(data.Trim(), out int _tempReading);
+                    if (result)
                     {
                         lock (_temperatureLock)
                         {
@@ -105,19 +105,19 @@ namespace TemperatureSensor
         public IMessage GetMessage()
         {
             // Cut milliseconds for shorter storage in message body as json.
-            DateTimeOffset _time = DateTimeOffset.Now;
-            _time = _time.AddTicks(-(_time.Ticks % TimeSpan.TicksPerSecond));
+            var time = DateTime.Now;
+            time = time.AddTicks(-(time.Ticks % TimeSpan.TicksPerSecond));
 
             // Temporary object with readings to be serialized.
-            IMessage _tempMessage = new TemperatureSensorData()
+            IMessage tempMessage = new TemperatureSensorData()
             {
                 Id = 0,
-                CreatedOn = _time,
+                CreatedOn = time,
                 IsProcessed = false,
                 ActorId = _hwSettings.DeviceId,
                 Temperature = _temperature
             };
-            return _tempMessage;
+            return tempMessage;
         }
 
         public async Task SaveMessageAsync(CancellationToken ct)

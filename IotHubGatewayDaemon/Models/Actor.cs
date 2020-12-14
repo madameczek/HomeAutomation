@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Configuration;
-using System.Text;
 
-namespace IotHubGateway.Models
+namespace IotHubGatewayDaemon.Models
 {
     public class Actor
     {

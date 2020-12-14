@@ -8,7 +8,7 @@ namespace HomeAutomationWebApp.Models.DbModels
         [Key]
         public int Id { get; set; }
         [Required]
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         [Required]
         public bool IsProcessed { get; set; }
         public double? AirTemperature { get; set; }

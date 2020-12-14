@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace IotHubGateway.Models
+namespace IotHubGatewayDaemon.Models
 {
     public class Gateway
     {

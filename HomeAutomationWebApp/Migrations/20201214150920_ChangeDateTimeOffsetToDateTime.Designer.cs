@@ -4,14 +4,16 @@ using HomeAutomationWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HomeAutomationWebApp.Migrations
 {
     [DbContext(typeof(AzureDbContext))]
-    partial class AzureDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201214150920_ChangeDateTimeOffsetToDateTime")]
+    partial class ChangeDateTimeOffsetToDateTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,42 +108,42 @@ namespace HomeAutomationWebApp.Migrations
                             Id = 1,
                             ActorId = new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 12, 14, 17, 5, 56, 37, DateTimeKind.Local).AddTicks(5445)
+                            UpdatedOn = new DateTime(2020, 12, 14, 16, 9, 19, 622, DateTimeKind.Local).AddTicks(6905)
                         },
                         new
                         {
                             Id = 2,
                             ActorId = new Guid("429060a5-7e97-4227-aa44-25999f13536f"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 12, 14, 17, 5, 56, 40, DateTimeKind.Local).AddTicks(1002)
+                            UpdatedOn = new DateTime(2020, 12, 14, 16, 9, 19, 625, DateTimeKind.Local).AddTicks(3998)
                         },
                         new
                         {
                             Id = 3,
                             ActorId = new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 12, 14, 17, 5, 56, 40, DateTimeKind.Local).AddTicks(1093)
+                            UpdatedOn = new DateTime(2020, 12, 14, 16, 9, 19, 625, DateTimeKind.Local).AddTicks(4088)
                         },
                         new
                         {
                             Id = 4,
                             ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"),
                             ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
-                            UpdatedOn = new DateTime(2020, 12, 14, 17, 5, 56, 40, DateTimeKind.Local).AddTicks(1123)
+                            UpdatedOn = new DateTime(2020, 12, 14, 16, 9, 19, 625, DateTimeKind.Local).AddTicks(4118)
                         },
                         new
                         {
                             Id = 5,
                             ActorId = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 12, 14, 17, 5, 56, 40, DateTimeKind.Local).AddTicks(1151)
+                            UpdatedOn = new DateTime(2020, 12, 14, 16, 9, 19, 625, DateTimeKind.Local).AddTicks(4187)
                         },
                         new
                         {
                             Id = 6,
                             ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 12, 14, 17, 5, 56, 40, DateTimeKind.Local).AddTicks(1181)
+                            UpdatedOn = new DateTime(2020, 12, 14, 16, 9, 19, 625, DateTimeKind.Local).AddTicks(4220)
                         });
                 });
 
@@ -334,21 +336,21 @@ namespace HomeAutomationWebApp.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "b91fe005-a409-4f68-8761-e496a5aab3be",
+                            ConcurrencyStamp = "0d9ad7a2-ea0f-4851-94a2-8a9ade314dfb",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "6c2c292e-d44f-49dd-9590-9d931f9a64fd",
+                            ConcurrencyStamp = "2e5223ca-be01-4a5c-8ed3-fe838c593e00",
                             Name = "SiteManager",
                             NormalizedName = "SITEMANAGER"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "c5be0dd8-bde3-416a-a063-d3a3172c9083",
+                            ConcurrencyStamp = "39218674-8a4d-46bb-a5d1-e7c7ba9d2c94",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -533,11 +535,11 @@ namespace HomeAutomationWebApp.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("Firstname")
+                    b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<string>("Lastname")
+                    b.Property<string>("LastName")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 

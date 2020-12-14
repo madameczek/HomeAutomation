@@ -1,9 +1,6 @@
-﻿using IotHubGateway.Contexts;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using IotHubGatewayDaemon.Contexts;
 
-namespace IotHubGateway.Services
+namespace IotHubGatewayDaemon.Services
 {
     class RemoteQueue
     {

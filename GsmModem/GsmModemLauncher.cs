@@ -1,9 +1,7 @@
-﻿using GsmModem.Models;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Shared.Models;
@@ -13,7 +11,6 @@ namespace GsmModem
     public class GsmModemLauncher : IHostedService, IDisposable
     {
         private Timer _readModemTimer;
-        //private Task _modemReadTask;
         private readonly List<Task> _tasks = new List<Task>();
         
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
@@ -61,7 +58,6 @@ namespace GsmModem
 
         private void ReadModem(object state)
         {
-            //var modemReadTask = _gsmService.ReadDeviceAsync(_stoppingCts.Token);
             _tasks.Add(_gsmService.ReadDeviceAsync(_stoppingCts.Token));
         }
 

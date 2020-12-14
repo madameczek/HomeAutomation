@@ -13,7 +13,7 @@ namespace HomeAutomationWebApp.Services
             var result = _emailService.SendAsync(
                 user.Email,
                 //"marek@adameczek.pl",
-                $"{user.FirstName}, confirm your registration",
+                $"{user.Firstname}, confirm your registration",
                 $"<h3>Kliknij link, by potwierdzić rejestrację do serwisu 'Home Automation'</h3><br />" +
                 $"<a href=\"{confirmationLink}\">Potwierdź adres email</a><br />" +
                 $"Zignoruj tę wiadomość, jeśli nie donowywałeś(aś) rejestracji.",
@@ -29,7 +29,7 @@ namespace HomeAutomationWebApp.Services
         {
             _emailService.SendAsync(
                 user.Email,
-                $"{user.FirstName}, zlecono zmianę hasła",
+                $"{user.Firstname}, zlecono zmianę hasła",
                 "<h3>Otrzymujesz ten email, bo uruchomiono opcję resetowania hasła do serwisu 'Home Automation'</h3><br />" +
                 $"Kliknij <a href=\"{confirmationLink}\">link</a>, by potwierdzić operację<br />" +
                 "Nastąpi przekierowanie do formularza zmiany hasła.<br />" +
