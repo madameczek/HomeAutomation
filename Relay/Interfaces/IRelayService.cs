@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Relays
+namespace Relay
 {
     public class IRelayService
     {

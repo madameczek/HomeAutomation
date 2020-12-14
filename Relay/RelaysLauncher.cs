@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-
-namespace Relays
+namespace Relay
 {
     public class RelaysLauncher : IHostedService, IDisposable
     {
@@ -16,7 +15,7 @@ namespace Relays
         private readonly IRelayService _relayService;
         public RelaysLauncher(ILoggerFactory loggerFactory, IRelayService service)
         {
-            _logger = loggerFactory.CreateLogger("Relays Launcher");
+            _logger = loggerFactory.CreateLogger("Relay Launcher");
             _relayService = service;
         }
         #endregion

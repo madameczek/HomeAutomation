@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer", "DataLayer\DataLayer.csproj", "{8D5CB959-AC37-48A1-B56C-8977F8AD09A2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relay", "Relay\Relay.csproj", "{23BC951C-640E-43C5-95C8-7A061F8E64CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{8D5CB959-AC37-48A1-B56C-8977F8AD09A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D5CB959-AC37-48A1-B56C-8977F8AD09A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D5CB959-AC37-48A1-B56C-8977F8AD09A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23BC951C-640E-43C5-95C8-7A061F8E64CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23BC951C-640E-43C5-95C8-7A061F8E64CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23BC951C-640E-43C5-95C8-7A061F8E64CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23BC951C-640E-43C5-95C8-7A061F8E64CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{93146B93-E1B5-404A-A5F3-85A2B631AA33} = {68D17372-878F-4320-96BB-A2EC445EF7A5}
 		{58A974B2-E9EA-4DE0-A587-A99A12D5AF81} = {68D17372-878F-4320-96BB-A2EC445EF7A5}
 		{2B9F8E19-6F00-4E46-9A58-27A8E7877160} = {68D17372-878F-4320-96BB-A2EC445EF7A5}
+		{23BC951C-640E-43C5-95C8-7A061F8E64CD} = {68D17372-878F-4320-96BB-A2EC445EF7A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {374DB276-3DCB-4C07-B9A5-7E8B0756483A}
