@@ -25,27 +25,25 @@ namespace ActorsDaemon
                 Task.Delay(3000).Wait();
             }*/
 #endif
-            Log.Logger = new LoggerConfiguration()
-                //.ReadFrom.Configuration(configuration.GetSection("Serilog"))
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .Enrich.FromLogContext()
-                .WriteTo.File(
-                    AppDomain.CurrentDomain.BaseDirectory + @"/Actors-log-.txt",
-                    restrictedToMinimumLevel: LogEventLevel.Debug,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
-                    rollingInterval: RollingInterval.Month)
-#if DEBUG
-                .WriteTo.Console(
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
-                    restrictedToMinimumLevel: LogEventLevel.Debug)
-#endif
-                .CreateLogger();
 
             try
             {
+                var host = CreateHostBuilder(args).Build();
+                var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+                Log.Logger = new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    // can't get file sink working when configuration is fetched from IConfiguration object above
+                    // Therefore it is configured below
+                    .WriteTo.File(
+                        AppDomain.CurrentDomain.BaseDirectory + @"/Actors-log-.txt",
+                        restrictedToMinimumLevel: LogEventLevel.Debug,
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+                        rollingInterval: RollingInterval.Month)
+                    .CreateLogger();
                 Log.Information("Actor application is starting up");
-                CreateHostBuilder(args).Build().Run();
+
+                host.Run();
             }
             catch (Exception e)
             {

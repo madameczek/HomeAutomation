@@ -42,7 +42,7 @@ namespace GsmModem
                 return Task.FromResult(_port);
             }
             _logger.LogError("Port not configured. Available ports: {Ports}", SerialPort.GetPortNames().ToList());
-            return Task.FromException<SerialPort>(new IOException());
+            return Task.FromException<SerialPort>(new IOException("Requested port not available"));
         }
     }
 }

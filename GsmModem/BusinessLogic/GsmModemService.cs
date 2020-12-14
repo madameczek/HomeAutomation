@@ -44,7 +44,9 @@ namespace GsmModem
 
         public IHwSettings GetSettings()
         {
-            return _hwSettings =_configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<GsmModemHwSettings>();
+            return _hwSettings =_configuration
+                .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}")
+                .Get<GsmModemHwSettings>();
         }
 
         public async Task<IHwSettings> ConfigureService(CancellationToken ct)
@@ -54,9 +56,7 @@ namespace GsmModem
                  _port = await _portProvider.GetPort(_hwSettings);
                 await _device.Initialize(_port);
             }
-            catch (OperationCanceledException)
-            {
-            }
+            catch (OperationCanceledException) { }
             catch (IOException)
             {
                 throw;
