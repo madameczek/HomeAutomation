@@ -12,16 +12,9 @@ namespace TemperatureSensor
     {
         private Timer _readSensorTimer;
         private Timer _saveReadingToDatabaseTimer;
-        //private Task _readSensorTask;
-        //private Task _saveReadingToDatabaseTask;
         private readonly List<Task> _tasks = new List<Task>();
 
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
-        private ITemperatureSensorHwSettings _hwSettings = new TemperatureSensorHwSettings() 
-        { 
-            ReadInterval = 30, 
-            DatabasePushPeriod = 1200 
-        };
 
         #region Ctor & Dependency Injection
         private readonly ILogger _logger;
@@ -35,30 +28,29 @@ namespace TemperatureSensor
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _hwSettings = (ITemperatureSensorHwSettings)_temperatureSensorService.GetSettings();
+            var hwSettings = (ITemperatureSensorHwSettings)_temperatureSensorService.GetSettings();
             try
             {
-                if (_hwSettings.Attach)
+                if (hwSettings.Attach)
                 {
-                    _ = (ITemperatureSensorHwSettings)await _temperatureSensorService.ConfigureService(cancellationToken);
-
+                    await _temperatureSensorService.ConfigureService(cancellationToken);
                     _readSensorTimer = new Timer(
                         ReadSensor,
                         null,
                         TimeSpan.FromMilliseconds(100),
-                        TimeSpan.FromSeconds(_hwSettings.ReadInterval));
+                        TimeSpan.FromSeconds(hwSettings.ReadInterval));
                     _saveReadingToDatabaseTimer = new Timer(
                         SaveToDatabase,
                         null,
                         // Wait for sensor data before save to database
                         TimeSpan.FromMilliseconds(3000),
-                        TimeSpan.FromSeconds(_hwSettings.DatabasePushPeriod));
-                    _logger.LogDebug("Configured with sensor read period: {sensorReadPeriod}sec.", _hwSettings.ReadInterval);
-                    _logger.LogDebug("Configured with database save period: {databasePushPeriod}sec", _hwSettings.DatabasePushPeriod);
+                        TimeSpan.FromMinutes(hwSettings.DatabasePushPeriod));
+                    _logger.LogDebug("Configured with sensor read period: {sensorReadPeriod} sec.", hwSettings.ReadInterval);
+                    _logger.LogDebug("Configured with database save period: {databasePushPeriod} min", hwSettings.DatabasePushPeriod);
                 }
                 else
                 {
-                    _logger.LogDebug("Not attached");
+                    _logger.LogDebug("Service not initialized. Device not configured.");
                 }
             }
             catch (OperationCanceledException)
@@ -73,13 +65,11 @@ namespace TemperatureSensor
 
         private void ReadSensor(object state)
         {
-            //var readSensorTask = _temperatureSensorService.ReadDeviceAsync(_stoppingCts.Token);
             _tasks.Add(_temperatureSensorService.ReadDeviceAsync(_stoppingCts.Token));
         }
 
         private void SaveToDatabase(object state)
         {
-            //var saveReadingToDatabaseTask = _temperatureSensorService.SaveMessageAsync(_stoppingCts.Token);
             _tasks.Add(_temperatureSensorService.SaveMessageAsync(_stoppingCts.Token));
         }
 

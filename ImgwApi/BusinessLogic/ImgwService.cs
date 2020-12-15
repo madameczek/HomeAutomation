@@ -44,11 +44,10 @@ namespace ImgwApi
             return _hwSettings = _configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<ImgwHwSettings>();
         }
 
-        public Task<IHwSettings> ConfigureService(CancellationToken cancellationToken)
+        public Task ConfigureService(CancellationToken cancellationToken)
         {
-            _hwSettings = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).Get<ImgwHwSettings>(); // redundant
             _dataFieldNames = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).GetSection("Fields").Get<Dictionary<string, string>>();
-            return Task.FromResult(_hwSettings);
+            return Task.CompletedTask;
         }
 
         public async Task ReadDeviceAsync(CancellationToken ct)
@@ -69,11 +68,11 @@ namespace ImgwApi
             }
             catch (OperationCanceledException) 
             { 
-                _logger.LogDebug("Cancelled"); 
+                _logger.LogDebug("Cancelled."); 
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Service crashed");
+                _logger.LogCritical(e, "Service crashed.");
                 _deviceReadingIsValid = false;
                 await Task.FromException(e);
             }
@@ -103,6 +102,8 @@ namespace ImgwApi
                     StationName = _rawData[_dataFieldNames["StationName"]]
                 };
             }
+
+            tempMessage.CreatedOn = DateTime.SpecifyKind(tempMessage.CreatedOn, DateTimeKind.Local);
             return tempMessage;
         }
 
@@ -114,7 +115,6 @@ namespace ImgwApi
                 {
                     using var scope = _services.CreateScope();
                     var scopedService = scope.ServiceProvider.GetRequiredService<LocalQueue>();
-                    //_logger.LogDebug("Scoped service Hash: {LocalQueueHash}", scopedService.GetHashCode());
                     await scopedService.AddMessage(GetMessage(), typeof(Weather));
                 }
                 catch (OperationCanceledException)

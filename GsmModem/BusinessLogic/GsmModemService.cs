@@ -38,8 +38,8 @@ namespace GsmModem
         private readonly string _messageToDbPushPeriodSeconds = "GsmMessagePushPeriod";
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
-        private static readonly Object _messageLock = new object();
-        private static readonly Object _portLock = new object();
+        private static readonly object _messageLock = new object();
+        private static readonly object _portLock = new object();
         private bool _deviceReadingIsValid = false;
 
         public IHwSettings GetSettings()
@@ -49,7 +49,7 @@ namespace GsmModem
                 .Get<GsmModemHwSettings>();
         }
 
-        public async Task<IHwSettings> ConfigureService(CancellationToken ct)
+        public async Task ConfigureService(CancellationToken ct)
         {
             try
             {
@@ -66,7 +66,6 @@ namespace GsmModem
                 _logger.LogError(e, "Service configuration error");
             }
 
-            return _hwSettings;
         }
 
         public IMessage GetMessage()

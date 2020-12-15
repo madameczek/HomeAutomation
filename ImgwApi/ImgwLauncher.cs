@@ -12,9 +12,6 @@ namespace ImgwApi
     public class ImgwLauncher : IHostedService, IDisposable
     {
         private Timer _readImgwTimer;
-        //private Timer _saveReadingToDatabaseTimer;
-        //private Task _readImgwTask;
-        //private Task _saveReadingToDatabaseTask;
         private readonly List<Task> _tasks = new List<Task>();
 
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
@@ -37,18 +34,18 @@ namespace ImgwApi
             {
                 if (_hwSettings.Attach)
                 {
-                    _ = await _imgwService.ConfigureService(cancellationToken);
+                    await _imgwService.ConfigureService(cancellationToken);
 
                     _readImgwTimer = new Timer(
                         FetchAndStoreWeather,
                         null,
                         TimeSpan.FromMilliseconds(100),
                         TimeSpan.FromMinutes(_hwSettings.ReadInterval));
-                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod}min", _hwSettings.ReadInterval);
+                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod} min", _hwSettings.ReadInterval);
                 }
                 else
                 {
-                    _logger.LogDebug("Not attached");
+                    _logger.LogDebug("Service not initialized. Device not configured.");
                 }
             }
             catch (OperationCanceledException)
@@ -68,7 +65,7 @@ namespace ImgwApi
             readImgwTask.Wait(_stoppingCts.Token);
             if (readImgwTask.Exception != null) return;
             var saveReadingToDatabaseTask = _imgwService.SaveMessageAsync(_stoppingCts.Token);
-            _tasks.Add(readImgwTask);
+            _tasks.Add(saveReadingToDatabaseTask);
             saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
         }
 

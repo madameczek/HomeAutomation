@@ -10,7 +10,8 @@ namespace Shared.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// True if device should connected to a service.
+        /// True if device should be connected to a service.
+        /// If false, service isn't initialised.
         /// </summary>
         public bool Attach { get; set; }
         public string Interface { get; set; }

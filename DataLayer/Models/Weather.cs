@@ -9,6 +9,8 @@ namespace DataAccessLayer.Models
 
         [Key]
         public int Id { get; set; }
+        
+        // In database dates are stored as UTC.
         [Required]
         public DateTime CreatedOn { get => _createdOn.ToLocalTime(); set => _createdOn = value.ToUniversalTime(); }
         [Required]

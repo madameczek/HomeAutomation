@@ -31,10 +31,10 @@ namespace TemperatureSensor
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "TemperatureSensor";
         private ITemperatureSensorHwSettings _hwSettings = new TemperatureSensorHwSettings();
-        private readonly string _serviceSettings = "Services:DatabasePooling";
-        private readonly string _messageToDbPushPeriodSeconds = "TemperatureMessagePushPeriod";
+        private const string ServiceSettings = "Services:DatabasePooling";
+        private const string MessageToDbPushPeriodSeconds = "TemperatureMessagePushPeriod";
 
-        private static readonly Object _temperatureLock = new object();
+        private static readonly object _temperatureLock = new object();
         private double _temperature;
         private bool _deviceReadingIsValid;
 
@@ -43,23 +43,9 @@ namespace TemperatureSensor
             return _hwSettings = _configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<TemperatureSensorHwSettings>();
         }
 
-        public Task<IHwSettings> ConfigureService(CancellationToken cancellationToken)
+        public Task ConfigureService(CancellationToken cancellationToken)
         {
-            try
-            {
-                _hwSettings = _configuration
-                    .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<TemperatureSensorHwSettings>(); // redundant
-                var serviceSettings = _configuration.GetSection(_serviceSettings).Get<Dictionary<string, int>>();
-                if (serviceSettings.TryGetValue(_messageToDbPushPeriodSeconds, out var value))
-                {
-                    if (value * 1000 < int.MaxValue)
-                    {
-                        (_hwSettings).DatabasePushPeriod = value;
-                    }
-                }
-            }
-            catch (Exception) { throw; }
-            return Task.FromResult((IHwSettings)_hwSettings);
+            return Task.CompletedTask;
         }
 
         public async Task ReadDeviceAsync(CancellationToken ct)
@@ -67,7 +53,7 @@ namespace TemperatureSensor
             try
             {
                 string data = await Task.Run(() =>
-                    File.ReadAllText(_hwSettings.BasePath + _hwSettings.HWSerial + @"/temperature"), ct);
+                    File.ReadAllText(_hwSettings.BasePath + _hwSettings.HwSerial + @"/temperature"), ct);
                 if (data != null)
                 {
                     var result = int.TryParse(data.Trim(), out int _tempReading);
@@ -91,7 +77,7 @@ namespace TemperatureSensor
             {
                 _logger.LogCritical(
                     "Can't find device directory {tempSensorDirectory}", 
-                    (_hwSettings.BasePath + _hwSettings.HWSerial).ToString());
+                    (_hwSettings.BasePath + _hwSettings.HwSerial).ToString());
                 _deviceReadingIsValid = false;
             }
             catch (Exception e)

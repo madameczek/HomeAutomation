@@ -21,13 +21,10 @@ namespace DataAccessLayer
 
         public Task AddMessage(IMessage message, Type targetType)
         {
-            // Strange looking manipulations to change type from those used by devices to 'Message' used in DbSet.
-            // I.e time zone offset is removed from DateTimeOffest type in original message, 
-            // because MariaDb makes unwanted computatiom to UTC. But deserialisation to target type gives back the offset.
-
+            // Json serialization/deserialization is used to change type from those used by devices to 'Message' used in DbSet.
             // Serialized object will be used as proto to deserialize onto target type
-            // depending on required data type and then target type will be stored in a database.
-            string json = JsonConvert.SerializeObject(message);
+            // depending on required data type, and then target type will be stored in a database.
+            var json = JsonConvert.SerializeObject(message);
             var dbMessage = JsonConvert.DeserializeObject(json, targetType);
 
             var isDuplicate = false;
@@ -46,7 +43,7 @@ namespace DataAccessLayer
             }
             else
             {
-                _logger.LogWarning("Unknow type requested");
+                _logger.LogWarning("Unknow type requested.");
                 return Task.CompletedTask;
             }
 
@@ -74,12 +71,12 @@ namespace DataAccessLayer
             return Task.CompletedTask;
         }
 
-        static Message CreateBlobMessage (IMessage message)
+        private static Message CreateBlobMessage (IMessage message)
         {
             // Create json to be stored as string in MessageBody field of a Message.
             message.Id = null;
             message.IsProcessed = null;
-            string jsonData = JsonConvert.SerializeObject(
+            var jsonData = JsonConvert.SerializeObject(
                 message, 
                 new JsonSerializerSettings 
                 { 
@@ -100,7 +97,7 @@ namespace DataAccessLayer
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Local database Error");
+                _logger.LogCritical(e, "Local database Error.");
                 return false;
             }
         }

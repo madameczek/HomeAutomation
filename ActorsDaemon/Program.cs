@@ -6,8 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
 using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using TemperatureSensor;
 
 namespace ActorsDaemon
@@ -18,12 +19,12 @@ namespace ActorsDaemon
         {
 #if DEBUG
             // uncomment for remote debuging
-            /*for (; ; )
+            for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");
                 if (Debugger.IsAttached) break;
                 Task.Delay(3000).Wait();
-            }*/
+            }
 #endif
 
             try
@@ -33,13 +34,6 @@ namespace ActorsDaemon
 
                 Log.Logger = new LoggerConfiguration()
                     .ReadFrom.Configuration(configuration)
-                    // can't get file sink working when configuration is fetched from IConfiguration object above
-                    // Therefore it is configured below
-                    .WriteTo.File(
-                        AppDomain.CurrentDomain.BaseDirectory + @"/Actors-log-.txt",
-                        restrictedToMinimumLevel: LogEventLevel.Debug,
-                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
-                        rollingInterval: RollingInterval.Month)
                     .CreateLogger();
                 Log.Information("Actor application is starting up");
 

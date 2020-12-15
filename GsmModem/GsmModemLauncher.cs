@@ -33,7 +33,7 @@ namespace GsmModem
             {
                 if (_hwSettings.Attach)
                 {
-                    _ = await _gsmService.ConfigureService(cancellationToken);
+                    await _gsmService.ConfigureService(cancellationToken);
 
                     _readModemTimer = new Timer(
                         ReadModem,
@@ -43,7 +43,7 @@ namespace GsmModem
                 }
                 else
                 {
-                    _logger.LogDebug("Not attached");
+                    _logger.LogDebug("Service not initialized. Device not configured.");
                 }
             }
             catch (OperationCanceledException)

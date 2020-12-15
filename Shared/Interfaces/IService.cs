@@ -11,9 +11,14 @@ namespace Shared
         public string HwSettingsSection { get; }
         public string HwSettingsCurrentActorSection { get; }
 
+        /// <summary>
+        /// This method is responsible for fetching settings from IConfiguration object.
+        /// It must be called before Task ConfigureService(CancellationToken ct)
+        /// </summary>
+        /// <returns></returns>
         public IHwSettings GetSettings();
 
-        public Task<IHwSettings> ConfigureService(CancellationToken ct);
+        public Task ConfigureService(CancellationToken ct);
 
         /// <summary>
         /// Method is invoked periodically by Launcher object. 

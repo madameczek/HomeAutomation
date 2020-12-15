@@ -15,8 +15,6 @@ namespace ImgwApi.Models
 
         /// <summary>
         /// Interval between subsequent readings of IMGW API in minutes.
-        /// If can't be read from config file, default value is applied.
-        /// Default value is set in service's launcher object for 20 minutes.
         /// </summary>
         public int ReadInterval { get; set; }
         public string Url { get; set; }

@@ -14,13 +14,11 @@ namespace TemperatureSensor.Models
 
         /// <summary>
         /// Interval between subsequent readings of temperature sensor in seconds.
-        /// If can't be read from config file, default value is applied.
-        /// Default value is set in service's launcher object.
         /// </summary>
         public int ReadInterval { get; set; }
         public string Interface { get; set; }
         public string BasePath { get; set; }
-        public string HWSerial { get; set; }
+        public string HwSerial { get; set; }
         public int DatabasePushPeriod { get; set; }
     }
 }
