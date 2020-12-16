@@ -102,7 +102,6 @@ namespace ImgwApi
                     StationName = _rawData[_dataFieldNames["StationName"]]
                 };
             }
-
             tempMessage.CreatedOn = DateTime.SpecifyKind(tempMessage.CreatedOn, DateTimeKind.Local);
             return tempMessage;
         }

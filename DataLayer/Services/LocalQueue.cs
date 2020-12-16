@@ -6,6 +6,7 @@ using Shared.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DataAccessLayer
 {
@@ -13,10 +14,10 @@ namespace DataAccessLayer
     {
         private readonly LocalContext _dbContext;
         private readonly ILogger _logger;
-        public LocalQueue(ILogger<LocalQueue> logger, LocalContext dbContext)
+        public LocalQueue(ILoggerFactory logger, LocalContext dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
+            _logger = logger.CreateLogger("Local Queue");
         }
 
         public Task AddMessage(IMessage message, Type targetType)
@@ -59,11 +60,17 @@ namespace DataAccessLayer
             {
                 count = _dbContext.SaveChanges();
             }
-            catch(Exception e)
+            catch (RetryLimitExceededException e)
             {
-                _logger.LogCritical(e, "Local database error.");
-                throw;
+                _logger.LogWarning("Local database Error. Retry limit exceeded.");
+                return Task.FromException(e);
             }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e, "Local database Error.");
+                return Task.FromException(e);
+            }
+
             if (count > 0)
             {
                 _logger.LogDebug("Data of type {type} saved to local database.", targetType.ToString().Split('.').Last());
@@ -93,12 +100,18 @@ namespace DataAccessLayer
         {
             try
             {
-                return _dbContext.Messages.Any(m => m.CreatedOn == message.CreatedOn);
+                // conversion to UTC is connected with conversion defined in Message model
+                return _dbContext.Messages.Any(m => m.CreatedOn == message.CreatedOn.ToUniversalTime());
+            }
+            catch (RetryLimitExceededException)
+            {
+                _logger.LogWarning("Local database Error. Retry limit exceeded.");
+                return true;
             }
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Local database Error.");
-                return false;
+                return true;
             }
         }
     }

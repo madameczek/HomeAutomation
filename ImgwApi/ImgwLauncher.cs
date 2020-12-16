@@ -35,7 +35,6 @@ namespace ImgwApi
                 if (_hwSettings.Attach)
                 {
                     await _imgwService.ConfigureService(cancellationToken);
-
                     _readImgwTimer = new Timer(
                         FetchAndStoreWeather,
                         null,
