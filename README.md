@@ -12,16 +12,21 @@ The system consists of physical devices and an application. Management and monit
 
 ## Project status as of today
 
-- the hardware platform is running
-- the skeleton of the Raspberry Pi application works
-- electronic modules are integrated: GSM, LCD, input and relay outputs
-- Azure and local database (MariaDb) work
-- web application runs on Azure
-- data is downloaded from the temperature sensor
-- data is downloaded from the weather service
-- GSM Modem is initialised.
+- [x] The hardware platform is running  
+- [x] The skeleton of the Raspberry Pi application works  
+- [x] Electronic modules are integrated: GSM, LCD, input and relay outputs
+- [x] Azure and local database (MariaDb) work
+- [x] Web application runs on Azure
+- [x] Service downloading readings from a temperature sensor stores data in a db on Pi
+- [x] Service downloading readings from the IMGW API stores data in a db on Pi
+- [x] GSM service initialises GSM modem
+- [x] GSM Modem reads test messages sent to it
 
-As you can see, this is an incipient stage, but the feasibility is already proven and the hardware and core software modules have been integrated. It is a hobby project, which will probably be extended in time, and functionalities will be launched according to the developer's own needs ;)
+## Todo next
+
+- [ ] Mostly wanted is relay board actor service controlling outdoor lights on Christmas tree :grinning:
+
+As you can see, this is an incipient stage, but the feasibility is already proven and the hardware and core software modules have been integrated. It is a hobby project, which will probably be extended in time, and functionalities will be launched according to the developer's own needs :grinning:
 
 ## Technologies used
 
@@ -74,4 +79,4 @@ Another set of apps run on Linux as daemons. They manage devices, synchronise lo
 ![DevBoard](RPiDevBoard.png)
 
 ---
-If you have questions, visit my [home page](https://www.adameczek.pl "My Homepage") where contact info can be found :)
+If you have questions, visit my [home page](https://www.adameczek.pl "My Homepage") where contact info can be found :smiley:
