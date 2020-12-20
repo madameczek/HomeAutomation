@@ -8,6 +8,7 @@ using Serilog;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Relay;
 using TemperatureSensor;
 
 namespace ActorsDaemon
@@ -62,6 +63,7 @@ namespace ActorsDaemon
                     services.AddHostedService<TemperatureSensorLauncher>();
                     services.AddHostedService<ImgwLauncher>();
                     services.AddHostedService<GsmModemLauncher>();
+                    services.AddHostedService<RelaysLauncher>();
                     services.AddScoped<LocalQueue>();
                     services.AddSingleton<ITemperatureSensorService, TemperatureSensorService>();
                     services.AddSingleton<IImgwService, ImgwService>();
@@ -69,6 +71,8 @@ namespace ActorsDaemon
                     services.AddDbContext<LocalContext>();
                     services.AddTransient<IPortProvider, PortProvider>();
                     services.AddTransient<IModemDevice, ModemDevice>();
+                    services.AddSingleton<IRelayService, RelayService>();
+                    services.AddSingleton<ISunriseSunsetService, SunriseSunsetService>();
                 })
                 .UseSerilog();
         }

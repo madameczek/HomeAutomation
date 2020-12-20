@@ -3,17 +3,40 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Relay.Models;
 using Shared.Models;
 
 namespace Relay
 {
-    internal class RelayService : IRelayService
+    public class RelayService : IRelayService
     {
-        public string HwSettingsSection { get; }
-        public string HwSettingsCurrentActorSection { get; }
-        public IHwSettings GetSettings()
+        
+
+        #region Dependency Injection
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
+        private readonly IServiceProvider _services;
+        public RelayService(IConfiguration configuration, ILoggerFactory logger, IServiceProvider services)
         {
-            throw new NotImplementedException();
+            _configuration = configuration;
+            _logger = logger.CreateLogger("Relay service");
+            _services = services;
+        }
+        #endregion
+        
+        public string HwSettingsSection { get; } = "HWSettings";
+        public string HwSettingsCurrentActorSection { get; } = "Relay";
+        private List<RelayHwSettings> _hwSettingsList;
+
+        public IHwSettings GetSettings() => throw new NotImplementedException();
+
+        IEnumerable<IHwSettings> IRelayService.GetSettings()
+        {
+            return _hwSettingsList = _configuration
+                .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}")
+                .Get<List<RelayHwSettings>>();
         }
 
         public Task ConfigureService(CancellationToken ct)

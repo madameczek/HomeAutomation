@@ -1,10 +1,11 @@
-﻿using Shared;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Shared.Models;
-using System;
 
-namespace ImgwApi.Models
+namespace Relay.Models
 {
-    public class ImgwHwSettings : IImgwHwSettings
+    public class RelayHwSettings : IHwSettings
     {
         public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }
@@ -13,10 +14,9 @@ namespace ImgwApi.Models
         public string Interface { get; set; }
 
         /// <summary>
-        /// Interval between subsequent readings of IMGW API in minutes.
+        /// Interval between subsequent readings in seconds.
         /// </summary>
         public int ReadInterval { get; set; }
-        public string Url { get; set; }
-        public int StationId { get; set; }
+        public int GpioPin { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DataAccessLayer;
+﻿using DataLayer;
+using DataLayer.Models;
 using ImgwApi.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,8 +12,6 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using DataLayer;
-using DataLayer.Models;
 
 namespace ImgwApi
 {
@@ -33,7 +32,7 @@ namespace ImgwApi
         // Define section of appsettings.json to parse device config from configuration object
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "ImgwApi";
-        private IHwSettings _hwSettings = new ImgwHwSettings();
+        private IImgwHwSettings _hwSettings;
         private Dictionary<string, string> _dataFieldNames;
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
@@ -42,12 +41,17 @@ namespace ImgwApi
 
         public IHwSettings GetSettings()
         {
-            return _hwSettings = _configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<ImgwHwSettings>();
+            return _hwSettings = _configuration
+                .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}")
+                .Get<ImgwHwSettings>();
         }
 
         public Task ConfigureService(CancellationToken cancellationToken)
         {
-            _dataFieldNames = _configuration.GetSection(HwSettingsSection).GetSection(HwSettingsCurrentActorSection).GetSection("Fields").Get<Dictionary<string, string>>();
+            _dataFieldNames = _configuration
+                .GetSection(HwSettingsSection)
+                .GetSection(HwSettingsCurrentActorSection)
+                .GetSection("Fields").Get<Dictionary<string, string>>();
             return Task.CompletedTask;
         }
 

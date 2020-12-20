@@ -40,11 +40,11 @@ namespace ImgwApi
                         null,
                         TimeSpan.FromMilliseconds(100),
                         TimeSpan.FromMinutes(_hwSettings.ReadInterval));
-                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod} min", _hwSettings.ReadInterval);
+                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod} min.", _hwSettings.ReadInterval);
                 }
                 else
                 {
-                    _logger.LogDebug("Service not initialized. Device not configured.");
+                    _logger.LogDebug("Service not initialized.");
                 }
             }
             catch (OperationCanceledException)
@@ -53,7 +53,7 @@ namespace ImgwApi
             }
             catch(Exception e)
             {
-                _logger.LogCritical(e, "Starting service failed");
+                _logger.LogCritical(e, "Starting service failed.");
             }
         }
 

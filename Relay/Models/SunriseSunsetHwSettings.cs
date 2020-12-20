@@ -1,10 +1,11 @@
-﻿using Shared;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Shared.Models;
-using System;
 
-namespace ImgwApi.Models
+namespace Relay.Models
 {
-    public class ImgwHwSettings : IImgwHwSettings
+    internal class SunriseSunsetHwSettings : IHwSettings
     {
         public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }
@@ -13,10 +14,8 @@ namespace ImgwApi.Models
         public string Interface { get; set; }
 
         /// <summary>
-        /// Interval between subsequent readings of IMGW API in minutes.
+        /// Interval between subsequent readings of API in hours.
         /// </summary>
         public int ReadInterval { get; set; }
-        public string Url { get; set; }
-        public int StationId { get; set; }
     }
 }

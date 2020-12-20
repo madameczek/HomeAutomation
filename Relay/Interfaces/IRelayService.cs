@@ -10,6 +10,6 @@ namespace Relay
 {
     public interface IRelayService : IService
     {
-
+        public new IEnumerable<IHwSettings> GetSettings();
     }
 }

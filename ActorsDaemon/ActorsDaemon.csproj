@@ -27,6 +27,7 @@
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
     <ProjectReference Include="..\GsmModem\GsmModem.csproj" />
     <ProjectReference Include="..\ImgwApi\ImgwApi.csproj" />
+    <ProjectReference Include="..\Relay\Relay.csproj" />
     <ProjectReference Include="..\TemperatureSensor\TemperatureSensor.csproj" />
   </ItemGroup>
 
