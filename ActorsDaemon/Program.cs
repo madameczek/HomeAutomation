@@ -1,5 +1,4 @@
-﻿using DataAccessLayer;
-using DataAccessLayer.Contexts;
+﻿using DataLayer;
 using GsmModem;
 using ImgwApi;
 using Microsoft.Extensions.Configuration;
@@ -19,12 +18,12 @@ namespace ActorsDaemon
         {
 #if DEBUG
             // uncomment for remote debuging
-            /*for (; ; )
+            for (; ; )
             {
                 Console.WriteLine("waiting for debugger attach");
                 if (Debugger.IsAttached) break;
                 Task.Delay(3000).Wait();
-            }*/
+            }
 #endif
 
             try

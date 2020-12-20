@@ -1,5 +1,4 @@
 ﻿using DataAccessLayer;
-using DataAccessLayer.Models;
 using ImgwApi.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +11,8 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DataLayer;
+using DataLayer.Models;
 
 namespace ImgwApi
 {
@@ -114,7 +115,7 @@ namespace ImgwApi
                 {
                     using var scope = _services.CreateScope();
                     var scopedService = scope.ServiceProvider.GetRequiredService<LocalQueue>();
-                    await scopedService.AddMessage(GetMessage(), typeof(Weather));
+                    await scopedService.AddMessage(GetMessage(), typeof(Weather), ct);
                 }
                 catch (OperationCanceledException)
                 {

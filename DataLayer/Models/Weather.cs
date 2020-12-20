@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DataAccessLayer.Models
+namespace DataLayer.Models
 {
     public class Weather
     {

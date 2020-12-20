@@ -14,7 +14,7 @@ The system consists of physical devices and an application. Management and monit
 
 - [x] The hardware platform is running  
 - [x] The skeleton of the Raspberry Pi application works  
-- [x] Electronic modules are integrated: GSM, LCD, input and relay outputs
+- [x] Electronic modules are integrated: GSM modem, LCD, temoerature sensor, input switches and relay outputs
 - [x] Azure and local database (MariaDb) work
 - [x] Web application runs on Azure
 - [x] Service downloading readings from a temperature sensor stores data in a db on Pi

@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Shared;
+using Shared.Models;
 
 namespace Relay
 {
-    public class IRelayService
+    public interface IRelayService : IService
     {
+
     }
 }

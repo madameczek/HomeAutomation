@@ -1,15 +1,30 @@
-﻿using DataAccessLayer.Contexts;
-using DataAccessLayer.Models;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DataLayer.Models;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Shared;
 using Shared.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Storage;
 
-namespace DataAccessLayer
+namespace DataLayer
 {
+    public enum DeviceType
+    {
+        None,
+        ActorConfiguration,
+        GsmModem,
+        Input,
+        Message,
+        QueueItemLocal,
+        Relay,
+        SunriseSunset,
+        TemperatureAndHumidity,
+        Weather
+    }
+
     public class LocalQueue
     {
         private readonly LocalContext _dbContext;
@@ -20,7 +35,7 @@ namespace DataAccessLayer
             _logger = logger.CreateLogger("Local Queue");
         }
 
-        public Task AddMessage(IMessage message, Type targetType)
+        public Task AddMessage(IMessage message, Type targetType, CancellationToken ct)
         {
             // Json serialization/deserialization is used to change type from those used by devices to 'Message' used in DbSet.
             // Serialized object will be used as proto to deserialize onto target type
@@ -52,13 +67,13 @@ namespace DataAccessLayer
             // This is for future use.
             if (!isDuplicate)
             {
-                _dbContext.Add(CreateBlobMessage(message));
+                _dbContext.Add(CreateBlobMessage(message, targetType));
             }
 
             int count;
             try
             {
-                count = _dbContext.SaveChanges();
+                count = _dbContext.SaveChangesAsync(cancellationToken: ct).Result;
             }
             catch (RetryLimitExceededException e)
             {
@@ -78,7 +93,7 @@ namespace DataAccessLayer
             return Task.CompletedTask;
         }
 
-        private static Message CreateBlobMessage (IMessage message)
+        private static Message CreateBlobMessage (IMessage message, Type targetType)
         {
             // Create json to be stored as string in MessageBody field of a Message.
             message.Id = null;
@@ -93,6 +108,7 @@ namespace DataAccessLayer
             blobMessage.Id = 0;
             blobMessage.IsProcessed = false;
             blobMessage.MessageBody = jsonData;
+            blobMessage.Type = SetMessageType(targetType);
             return blobMessage;
         }
 
@@ -113,6 +129,15 @@ namespace DataAccessLayer
                 _logger.LogCritical(e, "Local database Error.");
                 return true;
             }
+        }
+
+        private static int? SetMessageType(Type targetType)
+        {
+            if (Enum.TryParse(targetType.ToString().Split('.').LastOrDefault(), out DeviceType type))
+            {
+                return (int)type;
+            }
+            return null;
         }
     }
 }

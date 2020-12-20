@@ -1,5 +1,4 @@
 ﻿using DataAccessLayer;
-using DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using DataLayer.Models;
+using DataLayer;
 using TemperatureSensor.Models;
 
 namespace TemperatureSensor
@@ -40,7 +41,9 @@ namespace TemperatureSensor
 
         public IHwSettings GetSettings()
         {
-            return _hwSettings = _configuration.GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}").Get<TemperatureSensorHwSettings>();
+            return _hwSettings = _configuration
+                .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}")
+                .Get<TemperatureSensorHwSettings>();
         }
 
         public Task ConfigureService(CancellationToken cancellationToken)
@@ -115,7 +118,7 @@ namespace TemperatureSensor
                     using var scope = _services.CreateScope();
                     var scopedService = scope.ServiceProvider.GetRequiredService<LocalQueue>();
                     //_logger.LogDebug("Scoped service Hash: {LocalQueueHash}", scopedService.GetHashCode());
-                    await scopedService.AddMessage(GetMessage(), typeof(TemperatureAndHumidity));
+                    await scopedService.AddMessage(GetMessage(), typeof(TemperatureAndHumidity), ct);
                 }
                 catch (OperationCanceledException)
                 {

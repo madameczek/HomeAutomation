@@ -6,7 +6,7 @@ namespace Shared.Models
     {
         public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }
-        public DeviceType Type { get; set; }
+        //public DeviceType Type { get; set; }
         public string Name { get; set; }
 
         /// <summary>

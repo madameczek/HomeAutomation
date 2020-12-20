@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataAccessLayer.Models
+namespace DataLayer.Models
 {
     public class QueueItemLocal
     {
@@ -13,12 +13,17 @@ namespace DataAccessLayer.Models
 
         // In database dates are stored as UTC.
         [Required]
-        public DateTime CreatedOn { get => _createdOn.ToLocalTime(); set => _createdOn = value.ToUniversalTime(); }
+        public DateTime CreatedOn
+        {
+            get => _createdOn.ToLocalTime(); 
+            set => _createdOn = value.ToUniversalTime();
+        }
         public string MessageBody { get; set; }
         [Required]
         public bool IsProcessed { get; set; }
         [Required]
         public int Direction { get; set; } // out = 0, in = 1
+        public int? Type { get; set; }
 
         // Relationships
         [ForeignKey("Actor")]

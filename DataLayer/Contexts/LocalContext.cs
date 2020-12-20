@@ -1,9 +1,9 @@
-﻿using DataAccessLayer.Models;
+﻿using System;
+using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
 
-namespace DataAccessLayer.Contexts
+namespace DataLayer
 {
     public class LocalContext : DbContext
     {
@@ -14,6 +14,7 @@ namespace DataAccessLayer.Contexts
         public DbSet<TemperatureAndHumidity> Temperatures {get; set;}
         public DbSet<Weather> WeatherReadings { get; set; }
         public DbSet<QueueItemLocal> Queue { get; set; }
+        public DbSet<SunriseSunset> SunriseSunsets { get; set; }
 
         #region Connection Configuration
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

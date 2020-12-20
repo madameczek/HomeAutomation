@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.DataAccessLayer.Migrations
 {
     [DbContext(typeof(LocalContext))]
-    [Migration("20201031085205_AddQueue")]
-    partial class AddQueue
+    [Migration("20201218220946_AddSunriseSunsetsTable")]
+    partial class AddSunriseSunsetsTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,7 +19,7 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                 .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.Actor", b =>
+            modelBuilder.Entity("DataLayer.Models.Actor", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -77,7 +77,7 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.ActorConfiguration", b =>
+            modelBuilder.Entity("DataLayer.Models.ActorConfiguration", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,46 +105,46 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                             Id = 1,
                             ActorId = new Guid("f66394fb-4a24-4876-a5e2-1a1e2bdda432"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 10, 31, 9, 52, 5, 267, DateTimeKind.Local).AddTicks(7247)
+                            UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
                         },
                         new
                         {
                             Id = 2,
                             ActorId = new Guid("429060a5-7e97-4227-aa44-25999f13536f"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 10, 31, 9, 52, 5, 270, DateTimeKind.Local).AddTicks(2135)
+                            UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
                         },
                         new
                         {
                             Id = 3,
                             ActorId = new Guid("4cda556f-aeda-4c8e-a28e-5338363283c8"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 10, 31, 9, 52, 5, 270, DateTimeKind.Local).AddTicks(2231)
+                            UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
                         },
                         new
                         {
                             Id = 4,
                             ActorId = new Guid("dad5ba5d-e9af-4e54-9452-db90168b8de2"),
                             ConfigurationJson = "{\"ProcessId\":2,\"DeviceId\":\"dad5ba5d-e9af-4e54-9452-db90168b8de2\",\"Type\":3,\"Name\":\"TemperatureSensor\",\"Attach\":true,\"Interface\":\"wire-1\",\"ReadInterval\":5000,\"BasePath\":\"/sys/bus/w1/devices/\",\"HWSerial\":\"28-0000005a5d8c\"}",
-                            UpdatedOn = new DateTime(2020, 10, 31, 9, 52, 5, 270, DateTimeKind.Local).AddTicks(2261)
+                            UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
                         },
                         new
                         {
                             Id = 5,
                             ActorId = new Guid("592d93fa-9d3e-42cc-a65f-9adcb77d98e1"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 10, 31, 9, 52, 5, 270, DateTimeKind.Local).AddTicks(2289)
+                            UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
                         },
                         new
                         {
                             Id = 6,
                             ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
                             ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 10, 31, 9, 52, 5, 270, DateTimeKind.Local).AddTicks(2318)
+                            UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.Gateway", b =>
+            modelBuilder.Entity("DataLayer.Models.Gateway", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -168,7 +168,7 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.Message", b =>
+            modelBuilder.Entity("DataLayer.Models.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -193,7 +193,7 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.QueueItem", b =>
+            modelBuilder.Entity("DataLayer.Models.QueueItemLocal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -221,7 +221,58 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                     b.ToTable("Queue");
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.TemperatureAndHumidity", b =>
+            modelBuilder.Entity("DataLayer.Models.SunriseSunset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AstronomicalTwilightBegin")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("AstronomicalTwilightEnd")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CivilTwilightBegin")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CivilTwilightEnd")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<TimeSpan>("DayLength")
+                        .HasColumnType("time(6)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("NauticalTwilightBegin")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("NauticalTwilightEnd")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("SolarNoon")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Sunrise")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Sunset")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SunriseSunsets");
+                });
+
+            modelBuilder.Entity("DataLayer.Models.TemperatureAndHumidity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -249,7 +300,7 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                     b.ToTable("Temperatures");
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.Weather", b =>
+            modelBuilder.Entity("DataLayer.Models.Weather", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -290,43 +341,43 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                     b.ToTable("WeatherReadings");
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.Actor", b =>
+            modelBuilder.Entity("DataLayer.Models.Actor", b =>
                 {
-                    b.HasOne("Actors.Models.LocalDbModels.Gateway", null)
+                    b.HasOne("DataLayer.Models.Gateway", null)
                         .WithMany("Actors")
                         .HasForeignKey("GatewayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.ActorConfiguration", b =>
+            modelBuilder.Entity("DataLayer.Models.ActorConfiguration", b =>
                 {
-                    b.HasOne("Actors.Models.LocalDbModels.Actor", null)
+                    b.HasOne("DataLayer.Models.Actor", null)
                         .WithOne("Configuration")
-                        .HasForeignKey("Actors.Models.LocalDbModels.ActorConfiguration", "ActorId")
+                        .HasForeignKey("DataLayer.Models.ActorConfiguration", "ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.Message", b =>
+            modelBuilder.Entity("DataLayer.Models.Message", b =>
                 {
-                    b.HasOne("Actors.Models.LocalDbModels.Actor", null)
+                    b.HasOne("DataLayer.Models.Actor", null)
                         .WithMany("Messages")
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.QueueItem", b =>
+            modelBuilder.Entity("DataLayer.Models.QueueItemLocal", b =>
                 {
-                    b.HasOne("Actors.Models.LocalDbModels.Actor", null)
+                    b.HasOne("DataLayer.Models.Actor", null)
                         .WithMany("QueueItems")
                         .HasForeignKey("ActorId");
                 });
 
-            modelBuilder.Entity("Actors.Models.LocalDbModels.TemperatureAndHumidity", b =>
+            modelBuilder.Entity("DataLayer.Models.TemperatureAndHumidity", b =>
                 {
-                    b.HasOne("Actors.Models.LocalDbModels.Actor", null)
+                    b.HasOne("DataLayer.Models.Actor", null)
                         .WithMany("Temperatures")
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
