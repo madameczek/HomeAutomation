@@ -28,7 +28,7 @@ namespace TemperatureSensor
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var hwSettings = (ITemperatureSensorHwSettings)_temperatureSensorService.GetSettings();
+            var hwSettings = (TemperatureSensorHwSettings)_temperatureSensorService.GetSettings();
             try
             {
                 if (hwSettings.Attach)

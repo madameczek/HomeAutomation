@@ -4,6 +4,6 @@ namespace GsmModem
 {
     public interface IGsmModemService : IService
     {
-        // Just for a case and for DI. All major components are declared in IService
+        // If no extension methods to existing in IService are defined, interface should be removed for clarity.
     }
 }

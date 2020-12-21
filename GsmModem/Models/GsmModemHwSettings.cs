@@ -6,11 +6,10 @@ using System.IO.Ports;
 
 namespace GsmModem.Models
 {
-    public class GsmModemHwSettings : IGsmModemHwSettings
+    public class GsmModemHwSettings : IHwSettings
     {
         public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }
-        //public DeviceType Type { get; set; }
         public string Name { get; set; }
         public bool Attach { get; set; }
         public string Interface { get; set; }

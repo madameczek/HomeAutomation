@@ -4,7 +4,7 @@ using System;
 
 namespace ImgwApi.Models
 {
-    public class ImgwHwSettings : IImgwHwSettings
+    public class ImgwHwSettings : IHwSettings
     {
         public int ProcessId { get; set; }
         public Guid DeviceId { get; set; }

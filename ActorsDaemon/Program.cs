@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Relay;
+using Shared;
 using TemperatureSensor;
 
 namespace ActorsDaemon
@@ -66,7 +67,7 @@ namespace ActorsDaemon
                     services.AddHostedService<RelaysLauncher>();
                     services.AddScoped<LocalQueue>();
                     services.AddSingleton<ITemperatureSensorService, TemperatureSensorService>();
-                    services.AddSingleton<IImgwService, ImgwService>();
+                    services.AddSingleton<IService, ImgwService>();
                     services.AddSingleton<IGsmModemService, GsmModemService>();
                     services.AddDbContext<LocalContext>();
                     services.AddTransient<IPortProvider, PortProvider>();

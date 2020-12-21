@@ -12,10 +12,11 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Shared;
 
 namespace ImgwApi
 {
-    public class ImgwService : IImgwService
+    public class ImgwService : IService
     {
         #region Dependency Injection
         private readonly IConfiguration _configuration;
@@ -32,7 +33,7 @@ namespace ImgwApi
         // Define section of appsettings.json to parse device config from configuration object
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "ImgwApi";
-        private IImgwHwSettings _hwSettings;
+        private ImgwHwSettings _hwSettings;
         private Dictionary<string, string> _dataFieldNames;
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
@@ -49,7 +50,7 @@ namespace ImgwApi
         public Task ConfigureService(CancellationToken cancellationToken)
         {
             _dataFieldNames = _configuration
-                .GetSection(HwSettingsSection)
+                .GetSection(HwSettingsSection) 
                 .GetSection(HwSettingsCurrentActorSection)
                 .GetSection("Fields").Get<Dictionary<string, string>>();
             return Task.CompletedTask;
@@ -63,12 +64,12 @@ namespace ImgwApi
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("User-Agent", "Private student's API test");
                 string response = await Task.Run(()
-                    => client.GetStringAsync((_hwSettings as IImgwHwSettings).Url + (_hwSettings as IImgwHwSettings).StationId), ct);
+                    => client.GetStringAsync(_hwSettings.Url + _hwSettings.StationId), ct);
                 lock (WeatherLock)
                 {
                     _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
                 }
-                _deviceReadingIsValid = _rawData.ContainsValue((_hwSettings as IImgwHwSettings).StationId.ToString());
+                _deviceReadingIsValid = _rawData.ContainsValue(_hwSettings.StationId.ToString());
                 _logger.LogDebug("Fetched data from IMGW.");
             }
             catch (OperationCanceledException) 

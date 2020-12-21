@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Shared;
 
 namespace ImgwApi
 {
@@ -13,14 +14,12 @@ namespace ImgwApi
     {
         private Timer _readImgwTimer;
         private readonly List<Task> _tasks = new List<Task>();
-
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
-        private IHwSettings _hwSettings;
 
         #region Ctor & Dependency Injection
         private readonly ILogger _logger;
-        private readonly IImgwService _imgwService;
-        public ImgwLauncher(ILoggerFactory loggerFactory, IImgwService service)
+        private readonly IService _imgwService;
+        public ImgwLauncher(ILoggerFactory loggerFactory, IService service)
         {
             _logger = loggerFactory.CreateLogger("IMGW Launcher");
             _imgwService = service;
@@ -29,18 +28,18 @@ namespace ImgwApi
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _hwSettings = _imgwService.GetSettings();
+            var hwSettings = _imgwService.GetSettings();
             try
             {
-                if (_hwSettings.Attach)
+                if (hwSettings.Attach)
                 {
                     await _imgwService.ConfigureService(cancellationToken);
                     _readImgwTimer = new Timer(
                         FetchAndStoreWeather,
                         null,
                         TimeSpan.FromMilliseconds(100),
-                        TimeSpan.FromMinutes(_hwSettings.ReadInterval));
-                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod} min.", _hwSettings.ReadInterval);
+                        TimeSpan.FromMinutes(hwSettings.ReadInterval));
+                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod} min.", hwSettings.ReadInterval);
                 }
                 else
                 {

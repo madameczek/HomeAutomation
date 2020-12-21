@@ -7,6 +7,6 @@ namespace GsmModem
 {
     public interface IPortProvider
     {
-        public Task<SerialPort> GetPort(IGsmModemHwSettings gsmModemHwSettings);
+        public Task<SerialPort> GetPort(GsmModemHwSettings gsmModemHwSettings);
     }
 }

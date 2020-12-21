@@ -1,15 +1,13 @@
-﻿using DataAccessLayer;
+﻿using DataLayer;
+using DataLayer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shared.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DataLayer.Models;
-using DataLayer;
 using TemperatureSensor.Models;
 
 namespace TemperatureSensor
@@ -31,11 +29,11 @@ namespace TemperatureSensor
         // Define variables for data fetched from 'appsettings.json'. Data are used to configure the service.
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "TemperatureSensor";
-        private ITemperatureSensorHwSettings _hwSettings = new TemperatureSensorHwSettings();
+        private TemperatureSensorHwSettings _hwSettings;
         private const string ServiceSettings = "Services:DatabasePooling";
         private const string MessageToDbPushPeriodSeconds = "TemperatureMessagePushPeriod";
 
-        private static readonly object _temperatureLock = new object();
+        private static readonly object TemperatureLock = new object();
         private double _temperature;
         private bool _deviceReadingIsValid;
 
@@ -62,7 +60,7 @@ namespace TemperatureSensor
                     var result = int.TryParse(data.Trim(), out int _tempReading);
                     if (result)
                     {
-                        lock (_temperatureLock)
+                        lock (TemperatureLock)
                         {
                             _temperature = _tempReading * 0.001;
                         }

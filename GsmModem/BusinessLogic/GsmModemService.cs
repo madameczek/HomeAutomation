@@ -33,13 +33,13 @@ namespace GsmModem
         // Define variables for data fetched from 'appsettings.json'. Data are used to configure the service.
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "GsmModem";
-        private IGsmModemHwSettings _hwSettings = new GsmModemHwSettings();
-        private readonly string _serviceSettings = "Services:DatabasePooling";
+        private GsmModemHwSettings _hwSettings;
+        private readonly string _serviceSettings = "DatabasePooling";
         private readonly string _messageToDbPushPeriodSeconds = "GsmMessagePushPeriod";
 
         private Dictionary<string, string> _rawData = new Dictionary<string, string>();
-        private static readonly object _messageLock = new object();
-        private static readonly object _portLock = new object();
+        private static readonly object MessageLock = new object();
+        private static readonly object PortLock = new object();
         private bool _deviceReadingIsValid = false;
 
         public IHwSettings GetSettings()

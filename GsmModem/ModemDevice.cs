@@ -23,7 +23,7 @@ namespace GsmModem
 
         public async Task Initialize(SerialPort port)
         {
-            var configuration = _configuration
+            var initializationCommands = _configuration
                 .GetSection("ModemCommands")
                 .Get<GsmModemCommands>()
                 .InitCommands
@@ -35,7 +35,7 @@ namespace GsmModem
             {
                 port.WriteLine("AT"); // needed to synchronise after uart speed change
                 await Task.Delay(300);
-                foreach (var command in configuration)
+                foreach (var command in initializationCommands)
                 {
                     port.WriteLine(command);
                     await Task.Delay(200);

@@ -51,9 +51,9 @@ namespace Relay
             }
 
             var a  = _relayService.GetSettings();
-            if (_relayHwSettings.Attach)
+            //if (_relayHwSettings.Attach)
             {
-                await _relayService.ConfigureService(cancellationToken);
+                //await _relayService.ConfigureService(cancellationToken);
 
             }
         }

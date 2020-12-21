@@ -26,7 +26,7 @@ namespace GsmModem
         }
         #endregion
 
-        public Task<SerialPort> GetPort(IGsmModemHwSettings gsmModemHwSettings)
+        public Task<SerialPort> GetPort(GsmModemHwSettings gsmModemHwSettings)
         {
             _port = new SerialPort()
             {

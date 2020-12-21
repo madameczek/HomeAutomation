@@ -12,8 +12,6 @@ namespace Relay
 {
     public class RelayService : IRelayService
     {
-        
-
         #region Dependency Injection
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
@@ -25,7 +23,8 @@ namespace Relay
             _services = services;
         }
         #endregion
-        
+
+        // Define section of appsettings.json to parse device config from configuration object
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "Relay";
         private List<RelayHwSettings> _hwSettingsList;
