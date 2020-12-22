@@ -90,7 +90,7 @@ namespace ImgwApi
         {
             // Temporary object with readings to be serialized.
             WeatherData tempMessage;
-            var parseCulture = CultureInfo.CreateSpecificCulture("en-US");
+            //var parseCulture = CultureInfo.CreateSpecificCulture("en-US");
             lock (WeatherLock)
             {
                 tempMessage = new WeatherData()

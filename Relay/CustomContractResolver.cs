@@ -6,7 +6,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Relay
 {
-    class CustomContractResolver : DefaultContractResolver
+    internal class CustomContractResolver : DefaultContractResolver
     {
         private Dictionary<string, string> PropertyMapping { get; set; }
 

@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
+using DataLayer;
+using DataLayer.Models;
 using Newtonsoft.Json.Linq;
 
 namespace Relay
@@ -84,6 +86,7 @@ namespace Relay
                             {
                                 _data = JsonConvert.DeserializeObject<SunriseSunsetApiData>(sunData?.ToString(), settings);
                             }
+                            _deviceReadingIsValid = true;
                             _logger.LogDebug("Fetched data from Sunset API.");
                             await Task.CompletedTask;
                         }
@@ -105,12 +108,34 @@ namespace Relay
 
         public IMessage GetMessage()
         {
-            throw new NotImplementedException();
+            var tempMessage = JsonConvert.SerializeObject(_data);
+            var message = JsonConvert.DeserializeObject<SunriseSunsetApiData>(tempMessage);
+            message.Id = 0;
+            message.ActorId = _hwSettings.DeviceId;
+            message.IsProcessed = false;
+            message.CreatedOn = DateTime.Now;
+            return message;
         }
 
-        public Task SaveMessageAsync(CancellationToken ct)
+        public async Task SaveMessageAsync(CancellationToken ct)
         {
-            throw new NotImplementedException();
+            if (_deviceReadingIsValid)
+            {
+                try
+                {
+                    using var scope = _services.CreateScope();
+                    var scopedService = scope.ServiceProvider.GetRequiredService<LocalQueue>();
+                    await scopedService.AddMessage(GetMessage(), typeof(SunriseSunset), ct);
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogDebug("Cancelled");
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error saving message.");
+                }
+            }
         }
     }
 }

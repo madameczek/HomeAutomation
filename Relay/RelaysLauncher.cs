@@ -66,7 +66,10 @@ namespace Relay
             _tasks.Add(readApiTask);
             readApiTask.Wait(_stoppingCts.Token);
             if(readApiTask.Exception != null) return;
-            
+            var saveReadingToDatabaseTask = _sunsetService.SaveMessageAsync(_stoppingCts.Token);
+            _tasks.Add(saveReadingToDatabaseTask);
+            saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
+
         }
 
         private static void Timer1(object state)
