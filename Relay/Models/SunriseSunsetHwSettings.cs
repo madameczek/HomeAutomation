@@ -17,5 +17,9 @@ namespace Relay.Models
         /// Interval between subsequent readings of API in hours.
         /// </summary>
         public int ReadInterval { get; set; }
+        public string Url { get; set; }
+        public string Location { get; set; }
+        public double Lat { get; set; }
+        public double Lon { get; set; }
     }
 }

@@ -31,7 +31,6 @@ namespace Relay
         }
         #endregion
 
-
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _sunsetHwSettings = _sunsetService.GetSettings();
@@ -50,17 +49,24 @@ namespace Relay
                 _logger.LogDebug("Sunset API not initialized.");
             }
 
-            var a  = _relayService.GetSettings();
-            //if (_relayHwSettings.Attach)
+            var relaysSettingsList  = _relayService.GetSettings();
+            foreach (var settings in relaysSettingsList)
             {
-                //await _relayService.ConfigureService(cancellationToken);
-
+                if (settings.Attach)
+                {
+                    await _relayService.ConfigureService(settings, cancellationToken);
+                }
             }
+            
         }
 
-        private static void FetchAndStoreSunsetTime(object state)
+        private void FetchAndStoreSunsetTime(object state)
         {
-
+            var readApiTask = _sunsetService.ReadDeviceAsync(_stoppingCts.Token);
+            _tasks.Add(readApiTask);
+            readApiTask.Wait(_stoppingCts.Token);
+            if(readApiTask.Exception != null) return;
+            
         }
 
         private static void Timer1(object state)

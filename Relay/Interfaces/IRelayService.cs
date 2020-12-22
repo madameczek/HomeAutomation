@@ -11,5 +11,6 @@ namespace Relay
     public interface IRelayService : IService
     {
         public new IEnumerable<IHwSettings> GetSettings();
+        public Task ConfigureService(IHwSettings settings, CancellationToken ct);
     }
 }

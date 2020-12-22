@@ -53,7 +53,7 @@ namespace GsmModem
         {
             try
             {
-                 _port = await _portProvider.GetPort(_hwSettings);
+                 _port = await _portProvider.GetPort(_hwSettings); // get port before any IO operation
                 await _device.Initialize(_port);
             }
             catch (OperationCanceledException) { }

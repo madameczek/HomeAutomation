@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Shared;
 using Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Shared;
 
 namespace ImgwApi
 {
@@ -21,11 +21,13 @@ namespace ImgwApi
         #region Dependency Injection
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
+        private readonly HttpClient _httpClient;
         private readonly IServiceProvider _services;
-        public ImgwService(ILoggerFactory logger, IConfiguration configuration, IServiceProvider services)
+        public ImgwService(ILoggerFactory logger, IConfiguration configuration, HttpClient httpClient, IServiceProvider services)
         {
             _configuration = configuration;
             _logger = logger.CreateLogger("IMGW service");
+            _httpClient = httpClient;
             _services = services;
         }
         #endregion
@@ -58,13 +60,12 @@ namespace ImgwApi
 
         public async Task ReadDeviceAsync(CancellationToken ct)
         {
-            var client = new HttpClient();
             try
             {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("User-Agent", "Private student's API test");
+                _httpClient.DefaultRequestHeaders.Accept.Clear();
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", "Private student's API test");
                 string response = await Task.Run(()
-                    => client.GetStringAsync(_hwSettings.Url + _hwSettings.StationId), ct);
+                    => _httpClient.GetStringAsync($"{_hwSettings.Url}{_hwSettings.StationId}"), ct);
                 lock (WeatherLock)
                 {
                     _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
@@ -98,10 +99,10 @@ namespace ImgwApi
                     CreatedOn = DateTime.Parse(_rawData[_dataFieldNames["ReadingDate"]]).AddHours(int.Parse(_rawData[_dataFieldNames["ReadingTime"]])),
                     IsProcessed = false,
                     ActorId = _hwSettings.DeviceId,
-                    AirTemperature = double.Parse(_rawData[_dataFieldNames["AirTemperature"]], parseCulture),
-                    AirPressure = double.Parse(_rawData[_dataFieldNames["AirPressure"]], parseCulture),
-                    Precipitation = double.Parse(_rawData[_dataFieldNames["Precipitation"]], parseCulture),
-                    Humidity = double.Parse(_rawData[_dataFieldNames["Humidity"]], parseCulture),
+                    AirTemperature = double.Parse(_rawData[_dataFieldNames["AirTemperature"]], CultureInfo.InvariantCulture),
+                    AirPressure = double.Parse(_rawData[_dataFieldNames["AirPressure"]], CultureInfo.InvariantCulture),
+                    Precipitation = double.Parse(_rawData[_dataFieldNames["Precipitation"]], CultureInfo.InvariantCulture),
+                    Humidity = double.Parse(_rawData[_dataFieldNames["Humidity"]], CultureInfo.InvariantCulture),
                     WindSpeed = int.Parse(_rawData[_dataFieldNames["WindSpeed"]]),
                     WindDirection = int.Parse(_rawData[_dataFieldNames["WindDirection"]]),
                     StationId = int.Parse(_rawData[_dataFieldNames["StationId"]]),

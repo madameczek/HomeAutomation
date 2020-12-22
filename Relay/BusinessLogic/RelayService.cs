@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Relay.Interfaces;
 using Relay.Models;
 using Shared.Models;
 
@@ -30,6 +33,7 @@ namespace Relay
         private List<RelayHwSettings> _hwSettingsList;
 
         public IHwSettings GetSettings() => throw new NotImplementedException();
+    public Task ConfigureService(CancellationToken ct) => throw new NotImplementedException();
 
         IEnumerable<IHwSettings> IRelayService.GetSettings()
         {
@@ -38,9 +42,19 @@ namespace Relay
                 .Get<List<RelayHwSettings>>();
         }
 
-        public Task ConfigureService(CancellationToken ct)
+        public Task ConfigureService(IHwSettings settings, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            IRelayDevice relay;
+            try
+            {
+                return Task.CompletedTask;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Task.FromException(new IOException());
+            }
+
         }
 
         public Task ReadDeviceAsync(CancellationToken ct)

@@ -61,6 +61,8 @@ namespace ActorsDaemon
                 })
                 .ConfigureServices((services) =>
                 {
+                    services.AddHttpClient<ISunriseSunsetService, SunriseSunsetService>();
+                    services.AddHttpClient<IService, ImgwService>();
                     services.AddHostedService<TemperatureSensorLauncher>();
                     services.AddHostedService<ImgwLauncher>();
                     services.AddHostedService<GsmModemLauncher>();
