@@ -42,7 +42,7 @@ namespace Relay
                     null,
                     TimeSpan.FromMilliseconds(200),
                     TimeSpan.FromHours(_sunsetHwSettings.ReadInterval));
-                _logger.LogDebug("Sunset API configured with read&save period: {WeatherReadPeriod} hours.", _sunsetHwSettings.ReadInterval);
+                _logger.LogInformation("Sunset API configured with read&save period: {WeatherReadPeriod} hours.", _sunsetHwSettings.ReadInterval);
             }
             else
             {
@@ -95,7 +95,7 @@ namespace Relay
 
         public void Dispose()
         {
-            _logger.LogDebug("Disposing resources.");
+            _logger.LogInformation("Disposing resources.");
             _relayTimer1?.Dispose();
             _readApiTimer?.Dispose();
         }

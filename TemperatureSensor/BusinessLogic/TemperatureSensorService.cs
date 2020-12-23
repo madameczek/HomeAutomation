@@ -119,7 +119,7 @@ namespace TemperatureSensor
                 }
                 catch (OperationCanceledException)
                 {
-                    _logger.LogInformation("Cancelled");
+                    _logger.LogDebug("Cancelled");
                 }
             }
         }

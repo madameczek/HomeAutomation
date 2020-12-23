@@ -40,6 +40,8 @@ namespace GsmModem
                         null,
                         TimeSpan.FromMilliseconds(1000),
                         TimeSpan.FromSeconds(_hwSettings.ReadInterval));
+                    _logger.LogInformation("Configured with modem read period: {ModemReadPeriod} sec.", _hwSettings.ReadInterval);
+
                 }
                 else
                 {
@@ -78,7 +80,7 @@ namespace GsmModem
 
         public void Dispose()
         {
-            _logger.LogDebug("Disposing resources.");
+            _logger.LogInformation("Disposing resources.");
             _readModemTimer?.Dispose();
         }
     }

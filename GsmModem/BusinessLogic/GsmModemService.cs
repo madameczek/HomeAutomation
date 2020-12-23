@@ -80,7 +80,7 @@ namespace GsmModem
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInformation("Cancelled.");
+                _logger.LogDebug("Cancelled.");
             }
             return Task.CompletedTask;
         }

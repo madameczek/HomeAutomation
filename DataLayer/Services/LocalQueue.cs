@@ -95,7 +95,7 @@ namespace DataLayer
 
             if (count > 0)
             {
-                _logger.LogDebug("Data of type {type} saved to local database.", targetType.ToString().Split('.').Last());
+                _logger.LogInformation("Data of type {type} saved to local database.", targetType.ToString().Split('.').Last());
             }
             return Task.CompletedTask;
         }

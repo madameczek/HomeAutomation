@@ -39,7 +39,7 @@ namespace ImgwApi
                         null,
                         TimeSpan.FromMilliseconds(100),
                         TimeSpan.FromMinutes(hwSettings.ReadInterval));
-                    _logger.LogDebug("Configured with read&save period: {WeatherReadPeriod} min.", hwSettings.ReadInterval);
+                    _logger.LogInformation("Configured with read&save period: {WeatherReadPeriod} min.", hwSettings.ReadInterval);
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace ImgwApi
 
         public void Dispose()
         {
-            _logger.LogDebug("Disposing resources.");
+            _logger.LogInformation("Disposing resources.");
             _readImgwTimer?.Dispose();
         }
     }

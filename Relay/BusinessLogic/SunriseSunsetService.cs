@@ -1,19 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DataLayer;
+using DataLayer.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection; // for using IServiceProvider
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Relay.Models;
 using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
-using DataLayer;
-using DataLayer.Models;
-using Newtonsoft.Json.Linq;
 
 namespace Relay
 {
@@ -87,7 +86,7 @@ namespace Relay
                                 _data = JsonConvert.DeserializeObject<SunriseSunsetApiData>(sunData?.ToString(), settings);
                             }
                             _deviceReadingIsValid = true;
-                            _logger.LogDebug("Fetched data from Sunset API.");
+                            _logger.LogInformation("Fetched data from Sunset API.");
                             return;
                         }
                     }

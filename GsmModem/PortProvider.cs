@@ -38,7 +38,7 @@ namespace GsmModem
 
             if (SerialPort.GetPortNames().Any(pn => pn == _port.PortName))
             {
-                _logger.LogDebug("Serial port configured on {PortName}", gsmModemHwSettings.PortName);
+                _logger.LogInformation("Serial port configured on {PortName}", gsmModemHwSettings.PortName);
                 return Task.FromResult(_port);
             }
             _logger.LogError("Port not configured. Available ports: {Ports}", SerialPort.GetPortNames().ToList());

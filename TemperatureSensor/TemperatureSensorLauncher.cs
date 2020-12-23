@@ -45,8 +45,8 @@ namespace TemperatureSensor
                         // Wait for sensor data before save to database
                         TimeSpan.FromMilliseconds(3000),
                         TimeSpan.FromMinutes(hwSettings.DatabasePushPeriod));
-                    _logger.LogDebug("Configured with sensor read period: {sensorReadPeriod} sec.", hwSettings.ReadInterval);
-                    _logger.LogDebug("Configured with database save period: {databasePushPeriod} min", hwSettings.DatabasePushPeriod);
+                    _logger.LogInformation("Configured with sensor read period: {sensorReadPeriod} sec.", hwSettings.ReadInterval);
+                    _logger.LogInformation("Configured with database save period: {databasePushPeriod} min.", hwSettings.DatabasePushPeriod);
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace TemperatureSensor
 
         public void Dispose()
         {
-            _logger.LogDebug("Disposing resources.");
+            _logger.LogInformation("Disposing resources.");
             _readSensorTimer?.Dispose();
             _saveReadingToDatabaseTimer?.Dispose();
         }

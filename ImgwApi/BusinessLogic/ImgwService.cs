@@ -71,7 +71,7 @@ namespace ImgwApi
                     _rawData = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
                 }
                 _deviceReadingIsValid = _rawData.ContainsValue(_hwSettings.StationId.ToString());
-                _logger.LogDebug("Fetched data from IMGW.");
+                _logger.LogInformation("Fetched data from IMGW.");
             }
             catch (OperationCanceledException) 
             { 
