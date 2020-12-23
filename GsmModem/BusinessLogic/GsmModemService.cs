@@ -65,7 +65,6 @@ namespace GsmModem
             {
                 _logger.LogError(e, "Service configuration error");
             }
-
         }
 
         public IMessage GetMessage()

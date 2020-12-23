@@ -10,15 +10,17 @@ namespace Relay
     {
         private Dictionary<string, string> PropertyMapping { get; set; }
 
-        public CustomContractResolver(Dictionary<string, string> dataFielsNames)
+        public CustomContractResolver(IReadOnlyDictionary<string, string> dataFielsNames)
         {
             this.PropertyMapping = new Dictionary<string, string>()
             {
+                // <string> target_object_property_name, <string> JToken_object_field_name
                 {"Sunrise", dataFielsNames["Sunrise"]},
                 {"Sunset", dataFielsNames["Sunset"]},
                 {"SolarNoon", dataFielsNames["SolarNoon"]},
                 {"DayLengthSeconds", dataFielsNames["DayLengthSeconds"]},
                 {"CivilTwilightBegin", dataFielsNames["CivilTwilightBegin"]},
+                {"CivilTwilightEnd", dataFielsNames["CivilTwilightEnd"]},
                 {"NauticalTwilightBegin", dataFielsNames["NauticalTwilightBegin"]},
                 {"NauticalTwilightEnd", dataFielsNames["NauticalTwilightEnd"]},
                 {"AstronomicalTwilightBegin", dataFielsNames["AstronomicalTwilightBegin"]},

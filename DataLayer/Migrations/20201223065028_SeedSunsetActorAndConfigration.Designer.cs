@@ -3,14 +3,16 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccessLayer.DataAccessLayer.Migrations
 {
     [DbContext(typeof(LocalContext))]
-    partial class LocalContextModelSnapshot : ModelSnapshot
+    [Migration("20201223065028_SeedSunsetActorAndConfigration")]
+    partial class SeedSunsetActorAndConfigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

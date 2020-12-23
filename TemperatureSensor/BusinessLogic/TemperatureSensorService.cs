@@ -115,7 +115,6 @@ namespace TemperatureSensor
                 {
                     using var scope = _services.CreateScope();
                     var scopedService = scope.ServiceProvider.GetRequiredService<LocalQueue>();
-                    //_logger.LogDebug("Scoped service Hash: {LocalQueueHash}", scopedService.GetHashCode());
                     await scopedService.AddMessage(GetMessage(), typeof(TemperatureAndHumidity), ct);
                 }
                 catch (OperationCanceledException)

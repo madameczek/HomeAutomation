@@ -46,7 +46,7 @@ namespace DataLayer
 
             if (targetType == typeof(Weather))
             {
-                isDuplicate = IsDuplicate(dbMessage as Weather);
+                isDuplicate = IsDuplicate(dbMessage,  typeof(Weather));
                 if (!isDuplicate)
                 {
                     _dbContext.Add(dbMessage as Weather);
@@ -55,6 +55,14 @@ namespace DataLayer
             else if (targetType == typeof(TemperatureAndHumidity))
             {
                 _dbContext.Add(dbMessage as TemperatureAndHumidity);
+            }
+            else if (targetType == typeof(SunriseSunset))
+            {
+                isDuplicate = IsDuplicate(dbMessage, typeof(SunriseSunset));
+                if (!isDuplicate)
+                {
+                    _dbContext.Add(dbMessage as SunriseSunset);
+                }
             }
             else
             {
@@ -111,22 +119,35 @@ namespace DataLayer
             return blobMessage;
         }
 
-        private bool IsDuplicate(Weather message)
+        private bool IsDuplicate(object message, Type type)
         {
             try
             {
-                // conversion to UTC is connected with conversion defined in Message model
-                return _dbContext.Messages.Any(m => m.CreatedOn == message.CreatedOn.ToUniversalTime());
+                if (type == typeof(Weather))
+                {
+                    // conversion to UTC is connected with conversion defined in Message model
+                    return _dbContext.Messages.Where(m=>m.Type == (int)DeviceType.Weather).Any(m =>
+                        m.CreatedOn == (message as Weather).CreatedOn.ToUniversalTime());
+                }
+
+                if (type == typeof(SunriseSunset))
+                {
+                    // conversion to UTC is connected with conversion defined in Message model
+                    return _dbContext.Messages.Where(m => m.Type == (int)DeviceType.SunriseSunset).Any(m =>
+                        m.CreatedOn.Date == (message as SunriseSunset).CreatedOn.ToUniversalTime().Date);
+                }
+
+                return false;
             }
             catch (RetryLimitExceededException)
             {
                 _logger.LogWarning("Local database Error. Retry limit exceeded.");
-                return true;
+                return false;
             }
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Local database Error.");
-                return true;
+                return false;
             }
         }
 

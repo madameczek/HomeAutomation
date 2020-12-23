@@ -80,6 +80,13 @@ namespace DataLayer
                   Type = "WeatherData",
                   GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c")
               });
+            modelBuilder.Entity<Actor>().HasData
+            (new Actor
+            {
+                Id = new Guid("c1226187-9859-4e8e-ac1f-a27a3bfb5030"),
+                Type = "Sun astronomical data API",
+                GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c")
+            });
 
             modelBuilder.Entity<ActorConfiguration>().HasData
               (new ActorConfiguration
@@ -129,6 +136,14 @@ namespace DataLayer
                   ConfigurationJson = "",
                   ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576")
               });
+            modelBuilder.Entity<ActorConfiguration>().HasData
+            (new ActorConfiguration
+            {
+                Id = 7,
+                UpdatedOn = new DateTime(2020, 10, 31),
+                ConfigurationJson = "",
+                ActorId = new Guid("c1226187-9859-4e8e-ac1f-a27a3bfb5030")
+            });
         }
     }
 }

@@ -18,6 +18,7 @@ namespace HomeAutomationWebApp.Models.DbModels
         public double? WindSpeed { get; set; }
         public int? WindDirection { get; set; }
         public int? StationId { get; set; }
+        [StringLength(100)]
         public string StationName { get; set; }
     }
 }

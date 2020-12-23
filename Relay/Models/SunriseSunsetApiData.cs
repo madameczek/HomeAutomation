@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
-using Shared.Models;
+﻿using Shared.Models;
+using System;
 
 namespace Relay.Models
 {
@@ -14,7 +11,7 @@ namespace Relay.Models
         public bool? IsProcessed { get; set; }
         public Guid ActorId { get; set; }
 
-        public int DayLengthSeconds { get;  set; }
+        public int DayLengthSeconds { get; set; }
         public DateTime Sunrise { get; set; }
         public DateTime Sunset { get; set; }
         public DateTime SolarNoon { get; set; }
@@ -25,5 +22,8 @@ namespace Relay.Models
         public DateTime NauticalTwilightEnd { get; set; }
         public DateTime AstronomicalTwilightBegin { get; set; }
         public DateTime AstronomicalTwilightEnd { get; set; }
+        public string Location { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

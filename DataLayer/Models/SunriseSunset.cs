@@ -5,10 +5,10 @@ namespace DataLayer.Models
 {
     public class SunriseSunset
     {
+        private DateTime _createdOn;
         private DateTime _sunrise;
         private DateTime _sunset;
         private DateTime _solarNoon;
-        private int _dayLength;
         private DateTime _civilTwilightBegin;
         private DateTime _civilTwilightEnd;
         private DateTime _nauticalTwilightBegin;
@@ -18,7 +18,13 @@ namespace DataLayer.Models
 
         [Key]
         public int Id { get; set; }
+
         // In database dates are stored as UTC.
+        [Required]
+        public DateTime CreatedOn { get => _createdOn.ToLocalTime(); set => _createdOn = value.ToUniversalTime(); }
+        [Required]
+        public bool IsProcessed { get; set; }
+
         [Required]
         public DateTime Sunrise { get => _sunrise.ToLocalTime(); set => _sunrise = value.ToUniversalTime(); }
         [Required]
@@ -26,7 +32,7 @@ namespace DataLayer.Models
         [Required]
         public DateTime SolarNoon { get => _solarNoon.ToLocalTime(); set => _solarNoon = value.ToUniversalTime(); }
         [Required]
-        public TimeSpan DayLength {get => TimeSpan.FromSeconds(_dayLength); set => _dayLength = value.Seconds; }
+        public TimeSpan DayLength { get; set; }
         [Required]
         public DateTime CivilTwilightBegin { get => _civilTwilightBegin.ToLocalTime(); set => _civilTwilightBegin = value.ToUniversalTime(); }
         [Required]
@@ -40,6 +46,7 @@ namespace DataLayer.Models
         [Required]
         public DateTime AstronomicalTwilightEnd { get => _astronomicalTwilightEnd.ToLocalTime(); set => _astronomicalTwilightEnd = value.ToUniversalTime(); }
         [Required]
+        [StringLength(100)]
         public string Location { get; set; }
         [Required]
         public double Latitude { get; set; }

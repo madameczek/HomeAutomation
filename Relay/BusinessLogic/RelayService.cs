@@ -54,7 +54,6 @@ namespace Relay
                 Console.WriteLine(e);
                 return Task.FromException(new IOException());
             }
-
         }
 
         public Task ReadDeviceAsync(CancellationToken ct)

@@ -3,14 +3,16 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccessLayer.DataAccessLayer.Migrations
 {
     [DbContext(typeof(LocalContext))]
-    partial class LocalContextModelSnapshot : ModelSnapshot
+    [Migration("20201222210331_AddMissingFieldsForAstronomicalData")]
+    partial class AddMissingFieldsForAstronomicalData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,12 +74,6 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                             Id = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
                             GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"),
                             Type = "WeatherData"
-                        },
-                        new
-                        {
-                            Id = new Guid("c1226187-9859-4e8e-ac1f-a27a3bfb5030"),
-                            GatewayId = new Guid("4b77c5fd-9d06-4771-ac13-b7c79c72f85c"),
-                            Type = "Sun astronomical data API"
                         });
                 });
 
@@ -143,13 +139,6 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                         {
                             Id = 6,
                             ActorId = new Guid("5a080659-ccb2-482a-be94-97e668689576"),
-                            ConfigurationJson = "",
-                            UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ActorId = new Guid("c1226187-9859-4e8e-ac1f-a27a3bfb5030"),
                             ConfigurationJson = "",
                             UpdatedOn = new DateTime(2020, 10, 31, 0, 0, 0, 0, DateTimeKind.Local)
                         });
@@ -270,8 +259,7 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<double>("Longitude")
                         .HasColumnType("double");
@@ -352,8 +340,7 @@ namespace DataAccessLayer.DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StationName")
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int?>("WindDirection")
                         .HasColumnType("int");

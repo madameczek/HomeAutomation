@@ -88,7 +88,7 @@ namespace Relay
                             }
                             _deviceReadingIsValid = true;
                             _logger.LogDebug("Fetched data from Sunset API.");
-                            await Task.CompletedTask;
+                            return;
                         }
                     }
                     _logger.LogError("Error fetching data.");
@@ -108,13 +108,15 @@ namespace Relay
 
         public IMessage GetMessage()
         {
-            var tempMessage = JsonConvert.SerializeObject(_data);
-            var message = JsonConvert.DeserializeObject<SunriseSunsetApiData>(tempMessage);
-            message.Id = 0;
-            message.ActorId = _hwSettings.DeviceId;
-            message.IsProcessed = false;
-            message.CreatedOn = DateTime.Now;
-            return message;
+            var time = DateTime.Now;
+            _data.CreatedOn = time.AddTicks(-(time.Ticks % TimeSpan.TicksPerSecond));
+            _data.Id = 0;
+            _data.ActorId = _hwSettings.DeviceId;
+            _data.IsProcessed = false;
+            _data.Location = _hwSettings.Location;
+            _data.Latitude = _hwSettings.Lat;
+            _data.Longitude = _hwSettings.Lon;
+            return _data;
         }
 
         public async Task SaveMessageAsync(CancellationToken ct)

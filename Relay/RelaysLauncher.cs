@@ -78,15 +78,26 @@ namespace Relay
         }
 
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _readApiTimer?.Change(Timeout.Infinite, 0);
+            try
+            {
+                _stoppingCts.Cancel();
+            }
+            finally
+            {
+                _logger.LogDebug("Stopping");
+                Task.WhenAll(_tasks).Wait(cancellationToken);
+            }
+            await Task.CompletedTask;
         }
 
         public void Dispose()
         {
             _logger.LogDebug("Disposing resources.");
             _relayTimer1?.Dispose();
+            _readApiTimer?.Dispose();
         }
     }
 }
