@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Shared;
 
-namespace Relay
+namespace Relay.Interfaces
 {
     public interface ISunriseSunsetService : IService
     {

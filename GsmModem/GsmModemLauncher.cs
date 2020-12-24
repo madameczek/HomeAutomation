@@ -72,7 +72,7 @@ namespace GsmModem
             }
             finally
             {
-                _logger.LogDebug("Stopping");
+                _logger.LogInformation("Stopping");
                 Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;
@@ -80,7 +80,7 @@ namespace GsmModem
 
         public void Dispose()
         {
-            _logger.LogInformation("Disposing resources.");
+            _logger.LogDebug("Disposing resources.");
             _readModemTimer?.Dispose();
         }
     }

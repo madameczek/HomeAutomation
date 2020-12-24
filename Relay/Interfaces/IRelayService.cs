@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Shared;
 using Shared.Models;
 
-namespace Relay
+namespace Relay.Interfaces
 {
     public interface IRelayService : IService
     {

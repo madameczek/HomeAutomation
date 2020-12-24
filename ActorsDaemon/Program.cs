@@ -6,9 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.Device.Gpio;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Relay;
+using Relay.Interfaces;
 using Shared;
 using TemperatureSensor;
 
@@ -76,6 +78,8 @@ namespace ActorsDaemon
                     services.AddTransient<IModemDevice, ModemDevice>();
                     services.AddSingleton<IRelayService, RelayService>();
                     services.AddSingleton<ISunriseSunsetService, SunriseSunsetService>();
+                    services.AddSingleton<GpioService>();
+                    services.AddTransient<IRelayDevice, RelayDevice>();
                 })
                 .UseSerilog();
         }

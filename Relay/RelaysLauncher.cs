@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Relay.Interfaces;
 using Shared.Models;
 
 namespace Relay
@@ -13,6 +15,7 @@ namespace Relay
         private Timer _relayTimer1;
         private Timer _readApiTimer;
         private readonly List<Task> _tasks = new List<Task>();
+        private List<Tuple<IRelayService, Timer>> _relays = new List<Tuple<IRelayService, Timer>>();
 
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
         private IHwSettings _relayHwSettings;
@@ -22,12 +25,13 @@ namespace Relay
         private readonly ILogger _logger;
         private readonly IRelayService _relayService;
         private readonly ISunriseSunsetService _sunsetService;
-        public RelaysLauncher(ILoggerFactory loggerFactory, IRelayService relayService, ISunriseSunsetService sunsetService)
+        private readonly IServiceProvider _serviceProvider;
+        public RelaysLauncher(ILoggerFactory loggerFactory, IRelayService relayService, ISunriseSunsetService sunsetService, IServiceProvider provider)
         {
             _logger = loggerFactory.CreateLogger("Relay Launcher");
             _relayService = relayService;
             _sunsetService = sunsetService;
-
+            _serviceProvider = provider;
         }
         #endregion
 
@@ -49,12 +53,26 @@ namespace Relay
                 _logger.LogDebug("Sunset API not initialized.");
             }
 
-            var relaysSettingsList  = _relayService.GetSettings();
+            IEnumerable<IHwSettings> relaysSettingsList;
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var relayService = scope.ServiceProvider.GetRequiredService<IRelayService>();
+                relaysSettingsList = relayService.GetSettings();
+            } 
             foreach (var settings in relaysSettingsList)
             {
                 if (settings.Attach)
                 {
-                    await _relayService.ConfigureService(settings, cancellationToken);
+                    using var scope = _serviceProvider.CreateScope();
+                    var relayService = scope.ServiceProvider.GetRequiredService<IRelayService>();
+                    await relayService.ConfigureService(settings, cancellationToken);
+                    _relayTimer1 = new Timer(
+                        Relay1,
+                        null,
+                        TimeSpan.FromMilliseconds(800000),
+                        TimeSpan.FromSeconds(settings.ReadInterval));
+                    _relays.Add(Tuple.Create(relayService, _relayTimer1));
+                    _logger.LogInformation("Relay {Name} configured with read period: {RelayReadPeriod} sec.", settings.Name, settings.ReadInterval);
                 }
             }
             
@@ -72,7 +90,7 @@ namespace Relay
 
         }
 
-        private static void Timer1(object state)
+        private static void Relay1(object state)
         {
 
         }
@@ -81,13 +99,14 @@ namespace Relay
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _readApiTimer?.Change(Timeout.Infinite, 0);
+            _relays.ForEach(t=>t.Item2.Change(Timeout.Infinite, 0));
             try
             {
                 _stoppingCts.Cancel();
             }
             finally
             {
-                _logger.LogDebug("Stopping");
+                _logger.LogInformation("Stopping");
                 Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;
@@ -95,9 +114,9 @@ namespace Relay
 
         public void Dispose()
         {
-            _logger.LogInformation("Disposing resources.");
-            _relayTimer1?.Dispose();
+            _logger.LogDebug("Disposing resources.");
             _readApiTimer?.Dispose();
+            _relays.ForEach(t=>t.Item2?.Dispose());
         }
     }
 }

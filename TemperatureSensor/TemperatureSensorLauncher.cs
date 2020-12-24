@@ -82,7 +82,7 @@ namespace TemperatureSensor
             }
             finally
             {
-                _logger.LogDebug("Stopping");
+                _logger.LogInformation("Stopping");
                 Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;
@@ -90,7 +90,7 @@ namespace TemperatureSensor
 
         public void Dispose()
         {
-            _logger.LogInformation("Disposing resources.");
+            _logger.LogDebug("Disposing resources.");
             _readSensorTimer?.Dispose();
             _saveReadingToDatabaseTimer?.Dispose();
         }

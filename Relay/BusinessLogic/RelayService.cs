@@ -19,40 +19,42 @@ namespace Relay
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         private readonly IServiceProvider _services;
-        public RelayService(IConfiguration configuration, ILoggerFactory logger, IServiceProvider services)
+        private readonly IRelayDevice _relayDevice;
+        public RelayService(IConfiguration configuration, ILoggerFactory logger, IServiceProvider services, IRelayDevice relayDevice)
         {
             _configuration = configuration;
             _logger = logger.CreateLogger("Relay service");
             _services = services;
+            _relayDevice = relayDevice;
         }
         #endregion
 
         // Define section of appsettings.json to parse device config from configuration object
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "Relay";
-        private List<RelayHwSettings> _hwSettingsList;
+        private RelayHwSettings _hwSettings;
 
         public IHwSettings GetSettings() => throw new NotImplementedException();
-    public Task ConfigureService(CancellationToken ct) => throw new NotImplementedException();
+        public Task ConfigureService(CancellationToken ct) => throw new NotImplementedException();
 
         IEnumerable<IHwSettings> IRelayService.GetSettings()
         {
-            return _hwSettingsList = _configuration
+            return _configuration
                 .GetSection($"{HwSettingsSection}:{HwSettingsCurrentActorSection}")
                 .Get<List<RelayHwSettings>>();
         }
 
         public Task ConfigureService(IHwSettings settings, CancellationToken ct)
         {
-            IRelayDevice relay;
+            _hwSettings = (RelayHwSettings)settings;
             try
             {
+                _relayDevice.SetPin(_hwSettings.GpioPin);
                 return Task.CompletedTask;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return Task.FromException(new IOException());
+                return Task.FromException(e);
             }
         }
 

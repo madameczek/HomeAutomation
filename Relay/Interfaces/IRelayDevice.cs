@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Relay.Interfaces
 {
-    interface IRelayDevice
+    public interface IRelayDevice
     {
+        public void SetPin(int pin);
     }
 }
