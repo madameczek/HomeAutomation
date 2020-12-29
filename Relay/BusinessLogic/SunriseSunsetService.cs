@@ -20,17 +20,21 @@ namespace Relay
     public class SunriseSunsetService : ISunriseSunsetService
     {
         #region Dependency Injection
+
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
         private readonly IServiceProvider _services;
-        public SunriseSunsetService(IConfiguration configuration, ILoggerFactory logger, HttpClient httpClient, IServiceProvider services)
+
+        public SunriseSunsetService(IConfiguration configuration, ILoggerFactory logger, HttpClient httpClient,
+            IServiceProvider services)
         {
             _configuration = configuration;
             _logger = logger.CreateLogger("Sunset service");
             _httpClient = httpClient;
             _services = services;
         }
+
         #endregion
 
         // Define section of appsettings.json to parse device config from configuration object
@@ -42,6 +46,35 @@ namespace Relay
         private SunriseSunsetApiData _data;
         private static readonly object ApiLock = new object();
         private bool _deviceReadingIsValid;
+        
+        public delegate void SunsetEventHandler();
+        public event SunsetEventHandler Sunset;
+        protected virtual void OnSunset()
+        {
+            Sunset?.Invoke();
+        }
+        // utworzyć task, który bedzie porownywał czas dnia z czasem sunset i 
+        private void Run(CancellationToken ct)
+        {
+            Task.Run(() =>
+            {
+                var isRaised = false;
+                DateTime raisedDate = DateTime.Now.Date;
+                while (!ct.IsCancellationRequested)
+                {
+                    // raise once a day
+                    if (!isRaised && DateTime.Now.TimeOfDay > _data.Sunset.TimeOfDay)
+                    {
+                        OnSunset();
+                        isRaised = true;
+                        raisedDate = DateTime.Now.Date;
+                    }
+                    Task.Delay(TimeSpan.FromMinutes(1), ct).Wait(ct);
+                    // jesli nastapil nowy dzien, to skasowac flage raisedtoday
+                    if (isRaised && DateTime.Now.Date > raisedDate.Date) isRaised = false;
+                }
+            }, ct);
+        }
 
         public IHwSettings GetSettings()
         {
@@ -88,6 +121,7 @@ namespace Relay
                             }
                             _deviceReadingIsValid = true;
                             _logger.LogInformation("Fetched data from Sunset API.");
+                            Run(ct);
                             return;
                         }
                     }

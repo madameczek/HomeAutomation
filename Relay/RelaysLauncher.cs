@@ -12,10 +12,10 @@ namespace Relay
 {
     public class RelaysLauncher : IHostedService, IDisposable
     {
-        private Timer _relayTimer1;
+        //private Timer relayTimer;
         private Timer _readApiTimer;
         private readonly List<Task> _tasks = new List<Task>();
-        private List<Tuple<IRelayService, Timer>> _relays = new List<Tuple<IRelayService, Timer>>();
+        private List<Tuple<IRelayService, IHwSettings, Timer>> _relays = new List<Tuple<IRelayService, IHwSettings, Timer>>();
 
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
         private IHwSettings _relayHwSettings;
@@ -66,13 +66,18 @@ namespace Relay
                     using var scope = _serviceProvider.CreateScope();
                     var relayService = scope.ServiceProvider.GetRequiredService<IRelayService>();
                     await relayService.ConfigureService(settings, cancellationToken);
-                    _relayTimer1 = new Timer(
-                        Relay1,
+                    _ = relayService.Run(cancellationToken);
+                    var relayTimer = new Timer(
+                        Relay,
                         null,
-                        TimeSpan.FromMilliseconds(800000),
+                        TimeSpan.FromMilliseconds(80),
                         TimeSpan.FromSeconds(settings.ReadInterval));
-                    _relays.Add(Tuple.Create(relayService, _relayTimer1));
+                    _relays.Add(Tuple.Create(relayService, settings, relayTimer));
                     _logger.LogInformation("Relay {Name} configured with read period: {RelayReadPeriod} sec.", settings.Name, settings.ReadInterval);
+                }
+                else
+                {
+                    _logger.LogDebug("Relay {Name} not initialized.", settings.Name);
                 }
             }
             
@@ -87,19 +92,17 @@ namespace Relay
             var saveReadingToDatabaseTask = _sunsetService.SaveMessageAsync(_stoppingCts.Token);
             _tasks.Add(saveReadingToDatabaseTask);
             saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
-
         }
 
-        private static void Relay1(object state)
+        private static void Relay(object state)
         {
-
+            //SunriseSunsetService.SunsetEventHandler sunset
         }
-
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _readApiTimer?.Change(Timeout.Infinite, 0);
-            _relays.ForEach(t=>t.Item2.Change(Timeout.Infinite, 0));
+            _relays.ForEach(t=>t.Item3.Change(Timeout.Infinite, 0));
             try
             {
                 _stoppingCts.Cancel();
@@ -116,7 +119,7 @@ namespace Relay
         {
             _logger.LogDebug("Disposing resources.");
             _readApiTimer?.Dispose();
-            _relays.ForEach(t=>t.Item2?.Dispose());
+            _relays.ForEach(t=>t.Item3?.Dispose());
         }
     }
 }

@@ -33,6 +33,7 @@ namespace Relay
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "Relay";
         private RelayHwSettings _hwSettings;
+        private bool _isOn = false;
 
         public IHwSettings GetSettings() => throw new NotImplementedException();
         public Task ConfigureService(CancellationToken ct) => throw new NotImplementedException();
@@ -49,7 +50,8 @@ namespace Relay
             _hwSettings = (RelayHwSettings)settings;
             try
             {
-                _relayDevice.SetPin(_hwSettings.GpioPin);
+                _relayDevice.Configure(_hwSettings);
+                // pobierz sunset;
                 return Task.CompletedTask;
             }
             catch (Exception e)
@@ -57,6 +59,30 @@ namespace Relay
                 return Task.FromException(e);
             }
         }
+
+        public async Task Run(CancellationToken ct)
+        {
+            var timeOn = _hwSettings.TimeOn;
+            var timeOff = _hwSettings.TimeOff;
+            while (!ct.IsCancellationRequested)
+            {
+                if (DateTime.Now.TimeOfDay > timeOn && DateTime.Now.TimeOfDay < timeOff)
+                {
+                    await _relayDevice.SetOn();
+                    //_logger.LogDebug("Relay {Name} is ON", _hwSettings.Name);
+                }
+                else
+                {
+                    await _relayDevice.SetOff();
+                    //_logger.LogDebug("Relay {Name} is OFF", _hwSettings.Name);
+                }
+                await Task.Delay(TimeSpan.FromSeconds(10), ct);
+            }
+            // sprawdzaj godzine, jesli > sunset włącz 
+        }
+
+        
+
 
         public Task ReadDeviceAsync(CancellationToken ct)
         {

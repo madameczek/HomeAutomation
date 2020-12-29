@@ -12,5 +12,6 @@ namespace Relay.Interfaces
     {
         public new IEnumerable<IHwSettings> GetSettings();
         public Task ConfigureService(IHwSettings settings, CancellationToken ct);
+        public Task Run(CancellationToken ct);
     }
 }
