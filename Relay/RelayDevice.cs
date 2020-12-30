@@ -40,7 +40,7 @@ namespace Relay
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Set ON pin failed");
+                _logger.LogError(e, "Set ON pin {Pin} failed", _pin);
                 return Task.FromException(e);
             }
         }
@@ -55,7 +55,7 @@ namespace Relay
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Set Off pin failed");
+                _logger.LogError(e, "Set Off pin {Pin} failed", _pin);
                 return Task.FromException(e);
             }
         }
@@ -70,7 +70,7 @@ namespace Relay
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Toggle pin failed");
+                _logger.LogError(e, "Toggle pin {Pin} failed", _pin);
                 return Task.FromException(e);
             }
         }
@@ -80,12 +80,7 @@ namespace Relay
             _pin = settings.GpioPin;
             // This sets which output state (high or low) is configured as 'active' state.
             _activeState = settings.ActiveState;
-            _gpio.OpenPin(settings.GpioPin);
+            _gpio.OpenPin(settings.GpioPin, _activeState);
         }
-
-        // zainicjalizować device i trzymac bool isInitialized
-        // można w serwisie trzymac zmienną _device w usingu
-        // pomyslec, jak uzywac różne device z jednym kontrollerem gpio
-        
     }
 }

@@ -33,7 +33,6 @@ namespace Relay
         public string HwSettingsSection { get; } = "HWSettings";
         public string HwSettingsCurrentActorSection { get; } = "Relay";
         private RelayHwSettings _hwSettings;
-        private bool _isOn = false;
 
         public IHwSettings GetSettings() => throw new NotImplementedException();
         public Task ConfigureService(CancellationToken ct) => throw new NotImplementedException();
@@ -69,13 +68,12 @@ namespace Relay
                 if (DateTime.Now.TimeOfDay > timeOn && DateTime.Now.TimeOfDay < timeOff)
                 {
                     _ = _relayDevice.SetOn();
-                    //_logger.LogDebug("Relay {Name} is ON", _hwSettings.Name);
+                    _logger.LogTrace("Relay {RelayName} is ON.", _hwSettings.Name);
                 }
                 else
                 {
                     _ = _relayDevice.SetOff();
-                    //_logger.LogDebug("Relay {Name} is OFF", _hwSettings.Name);
-                    //_ = _relayDevice.Toggle(); // just for testing
+                    _logger.LogTrace("Relay {RelayName} is OFF.", _hwSettings.Name);
                 }
                 await Task.Delay(TimeSpan.FromSeconds(15), ct);
             }

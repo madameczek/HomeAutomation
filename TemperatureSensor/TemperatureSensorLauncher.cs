@@ -55,11 +55,11 @@ namespace TemperatureSensor
             }
             catch (OperationCanceledException)
             {
-                _logger.LogDebug("Cancelled");
+                _logger.LogDebug("Cancelled.");
             }
             catch(Exception e)
             {
-                _logger.LogCritical(e, "Starting service failed");
+                _logger.LogCritical(e, "Starting service failed.");
             }
         }
 
@@ -82,7 +82,7 @@ namespace TemperatureSensor
             }
             finally
             {
-                _logger.LogInformation("Stopping");
+                _logger.LogInformation("Stopping.");
                 Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;

@@ -4,54 +4,66 @@ using System.Text;
 using System.Device.Gpio;
 using System.IO.Ports;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Relay
 {
     public class GpioService : IDisposable
     {
+        private readonly GpioController _gpio;
         private readonly ILogger _logger;
         public GpioService(ILoggerFactory logger)
         {
             _logger = logger.CreateLogger("GPIO controller");
+            _gpio = new GpioController(PinNumberingScheme.Logical);
         }
 
         // to do: handle exception: no gpio found
-        GpioController gpio = new GpioController(PinNumberingScheme.Logical);
-
-        public void OpenPin(int pin)
+        
+        public void OpenPin(int pin, PinValue onValue)
         {
-            if (!gpio.IsPinOpen(pin)) gpio.OpenPin(pin, PinMode.Output);
-            _logger.LogDebug("Pin set");
+            if (!_gpio.IsPinOpen(pin)) 
+            {
+                // There is a flash of low potential on an output between setting pin as output
+                // and writing output to high. Sequence below charges internal capatitance before
+                // setting pin as output. This minimalise initial low level on output before it is set high.
+                // This might be important when active state = PinValue low.
+                // To eliminate this completely, passive hardware integrator circuit should help.
+                _gpio.OpenPin(pin, PinMode.InputPullUp);
+                Task.Delay(10).Wait();
+                _gpio.SetPinMode(pin, PinMode.Output);
+                _gpio.Write(pin, !onValue);
+            }
         }
 
         public void SetOn(int pin, PinValue onValue)
         {
-            if (gpio.IsPinOpen(pin))
+            if (_gpio.IsPinOpen(pin))
             {
-                gpio.Write(pin, onValue);
+                _gpio.Write(pin, onValue);
             }
         }
 
         public void SetOff(int pin, PinValue onValue)
         {
-            if (gpio.IsPinOpen(pin))
+            if (_gpio.IsPinOpen(pin))
             {
-                gpio.Write(pin, !onValue);
+                _gpio.Write(pin, !onValue);
             }
         }
 
         public void Toggle(int pin)
         {
-            if (gpio.IsPinOpen(pin))            
+            if (_gpio.IsPinOpen(pin))            
             {
-                gpio.Write(pin, !gpio.Read(pin));
+                _gpio.Write(pin, !_gpio.Read(pin));
             }
         }
 
         public void Dispose()
         {
-            _logger.LogDebug("Disposing GPIO controller");
-            gpio.Dispose();
+            _logger.LogDebug("Disposing GPIO controller.");
+            _gpio.Dispose();
         }
     }
 }

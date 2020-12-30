@@ -48,7 +48,7 @@ namespace ImgwApi
             }
             catch (OperationCanceledException)
             {
-                _logger.LogDebug("Cancelled");
+                _logger.LogDebug("Cancelled.");
             }
             catch(Exception e)
             {
@@ -76,7 +76,7 @@ namespace ImgwApi
             }
             finally
             {
-                _logger.LogInformation("Stopping");
+                _logger.LogInformation("Stopping.");
                 Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;

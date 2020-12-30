@@ -12,7 +12,6 @@ namespace Relay
 {
     public class RelaysLauncher : IHostedService, IDisposable
     {
-        //private Timer relayTimer;
         private Timer _readApiTimer;
         private readonly List<Task> _tasks = new List<Task>();
         private List<Tuple<IRelayService, IHwSettings, Timer>> _relays = new List<Tuple<IRelayService, IHwSettings, Timer>>();
@@ -23,13 +22,11 @@ namespace Relay
 
         #region Ctor & Dependency Injection
         private readonly ILogger _logger;
-        private readonly IRelayService _relayService;
         private readonly ISunriseSunsetService _sunsetService;
         private readonly IServiceProvider _serviceProvider;
-        public RelaysLauncher(ILoggerFactory loggerFactory, IRelayService relayService, ISunriseSunsetService sunsetService, IServiceProvider provider)
+        public RelaysLauncher(ILoggerFactory loggerFactory, ISunriseSunsetService sunsetService, IServiceProvider provider)
         {
             _logger = loggerFactory.CreateLogger("Relay Launcher");
-            _relayService = relayService;
             _sunsetService = sunsetService;
             _serviceProvider = provider;
         }
@@ -74,11 +71,10 @@ namespace Relay
                         TimeSpan.FromMilliseconds(80),
                         TimeSpan.FromSeconds(settings.ReadInterval));
                     _relays.Add(Tuple.Create(relayService, settings, relayTimer));
-                    //_logger.LogDebug("Service {servicehash}. Scope {scopehash}", relayService.GetHashCode(), scope.GetHashCode());
                 }
                 else
                 {
-                    _logger.LogDebug("Relay {Name} not initialized.", settings.Name);
+                    _logger.LogTrace("Relay {Name} not initialized.", settings.Name);
                 }
             }
             
@@ -110,7 +106,7 @@ namespace Relay
             }
             finally
             {
-                _logger.LogInformation("Stopping");
+                _logger.LogInformation("Stopping.");
                 Task.WhenAll(_tasks).Wait(cancellationToken);
             }
             await Task.CompletedTask;
