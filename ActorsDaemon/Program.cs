@@ -18,7 +18,7 @@ namespace ActorsDaemon
 {
     public static class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
 #if DEBUG
             // uncomment for remote debuging
@@ -32,7 +32,7 @@ namespace ActorsDaemon
 
             try
             {
-                var host = CreateHostBuilder(args).Build();
+                var host = CreateHostBuilder().Build();
                 var configuration = host.Services.GetRequiredService<IConfiguration>();
 
                 Log.Logger = new LoggerConfiguration()
@@ -53,9 +53,9 @@ namespace ActorsDaemon
             }
         }
 
-        private static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder()
         {
-            return Host.CreateDefaultBuilder(args)
+            return Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration((config)=>
                 {
                     config.SetBasePath(AppDomain.CurrentDomain.BaseDirectory + @"/Properties/");
@@ -76,7 +76,7 @@ namespace ActorsDaemon
                     services.AddDbContext<LocalContext>();
                     services.AddTransient<IPortProvider, PortProvider>();
                     services.AddTransient<IModemDevice, ModemDevice>();
-                    services.AddSingleton<IRelayService, RelayService>();
+                    services.AddScoped<IRelayService, RelayService>();
                     services.AddSingleton<ISunriseSunsetService, SunriseSunsetService>();
                     services.AddSingleton<GpioService>();
                     services.AddTransient<IRelayDevice, RelayDevice>();

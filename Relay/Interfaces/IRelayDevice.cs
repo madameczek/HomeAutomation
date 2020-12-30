@@ -11,5 +11,6 @@ namespace Relay.Interfaces
         public void Configure(RelayHwSettings settings);
         public Task SetOn();
         public Task SetOff();
+        public Task Toggle();
     }
 }

@@ -66,14 +66,15 @@ namespace Relay
                     using var scope = _serviceProvider.CreateScope();
                     var relayService = scope.ServiceProvider.GetRequiredService<IRelayService>();
                     await relayService.ConfigureService(settings, cancellationToken);
-                    _ = relayService.Run(cancellationToken);
+                    _logger.LogInformation("Relay {Name} configured with read period: {RelayReadPeriod} sec.", settings.Name, settings.ReadInterval);
+                    _ = relayService.Run(cancellationToken); // temporary solution
                     var relayTimer = new Timer(
                         Relay,
                         null,
                         TimeSpan.FromMilliseconds(80),
                         TimeSpan.FromSeconds(settings.ReadInterval));
                     _relays.Add(Tuple.Create(relayService, settings, relayTimer));
-                    _logger.LogInformation("Relay {Name} configured with read period: {RelayReadPeriod} sec.", settings.Name, settings.ReadInterval);
+                    //_logger.LogDebug("Service {servicehash}. Scope {scopehash}", relayService.GetHashCode(), scope.GetHashCode());
                 }
                 else
                 {

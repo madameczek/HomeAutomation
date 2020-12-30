@@ -68,21 +68,18 @@ namespace Relay
             {
                 if (DateTime.Now.TimeOfDay > timeOn && DateTime.Now.TimeOfDay < timeOff)
                 {
-                    await _relayDevice.SetOn();
+                    _ = _relayDevice.SetOn();
                     //_logger.LogDebug("Relay {Name} is ON", _hwSettings.Name);
                 }
                 else
                 {
-                    await _relayDevice.SetOff();
+                    _ = _relayDevice.SetOff();
                     //_logger.LogDebug("Relay {Name} is OFF", _hwSettings.Name);
+                    //_ = _relayDevice.Toggle(); // just for testing
                 }
-                await Task.Delay(TimeSpan.FromSeconds(10), ct);
+                await Task.Delay(TimeSpan.FromSeconds(15), ct);
             }
-            // sprawdzaj godzine, jesli > sunset włącz 
         }
-
-        
-
 
         public Task ReadDeviceAsync(CancellationToken ct)
         {

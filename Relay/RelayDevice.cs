@@ -55,7 +55,22 @@ namespace Relay
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Set ON pin failed");
+                _logger.LogError(e, "Set Off pin failed");
+                return Task.FromException(e);
+            }
+        }
+
+        public Task Toggle()
+        {
+            if (_pin == 0) throw new Exception("GPIO pin not configured");
+            try
+            {
+                _gpio.Toggle(_pin);
+                return Task.CompletedTask;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Toggle pin failed");
                 return Task.FromException(e);
             }
         }
@@ -63,13 +78,9 @@ namespace Relay
         public void Configure(RelayHwSettings settings)
         {
             _pin = settings.GpioPin;
+            // This sets which output state (high or low) is configured as 'active' state.
             _activeState = settings.ActiveState;
             _gpio.OpenPin(settings.GpioPin);
-        }
-
-        public void Set(State state)
-        {
-
         }
 
         // zainicjalizować device i trzymac bool isInitialized
