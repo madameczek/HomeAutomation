@@ -1,7 +1,7 @@
 ﻿using DataLayer;
 using DataLayer.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection; // for using IServiceProvider
+using Microsoft.Extensions.DependencyInjection; // enables use of IServiceProvider
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,14 +19,15 @@ namespace Relay
 {
     public class SunriseSunsetService : ISunriseSunsetService
     {
-        #region Dependency Injection
-
+        #region Ctor & Dependency Injection
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
         private readonly IServiceProvider _services;
-
-        public SunriseSunsetService(IConfiguration configuration, ILoggerFactory logger, HttpClient httpClient,
+        public SunriseSunsetService(
+            IConfiguration configuration, 
+            ILoggerFactory logger, 
+            HttpClient httpClient,
             IServiceProvider services)
         {
             _configuration = configuration;
@@ -34,7 +35,6 @@ namespace Relay
             _httpClient = httpClient;
             _services = services;
         }
-
         #endregion
 
         // Define section of appsettings.json to parse device config from configuration object
@@ -47,17 +47,16 @@ namespace Relay
         private static readonly object ApiLock = new object();
         private bool _deviceReadingIsValid;
         
-        public delegate void SunsetEventHandler();
-        public event SunsetEventHandler Sunset;
+        public event EventHandler Sunset;
         protected virtual void OnSunset()
         {
-            Sunset?.Invoke();
+            Sunset?.Invoke(null, EventArgs.Empty);
         }
-        // utworzyć task, który bedzie porownywał czas dnia z czasem sunset i 
         private void Run(CancellationToken ct)
         {
             Task.Run(() =>
             {
+                Task.Delay(TimeSpan.FromSeconds(5), ct).Wait(ct);
                 var isRaised = false;
                 DateTime raisedDate = DateTime.Now.Date;
                 while (!ct.IsCancellationRequested)
@@ -121,7 +120,7 @@ namespace Relay
                             }
                             _deviceReadingIsValid = true;
                             _logger.LogInformation("Fetched data from Sunset API.");
-                            Run(ct);
+                            Run(ct); // tak naprawde to powinno ciagnac z bazy
                             return;
                         }
                     }

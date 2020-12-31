@@ -15,17 +15,17 @@ namespace Relay
 {
     public class RelayService : IRelayService
     {
-        #region Dependency Injection
+        #region Ctor & Dependency Injection
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
-        private readonly IServiceProvider _services;
         private readonly IRelayDevice _relayDevice;
-        public RelayService(IConfiguration configuration, ILoggerFactory logger, IServiceProvider services, IRelayDevice relayDevice)
+        private readonly ISunriseSunsetService _sunsetService;
+        public RelayService(IConfiguration configuration, ILoggerFactory logger, IRelayDevice relayDevice, ISunriseSunsetService sunriseSunsetService)
         {
             _configuration = configuration;
             _logger = logger.CreateLogger("Relay service");
-            _services = services;
             _relayDevice = relayDevice;
+            _sunsetService = sunriseSunsetService;
         }
         #endregion
 
@@ -50,7 +50,18 @@ namespace Relay
             try
             {
                 _relayDevice.Configure(_hwSettings);
-                // pobierz sunset;
+                switch (_hwSettings.ActivateOn)
+                {
+                    case "Sunset":
+                        _sunsetService.Sunset += OnSunsetActivateEventHandler;
+                        break;
+                    case "TimeOn":
+                        break;
+                    default:
+                        _logger.LogError("Relay {Name} activation not configured.", _hwSettings.Name);
+                        break;
+                }
+                _logger.LogDebug("Relay {Name} activating configured for {Event}.", _hwSettings.Name, _hwSettings.ActivateOn);
                 return Task.CompletedTask;
             }
             catch (Exception e)
@@ -59,16 +70,26 @@ namespace Relay
             }
         }
 
+        void OnSunsetActivateEventHandler(object sender, EventArgs e)
+        {
+            _relayDevice.SetOn();
+            _logger.LogDebug("OnSunsetActivate event handler invoked.");
+        }
+
         public async Task Run(CancellationToken ct)
         {
+            // zamiast tego eventy od zegara.
+            // Przygotowac handlery, które będą dopinane case-switch.
+            // Uwazac na odpalanie eventow. w zadadzie nalezaloby sprawdzic
+            // czy nie nastapil warunek wylaczenia i dopiero wtedy sprawdzać, czy jest spelniony warunek wlaczenia.
             var timeOn = _hwSettings.TimeOn;
             var timeOff = _hwSettings.TimeOff;
             while (!ct.IsCancellationRequested)
             {
                 if (DateTime.Now.TimeOfDay > timeOn && DateTime.Now.TimeOfDay < timeOff)
                 {
-                    _ = _relayDevice.SetOn();
-                    _logger.LogTrace("Relay {RelayName} is ON.", _hwSettings.Name);
+                    //_ = _relayDevice.SetOn();
+                    //_logger.LogTrace("Relay {RelayName} is ON.", _hwSettings.Name);
                 }
                 else
                 {

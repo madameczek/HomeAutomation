@@ -91,9 +91,8 @@ namespace Relay
             saveReadingToDatabaseTask.Wait(_stoppingCts.Token);
         }
 
-        private static void Relay(object state)
+        private void Relay(object state)
         {
-            //SunriseSunsetService.SunsetEventHandler sunset
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

@@ -11,12 +11,6 @@ using Shared.Models;
 
 namespace Relay
 {
-    public enum State
-    {
-        On,
-        Off
-    }
-
     public class RelayDevice : IRelayDevice
     {
         private readonly GpioService _gpio;
@@ -29,14 +23,25 @@ namespace Relay
 
         private int _pin;
         private PinValue _activeState;
+        private bool _isGpioInitialised;
 
         public Task SetOn()
         {
-            if (_pin == 0) throw new Exception("GPIO pin is not configured");
             try
             {
-                _gpio.SetOn(_pin, _activeState);
-                return Task.CompletedTask;
+                if (_pin == 0) 
+                    throw new Exception("GPIO pin is not configured");
+                if (_isGpioInitialised)
+                {
+                    _gpio.SetOn(_pin, _activeState);
+                    return Task.CompletedTask;
+                }
+                throw new InvalidOperationException("GPIO not initialised.");
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogError("{Message}", e.Message);
+                return Task.FromException(e);
             }
             catch (Exception e)
             {
@@ -47,11 +52,21 @@ namespace Relay
 
         public Task SetOff()
         {
-            if (_pin == 0) throw new Exception("GPIO pin not configured");
             try
             {
-                _gpio.SetOn(_pin, !_activeState);
-                return Task.CompletedTask;
+                if (_pin == 0) 
+                    throw new Exception("GPIO pin not configured");
+                if (_isGpioInitialised)
+                {
+                    _gpio.SetOn(_pin, !_activeState);
+                    return Task.CompletedTask;
+                }
+                throw new InvalidOperationException("GPIO not initialised.");
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogError("{Message}", e.Message);
+                return Task.FromException(e);
             }
             catch (Exception e)
             {
@@ -62,11 +77,21 @@ namespace Relay
 
         public Task Toggle()
         {
-            if (_pin == 0) throw new Exception("GPIO pin not configured");
             try
             {
-                _gpio.Toggle(_pin);
-                return Task.CompletedTask;
+                if (_pin == 0) 
+                    throw new Exception("GPIO pin not configured");
+                if (_isGpioInitialised)
+                {
+                    _gpio.Toggle(_pin);
+                    return Task.CompletedTask;
+                }
+                throw new InvalidOperationException("GPIO not initialised.");
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogError("{Message}", e.Message);
+                return Task.FromException(e);
             }
             catch (Exception e)
             {
@@ -75,12 +100,28 @@ namespace Relay
             }
         }
 
-        public void Configure(RelayHwSettings settings)
+        public bool Configure(RelayHwSettings settings)
         {
             _pin = settings.GpioPin;
+            // First use of the method initialises GPIO controller with hardware
+            _isGpioInitialised = _gpio.Initialise();
             // This sets which output state (high or low) is configured as 'active' state.
             _activeState = settings.ActiveState;
-            _gpio.OpenPin(settings.GpioPin, _activeState);
+            try
+            {
+                if (_isGpioInitialised)
+                {
+                    _gpio.OpenPin(settings.GpioPin, _activeState);
+                    return true;
+                }
+                _logger.LogError("GPIO not initialised.");
+                return false;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Open pin {Pin} failed", _pin);
+                return false;
+            }
         }
     }
 }

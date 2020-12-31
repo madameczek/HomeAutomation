@@ -8,7 +8,7 @@ namespace Relay.Interfaces
 {
     public interface IRelayDevice
     {
-        public void Configure(RelayHwSettings settings);
+        public bool Configure(RelayHwSettings settings);
         public Task SetOn();
         public Task SetOff();
         public Task Toggle();

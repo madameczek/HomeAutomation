@@ -21,10 +21,12 @@ The system consists of physical devices and an application. Management and monit
 - [x] Service downloading readings from the IMGW API stores data in a db on Pi
 - [x] GSM service initialises GSM modem
 - [x] GSM Modem reads test messages sent to it
+- [x] Mostly wanted for Christmas: relay board actor for controlling outdoor lights on Christmas tree :grinning: Lights go on on sunset (gathered by API) and go off on time set in appsettings.
 
 ## Todo next
 
-- [ ] Mostly wanted is relay board actor service controlling outdoor lights on Christmas tree :grinning:
+- [ ] Finish implementation of different options invoking relays: time, input switch, command from GSM
+- [ ] Implement GSM modem functionality. It is tested on side, but not integrated with the *Home Automation System*
 
 As you can see, this is an incipient stage, but the feasibility is already proven and the hardware and core software modules have been integrated. It is a hobby project, which will probably be extended in time, and functionalities will be launched according to the developer's own needs :grinning:
 

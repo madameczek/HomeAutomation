@@ -8,6 +8,6 @@ namespace Relay.Interfaces
 {
     public interface ISunriseSunsetService : IService
     {
-        public event SunsetEventHandler Sunset;
+        public event EventHandler Sunset;
     }
 }

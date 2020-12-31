@@ -10,15 +10,31 @@ namespace Relay
 {
     public class GpioService : IDisposable
     {
-        private readonly GpioController _gpio;
+        private GpioController _gpio;
         private readonly ILogger _logger;
         public GpioService(ILoggerFactory logger)
         {
             _logger = logger.CreateLogger("GPIO controller");
-            _gpio = new GpioController(PinNumberingScheme.Logical);
         }
 
-        // to do: handle exception: no gpio found
+        public bool Initialise()
+        {
+            try
+            {
+                if (_gpio == null)
+                {
+                    _gpio = new GpioController(PinNumberingScheme.Logical);
+                    return true;
+                }
+                _logger.LogTrace("GPIO Initialised already.");
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error initialising GPIO hardware. ");
+                return false;
+            }
+        }
         
         public void OpenPin(int pin, PinValue onValue)
         {
@@ -63,7 +79,7 @@ namespace Relay
         public void Dispose()
         {
             _logger.LogDebug("Disposing GPIO controller.");
-            _gpio.Dispose();
+            _gpio?.Dispose();
         }
     }
 }
