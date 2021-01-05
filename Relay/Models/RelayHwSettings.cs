@@ -19,8 +19,8 @@ namespace Relay.Models
         public int ReadInterval { get; set; }
         public int GpioPin { get; set; }
         public int ActiveState { get; set; }
-        public string ActivateOn { get; set; }
-        public string DeactivateOn { get; set; }
+        public Activators ActivateOn { get; set; }
+        public Activators DeactivateOn { get; set; }
         public TimeSpan TimeOn { get; set; }
         public TimeSpan TimeOff { get; set; }
         public TimeSpan Timer { get; set; }

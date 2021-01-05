@@ -10,6 +10,7 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -73,9 +74,16 @@ namespace ImgwApi
                 _deviceReadingIsValid = _rawData.ContainsValue(_hwSettings.StationId.ToString());
                 _logger.LogInformation("Fetched data from IMGW.");
             }
-            catch (OperationCanceledException) 
+            catch (OperationCanceledException e) 
             { 
-                _logger.LogDebug("Cancelled."); 
+                _logger.LogDebug("Cancelled.");
+                await Task.FromException(e);
+            }
+            catch (IOException e)
+            {
+                _logger.LogError(e, "Remote serwer error.");
+                _deviceReadingIsValid = false;
+                await Task.FromException(e);
             }
             catch (Exception e)
             {
@@ -83,7 +91,6 @@ namespace ImgwApi
                 _deviceReadingIsValid = false;
                 await Task.FromException(e);
             }
-            await Task.CompletedTask;
         }
 
         public IMessage GetMessage()

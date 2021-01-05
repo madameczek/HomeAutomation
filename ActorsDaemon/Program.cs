@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Relay;
 using Relay.Interfaces;
+using Serilog.Configuration;
 using Shared;
 using TemperatureSensor;
 
@@ -34,6 +35,7 @@ namespace ActorsDaemon
             {
                 var host = CreateHostBuilder().Build();
                 var configuration = host.Services.GetRequiredService<IConfiguration>();
+                Environment.SetEnvironmentVariable("PROGRAMDATA", AppDomain.CurrentDomain.BaseDirectory);
 
                 Log.Logger = new LoggerConfiguration()
                     .ReadFrom.Configuration(configuration)

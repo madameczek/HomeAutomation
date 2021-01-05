@@ -13,6 +13,18 @@ using Shared.Models;
 
 namespace Relay
 {
+    public enum Activators
+    {
+        Sunset,
+        Sunrise,
+        TimeOn,
+        TimeOff,
+        DateTimeOn,
+        DateTimeOff,
+        GsmCommand,
+        InputOn,
+        InputOff
+    }
     public class RelayService : IRelayService
     {
         #region Ctor & Dependency Injection
@@ -52,10 +64,10 @@ namespace Relay
                 _relayDevice.Configure(_hwSettings);
                 switch (_hwSettings.ActivateOn)
                 {
-                    case "Sunset":
+                    case Activators.Sunset:
                         _sunsetService.Sunset += OnSunsetActivateEventHandler;
                         break;
-                    case "TimeOn":
+                    case Activators.TimeOn:
                         break;
                     default:
                         _logger.LogError("Relay {Name} activation not configured.", _hwSettings.Name);
